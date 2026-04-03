@@ -13,13 +13,19 @@ Move notes from inbox root into existing subfolders. Fast, reliable, no over-ana
 - **Nahbereich:** Delete confirmed empty files (0 bytes or whitespace only)
 - **Report:** Summary of moves, findings, improvement suggestions
 
+## Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. Use file creation date (birthtime), not modification date. |
+
 ## Workflow
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. If unset, ask the user.
 2. **Find inbox** — scan top-level folders for one containing "inbox" (case-insensitive). If ambiguous, ask.
 3. **Read subfolders** — list all immediate subdirectories of the inbox. These are the available categories. If none exist, stop and tell the user to create subfolders first.
 4. **List inbox root notes** — only `.md` files directly in the inbox root, not in subfolders.
-5. **Apply cooldown** — skip notes modified less than 2 days ago (grace period for active work).
+5. **Apply cooldown** — skip notes created less than `cooldown_days` ago (grace period for active work). Use file creation date, not modification date.
 6. **Nahbereich pass** — delete files that are empty (0 bytes or whitespace only). Log each deletion.
 7. **Pre-sort routing** — before categorizing, auto-route by pattern:
    - `YYYY-MM-DD.md` or `YYYY-MM-DD *.md` → subfolder containing "daily" (case-insensitive)
@@ -31,6 +37,12 @@ Move notes from inbox root into existing subfolders. Fast, reliable, no over-ana
    - When no TBD folder exists, skip the note and list it in the report
 9. **Move files** — use Bash `mv` with proper quoting for special characters. Preserve original filenames.
 10. **Write report** — see format below.
+
+## Protected Files
+
+Never move, rename, or process these files (see `references/vault-autopilot-note.md`):
+- `_vault-autopilot.md` in vault root
+- Any file starting with `_` in vault root (reserved for plugin management)
 
 ## Boundaries
 
@@ -48,7 +60,7 @@ Move notes from inbox root into existing subfolders. Fast, reliable, no over-ana
 - Empty files deleted: X (Nahbereich)
 
 ### Skipped
-- Cooldown (< 2 days): X notes
+- Cooldown (< [cooldown_days] days): X notes
 - Ambiguous (no clear category): X notes
 - Non-markdown files: X
 
