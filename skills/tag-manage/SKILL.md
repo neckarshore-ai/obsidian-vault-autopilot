@@ -13,6 +13,20 @@ Audit vault tags for issues and suggest new tags from content. Two modes: **audi
 - **Nahbereich:** Auto-fix obvious convention violations (lowercase → PascalCase)
 - **Report:** Tag health, changes, suggestions for manual review
 
+## Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `cooldown_days` | 3 | Skip notes created within the last N days. Use file creation date (birthtime). |
+| `scope` | inbox | Which folder to scan. `inbox` = inbox only. `vault` = entire vault. User confirms before execution. |
+| `mode` | full | `audit` (find problems), `suggest` (fill gaps), or `full` (both). |
+
+## Protected Files
+
+Never process or modify these files (see `references/vault-autopilot-note.md`):
+- `_vault-autopilot.md` in vault root
+- Any file starting with `_` in vault root (reserved for plugin management)
+
 ## Modes
 
 | Trigger | Mode |
