@@ -13,6 +13,20 @@ Analyze vault notes by age, content quality, and relevance. Recommend deletions 
 - **Nahbereich:** Delete accidental notes (generic name + no content + no metadata) without asking
 - **Report:** Quality distribution, deletion results, findings for other skills
 
+## Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `cooldown_days` | 3 | Skip notes created within the last N days. Use file creation date (birthtime). |
+| `scope` | inbox | Which folder to scan. `inbox` = inbox only. `vault` = entire vault. User confirms before execution. |
+| `batch_size` | 30 | Number of notes to present per batch for folders with 100+ notes. |
+
+## Protected Files
+
+Never process, score, or recommend deletion of these files (see `references/vault-autopilot-note.md`):
+- `_vault-autopilot.md` in vault root
+- Any file starting with `_` in vault root (reserved for plugin management)
+
 ## Quality Criteria
 
 Evaluate each note against all five. Weigh together, not individually.
