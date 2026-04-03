@@ -13,6 +13,19 @@ Fill missing structural metadata: `title`, `created`, `modified`, `aliases`, `pa
 - **Nahbereich:** Create frontmatter if none exists
 - **Report:** Fields added per type, enriched vs. complete
 
+## Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `cooldown_days` | 3 | Skip notes created within the last N days. Use file creation date (birthtime). |
+| `scope` | inbox | Which folder to scan. User confirms before execution. |
+
+## Protected Files
+
+Never process or modify these files (see `references/vault-autopilot-note.md`):
+- `_vault-autopilot.md` in vault root
+- Any file starting with `_` in vault root (reserved for plugin management)
+
 ## Properties and Rules
 
 ### Scaffold (always ensured)

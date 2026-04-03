@@ -13,6 +13,19 @@ Assign `status` (lifecycle) and `type` (category) in one pass. Rule-based, no AI
 - **Nahbereich:** Normalize casing (`Status` → `status`)
 - **Report:** Classifications, conflicts, distribution
 
+## Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `cooldown_days` | 3 | Skip notes created within the last N days. Use file creation date (birthtime). |
+| `scope` | inbox | Which folder to scan. `inbox` = inbox only. `vault` = entire vault. User confirms before execution. |
+
+## Protected Files
+
+Never process or modify these files (see `references/vault-autopilot-note.md`):
+- `_vault-autopilot.md` in vault root
+- Any file starting with `_` in vault root (reserved for plugin management)
+
 ## Status Values (priority order, highest wins)
 
 | Status | Rule |
