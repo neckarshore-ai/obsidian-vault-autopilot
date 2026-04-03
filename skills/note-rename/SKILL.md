@@ -13,6 +13,19 @@ Give poorly named vault notes clear, descriptive filenames. Rename and fix backl
 - **Nahbereich:** Delete accidental notes (see rule below)
 - **Report:** Renames, backlink updates, findings for other skills
 
+## Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. Use file creation date (birthtime), not modification date. |
+| `scope` | inbox | Which folder to scan. `inbox` = inbox root only. `vault` = entire vault. User confirms before execution. |
+
+## Protected Files
+
+Never rename or process these files (see `references/vault-autopilot-note.md`):
+- `_vault-autopilot.md` in vault root
+- Any file starting with `_` in vault root (reserved for plugin management)
+
 ## Rename Candidates
 
 Rename notes with **uninformative** filenames: `Untitled`, `Unbenannt`, `New Note`, `Draft`, `Blank note`, `Note from iPhone`, `Quick Note`, URL-only names, hash-only names, obvious typos (95%+ clear intent).
