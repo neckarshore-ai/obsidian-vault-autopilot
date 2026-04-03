@@ -1,0 +1,135 @@
+# Product Philosophy
+
+## Why This Exists
+
+Every knowledge worker drowns in unstructured notes. They dump ideas, meeting notes, research, and half-finished thoughts into tools like Obsidian — and never come back to organize them. The gap between "captured" and "useful" grows every day.
+
+AI can close that gap. Not by replacing the human's judgment, but by doing the grunt work: sorting, renaming, standardizing metadata, flagging stale content, surfacing connections. The human decides what matters. The AI makes it findable.
+
+This plugin is that AI layer for Obsidian — built on Claude Code, open source, and designed to work with any vault.
+
+## Core Principles
+
+### 1. Skill Philosophy — Core + Nahbereich + Report
+
+Every skill has three zones of responsibility:
+
+- **Core task:** Execute the job. Rename files, sort inbox, standardize properties. This is what the skill was called to do.
+- **Adjacent fixes (Nahbereich):** When evidence is clear, fix it. An empty file during a rename pass gets deleted. A missing date field gets filled. The surgeon takes the appendix while they're in there — but only if it's obviously needed.
+- **Report everything else:** "Found 5 files with broken YAML frontmatter." Don't fix what's not your job. Report it so the right skill can handle it.
+- **Write a report:** Every skill run produces output: what was done, what was found, what needs attention. This is how skills communicate — not through shared state, but through reports.
+
+This principle exists because skills must be **maintainable at scale**. A skill that does everything is impossible to test, debug, or improve. A skill that only does one thing misses obvious opportunities. The "Core + Nahbereich + Report" model is the sweet spot.
+
+### 2. Quality Over Tokens
+
+A skill that processes 100 notes thoroughly is more valuable than one that processes 500 notes superficially. Token consumption is a cost. Wrong metadata is a debt. We optimize for correctness, not speed.
+
+This does not mean "be wasteful." It means: when forced to choose between a cheaper run and a better result, choose the better result.
+
+### 3. No Vendor Lock-In (Two Dimensions)
+
+**Tool-agnostic:** Today the vault is Obsidian. Tomorrow it might be something else. Skills work on Markdown files and YAML frontmatter — not on Obsidian-specific APIs, plugins, or data formats. If a user moves their vault to another Markdown-based tool, these skills should still work.
+
+**AI-agnostic:** Today the engine is Claude Code. Tomorrow a customer might want Copilot, Cursor, or something that doesn't exist yet. The skill logic (what to do, when to do it, what rules to follow) is documented in plain Markdown. The AI reads and executes. Switching the AI means switching the reader, not rewriting the book.
+
+### 4. Opinionated Defaults, Configurable Everything
+
+Every skill ships with strong defaults that work out of the box. A new user installs the plugin and immediately gets value — inbox gets sorted, files get renamed, properties get standardized.
+
+But every default is overridable. Different vaults have different folder structures, different naming conventions, different property schemas. The configuration is where personal vaults become personal, and where enterprise customers get what they pay consulting for.
+
+### 5. Open Source First, Consulting on Top
+
+The plugin is free and open source. The code lives on GitHub. Anyone can install it, use it, modify it, contribute to it.
+
+The business is consulting: helping people who can't (or don't want to) set it up themselves. Enterprise knowledge workers at companies like Mercedes-Benz, Bosch, or Porsche have Obsidian, have Claude, but don't have time. They buy expertise to configure, customize, and optimize — not to install a plugin.
+
+The open source plugin is the proof of competence. The consulting is the revenue.
+
+## Skill Design Rules
+
+### Naming
+
+Pattern: `[domain]-[action]` — noun first (the domain), then verb or descriptive noun (the action).
+
+- Singular nouns, English compound-noun convention: `note-rename`, not `notes-rename`
+- Domain groups skills in `ls`: all `note-*` together, all `social-*` together
+- Standalone nouns OK when action IS the domain: `properties`, `tags`
+- kebab-case always
+
+See `CLAUDE.md` for the full naming reference with examples.
+
+### Scope
+
+Each skill answers one question: "What is your job?" If the answer has "and" in it, consider splitting.
+
+Exceptions: Consolidation is allowed when the underlying domain is the same. Four separate "properties-description", "properties-status", "properties-type", "properties-context" skills all work on YAML frontmatter — one `properties` skill with configurable scope is cleaner.
+
+The test: would a user ever want to run only part of this skill? If yes, split. If no, keep together.
+
+### Reports
+
+Every skill produces a summary:
+
+```
+## [Skill Name] Report — [Date]
+
+### Done
+- Renamed 12 files
+- Deleted 3 empty files (Nahbereich)
+
+### Findings
+- 5 files with broken YAML frontmatter (→ properties skill)
+- 2 files older than 1 year, no edits (→ quality-check skill)
+
+### Unchanged
+- 45 files already compliant
+```
+
+This format is non-negotiable. It is how the user (and future orchestrator) knows what happened.
+
+## Architecture
+
+### Plugin = obsidian-vault
+
+All Obsidian skills live in one plugin. The plugin is installed once, and individual skills activate based on user requests or triggers.
+
+### Config = Vault-Specific
+
+Each vault has its own configuration. The configuration mechanism is an open design decision — it will likely involve an onboarding/analysis skill that examines the vault and proposes a config. Details TBD.
+
+### Vault Path = Environment Variable
+
+```bash
+export OBSIDIAN_VAULT_PATH="/path/to/your/vault"
+```
+
+No hardcoded paths. No assumptions about vault location. One variable, one truth.
+
+## Target Skills (8)
+
+| # | Skill | Core Task | Nahbereich | Report |
+|---|-------|-----------|------------|--------|
+| 1 | inbox-sort | Move files from inbox to correct folders | Delete empty files | List of moves + findings |
+| 2 | note-rename | Rename poorly named files | Flag duplicates | Renamed files + suspicious patterns |
+| 3 | note-quality-check | Score notes, suggest deletions | Delete confirmed empty | Quality scores + deletion list |
+| 4 | properties | Standardize YAML frontmatter | Fix obvious errors (missing date) | Updated vs. skipped vs. broken |
+| 5 | tags | Assign and clean up tags | Remove orphan tags | Tag changes + tag health |
+| 6 | social-scraper | Import external content into vault | Normalize format | Imported items + source list |
+| 7 | research-report | Generate research summary from URLs | n/a | Report document |
+| 8 | social-post | Draft social post from vault note | n/a | Post draft + suggestions |
+
+Plus: a future **config/onboarding skill** that analyzes a vault and proposes configuration.
+
+## Business Context
+
+This plugin is one of the "Gelddruckmaschinchen" — small, focused products that generate revenue through competence demonstration and consulting.
+
+**Part of the Neckarshore AI product portfolio:**
+- **OMNIXIS Documentor** — Enterprise documentation engine (the flagship)
+- **Obsidian Vault Manager** — Knowledge management plugin (this project)
+- **Prod or Pretend** — LinkedIn tech hype detector (parked)
+- **Comedy Execution Engine** — Stand-up material management (side project)
+
+The Vault Manager serves a dual purpose: it makes the founder's own vault manageable (dogfooding), and it demonstrates AI-assisted knowledge management competence to potential OMNIXIS customers. A CTO who sees a well-managed vault plugin thinks: "If they can do this for personal knowledge, what can they do for our enterprise documentation?"

@@ -1,0 +1,12 @@
+{
+  "name": "obsidian-vault-autopilot",
+  "version": "0.1.0",
+  "description": "AI-powered vault autopilot — sorts, renames, tags, and enriches your Obsidian notes automatically.",
+  "author": {
+    "name": "Neckarshore AI",
+    "url": "https://neckarshore.ai"
+  },
+  "repository": "https://github.com/neckarshore-ai/mmp-obsidian-vault-autopilot",
+  "license": "MIT",
+  "keywords": ["obsidian", "obsidian-plugin", "claude-code", "agent-skills", "vault-management", "automation", "ai", "productivity"]
+}
