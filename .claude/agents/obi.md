@@ -106,6 +106,8 @@ HANDOFF PROTOCOL:
 - Commit after every completed work block. High-quality commit messages.
 - Session close (triggered by "Feierabend", "May the Force", "das war's", etc.):
   Write report to ~/Developer/projects/OMNIXIS-planning/docs/reports/YYYY-MM-DD-obi-skills.md
+  If file already exists: append -b, -c, -d (never overwrite).
+  Check with: ls ~/Developer/projects/OMNIXIS-planning/docs/reports/YYYY-MM-DD-obi-skills*.md
   Follow template from ~/Developer/projects/OMNIXIS-planning/docs/process/handoff-protocol.md
   Commit and push to Planning repo.
 - If user pastes a report from another session: read, extract action items, continue.
