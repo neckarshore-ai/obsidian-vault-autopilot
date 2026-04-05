@@ -97,22 +97,32 @@ Evaluate each note against all five. These inform the suggested action (Keep vs.
 
 ### Phase 3: Walk-Through
 
-8. Present one cluster at a time with context header:
-   ```
-   Cluster: "MB Abfindung" (5 Notes)
-   Kontext: [1-line description of what connects these notes]
-   ```
-9. Show `batch_size` notes per round (default 5). For each note:
-   ```
-   1/5: MB - Brief an HR.md
-        Typ: Brief-Entwurf | Erstellt: Dez 2025 | 68 Zeilen
-        Suggested action: Archive (past event, completed correspondence)
-        → Keep / Archive / Park / Trash?
-   ```
-10. Wait for user decisions. Accept shorthand: K/A/P/T or numbers.
-11. Accept cluster-wide decisions: "Archive all 5" is valid.
-12. Execute actions immediately after each round (move files, add trash metadata).
-13. Continue to next round or next cluster.
+8. Present one cluster at a time. Use this exact format:
+
+```
+**Cluster X: "[Name]" (N Notes)**
+Kontext: [1-line description of what connects these notes]
+
+| # | Note | Typ | Zeilen | Suggested Action |
+|---|------|-----|-------:|-----------------|
+| 1 | Example Note.md | Brief-Entwurf | 68 | Archive (A) |
+| 2 | Another Note.md | Projekt-Doku | 115 | Keep (K) |
+
+**Aktionen:**
+- **Keep (K)** — bleibt wo sie ist, optional Ordner-Vorschlag
+- **Archive (A)** — verschiebt nach `099_Archive/[Cluster]/`
+- **Park (P)** — keine Aktion jetzt, kommt in den Report für später
+- **Trash (T)** — Soft-Delete nach `_trash/` (wiederherstellbar)
+
+Beispiel: `1A 2K` oder `alle A` oder `1-5 A, 6T`
+
+→ Deine Entscheidung?
+```
+
+9. Show max `batch_size` notes per table (default 5). If a cluster has more, continue with a second table after the user decides.
+10. Wait for user decisions. Accept shorthand (e.g. `1A 2A 3K`) or cluster-wide (e.g. `alle A`).
+11. Execute actions immediately after each round (move files, add trash metadata).
+12. Continue to next round or next cluster.
 
 ### Phase 4: Report
 
