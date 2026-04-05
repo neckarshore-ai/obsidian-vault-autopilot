@@ -15,7 +15,7 @@ This plugin is that AI layer for Obsidian — built on Claude Code, open source,
 Every skill has three zones of responsibility:
 
 - **Core task:** Execute the job. Rename files, sort inbox, standardize properties. This is what the skill was called to do.
-- **Adjacent fixes (Nahbereich):** When evidence is clear, fix it. An empty file during a rename pass gets deleted. A missing date field gets filled. The surgeon takes the appendix while they're in there — but only if it's obviously needed.
+- **Adjacent fixes (Nahbereich):** When evidence is clear, fix it. An empty file during a rename pass gets removed. A missing date field gets filled. The surgeon takes the appendix while they're in there — but only if it's obviously needed. Destructive Nahbereich actions use the plugin's trash convention (see `references/trash-concept.md`). Only confirmed-empty files (0 bytes) may be permanently deleted. All other removals go through soft-delete to `_trash/`.
 - **Report everything else:** "Found 5 files with broken YAML frontmatter." Don't fix what's not your job. Report it so the right skill can handle it.
 - **Write a report:** Every skill run produces output: what was done, what was found, what needs attention. This is how skills communicate — not through shared state, but through reports.
 

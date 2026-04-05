@@ -10,7 +10,7 @@ Give poorly named vault notes clear, descriptive filenames. Rename and fix backl
 ## Principle: Core + Nahbereich + Report
 
 - **Core:** Rename uninformative filenames, update backlinks across vault
-- **Nahbereich:** Delete accidental notes (see rule below)
+- **Nahbereich:** Trash accidental notes via soft-delete (see rule below and `references/trash-concept.md`)
 - **Report:** Renames, backlink updates, findings for other skills
 
 ## Parameters
@@ -38,7 +38,7 @@ Rename notes with **uninformative** filenames: `Untitled`, `Unbenannt`, `New Not
 
 ## Accidental Note Detection (Nahbereich)
 
-Delete if ALL true: (1) generic filename, (2) no content beyond template boilerplate, (3) frontmatter has only generic tags and no real title. When in doubt → TBD prefix instead.
+Soft-delete to `_trash/` if ALL true: (1) generic filename, (2) no content beyond template boilerplate, (3) frontmatter has only generic tags and no real title. Add trash metadata per `references/trash-concept.md`. When in doubt → TBD prefix instead.
 
 ## Naming Rules
 
@@ -54,7 +54,7 @@ Delete if ALL true: (1) generic filename, (2) no content beyond template boilerp
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. Default scope: inbox root. Confirm with user.
 2. **Scan** — list `.md` files. Skip Daily Notes.
-3. **Nahbereich** — detect and delete accidental notes. Log each.
+3. **Nahbereich** — detect and trash accidental notes (soft-delete to `_trash/`). Log each.
 4. **Classify** — read title, tags, first ~30 lines (skip template boilerplate). Mark as: rename, keep, or TBD.
 5. **Detect clusters** — 3+ candidates on same topic → prepare prefix suggestion.
 6. **Check backlinks** — find all `[[Old Name]]` references across vault.
@@ -69,7 +69,7 @@ Delete if ALL true: (1) generic filename, (2) no content beyond template boilerp
 
 ### Done
 - Renamed: X notes | Backlinks updated: X refs in Y notes
-- Accidental notes deleted: X (Nahbereich)
+- Accidental notes trashed: X (Nahbereich, soft-delete to `_trash/`)
 
 ### Skipped
 - Already descriptive: X | Daily Notes: X | TBD: X

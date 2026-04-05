@@ -11,6 +11,7 @@ Every vault managed by this plugin has a `_vault-autopilot.md` file in its root 
 3. **Never delete** `_vault-autopilot.md`
 4. **Never modify content** — only the future `autopilot-update` meta-skill may write to this file
 5. **Skip during processing** — when scanning vault root or folders, exclude this file from all skill operations (sorting, renaming, quality checks, property changes, tag changes)
+6. **Never process files inside `_trash/`** — the trash folder is plugin-managed (see `references/trash-concept.md`). Skills must skip it during all scans.
 
 ## Detection
 

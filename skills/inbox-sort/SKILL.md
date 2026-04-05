@@ -10,7 +10,7 @@ Move notes from inbox root into existing subfolders. Fast, reliable, no over-ana
 ## Principle: Core + Nahbereich + Report
 
 - **Core:** Categorize and move notes into subfolders
-- **Nahbereich:** Delete confirmed empty files (0 bytes or whitespace only)
+- **Nahbereich:** Delete confirmed empty files (0 bytes). Whitespace-only files: soft-delete to `_trash/` (see `references/trash-concept.md`)
 - **Report:** Summary of moves, findings, improvement suggestions
 
 ## Parameters
@@ -26,7 +26,7 @@ Move notes from inbox root into existing subfolders. Fast, reliable, no over-ana
 3. **Read subfolders** — list all immediate subdirectories of the inbox. These are the available categories. If none exist, stop and tell the user to create subfolders first.
 4. **List inbox root notes** — only `.md` files directly in the inbox root, not in subfolders.
 5. **Apply cooldown** — skip notes created less than `cooldown_days` ago (grace period for active work). Use file creation date, not modification date.
-6. **Nahbereich pass** — delete files that are empty (0 bytes or whitespace only). Log each deletion.
+6. **Nahbereich pass** — permanently delete files that are 0 bytes. Soft-delete whitespace-only files to `_trash/` with trash metadata (see `references/trash-concept.md`). Log each action.
 7. **Pre-sort routing** — before categorizing, auto-route by pattern:
    - `YYYY-MM-DD.md` or `YYYY-MM-DD *.md` → subfolder containing "daily" (case-insensitive)
    - Web captures and social posts (see `references/web-capture-detection.md`) → matching subfolder
@@ -57,7 +57,7 @@ Never move, rename, or process these files (see `references/vault-autopilot-note
 
 ### Done
 - [Subfolder]: X notes moved
-- Empty files deleted: X (Nahbereich)
+- Nahbereich: X files removed (0-byte deleted: X, whitespace-only trashed: X)
 
 ### Skipped
 - Cooldown (< [cooldown_days] days): X notes
@@ -81,5 +81,5 @@ Before reporting done:
 - [ ] Every moved file still exists at its new path
 - [ ] No files were renamed or modified
 - [ ] Cooldown was respected (no recently modified files moved)
-- [ ] Empty file deletions were logged individually
+- [ ] Nahbereich actions were logged individually (0-byte deletes and whitespace-only trashes)
 - [ ] Report covers all processed and skipped notes
