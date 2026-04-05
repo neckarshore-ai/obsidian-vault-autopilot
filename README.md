@@ -40,9 +40,9 @@ Three repos, three different jobs. They teach and visualize. We automate.
 
 ## Installation
 
-### Claude Code Marketplace (recommended)
+### Claude Code (recommended)
 
-Add the marketplace and install:
+Add the marketplace and install the plugin:
 
 ```bash
 /plugin marketplace add neckarshore-ai/mmp-obsidian-vault-autopilot
@@ -51,11 +51,18 @@ Add the marketplace and install:
 
 ### Manual
 
-Clone and point Claude Code at the plugin:
+Clone the repo and register it as a local marketplace:
 
 ```bash
-git clone https://github.com/neckarshore-ai/mmp-obsidian-vault-autopilot.git
-claude --plugin-dir ./mmp-obsidian-vault-autopilot
+git clone https://github.com/neckarshore-ai/mmp-obsidian-vault-autopilot.git \
+  ~/.claude/plugins/obsidian-vault-autopilot
+```
+
+Then in Claude Code:
+
+```bash
+/plugin marketplace add ~/.claude/plugins/obsidian-vault-autopilot
+/plugin install obsidian-vault-autopilot@neckarshore-ai
 ```
 
 ### Prerequisites
