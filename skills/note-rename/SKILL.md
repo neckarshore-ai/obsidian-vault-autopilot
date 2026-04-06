@@ -24,7 +24,14 @@ Give poorly named vault notes clear, descriptive filenames. Rename and fix backl
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. Use file creation date (birthtime), not modification date. |
-| `scope` | inbox | Which folder to scan. `inbox` = inbox root only. `vault` = entire vault. User confirms before execution. |
+| `scope` | inbox | Which folder to scan. `inbox` = inbox root only. `vault` = entire vault (excluding vault root). `folder:path` = specific subfolder. User confirms before execution. |
+
+## Scope Rules
+
+- **Vault root is always excluded** unless the user explicitly asks to process root-level files. Root files are typically structural (OPS docs, config notes, plugin files) and rarely rename candidates.
+- Folders starting with `_` are excluded from scanning (`_trash/`, `_secret/`, `_test-backup/`).
+- Folders starting with `.` are excluded (`.trash/`, `.obsidian/`).
+- Template folders (e.g. `00_Templates`) are excluded.
 
 ## Protected Files
 
@@ -36,11 +43,16 @@ Never rename or process these files (see `references/vault-autopilot-note.md`):
 
 Rename notes with **uninformative** filenames: `Untitled`, `Unbenannt`, `New Note`, `Draft`, `Blank note`, `Note from iPhone`, `Quick Note`, URL-only names, hash-only names, obvious typos (95%+ clear intent).
 
-**Never rename:** Daily Notes (`YYYY-MM-DD.md`) or already descriptive names.
+**Never rename:** Already descriptive names.
+
+**Daily Notes (`YYYY-MM-DD.md`):** Not automatically kept. Classify by content:
+- **Empty or boilerplate-only** → Trash candidate (accidental note detection)
+- **Has content (links, text, ideas)** → Rename candidate. Keep date prefix: `YYYY-MM-DD - Context - Detail`
+- **Multi-topic (links from different platforms, mixed themes)** → TBD suffix. Flag for manual review.
 
 **Web captures:** Apply prefix per `references/web-capture-detection.md`. Skip existing categorical prefixes.
 
-**Unclear cases:** `TBD - [Original Name]`. Report for manual review.
+**Unclear cases:** `[Original Name] - TBD`. When the original name contains a date, keep the date first: `YYYY-MM-DD - TBD`. The date must always lead for chronological sorting.
 
 ## Accidental Note Detection (Nahbereich)
 
@@ -48,7 +60,14 @@ Soft-delete to `_trash/` if ALL true: (1) generic filename, (2) no content beyon
 
 ## Daily Note Detection (Nahbereich)
 
-If a note matches the Daily Note pattern (`YYYY-MM-DD.md`) but is outside the Daily Notes folder, move it to the vault's Daily Notes folder. These are misplaced daily notes, not rename candidates. Add skill-log with 📅 Daily action.
+Notes matching the Daily Note pattern (`YYYY-MM-DD.md`) get special handling. They are NOT auto-kept — classify by content (see Rename Candidates above). Location handling:
+
+**Detection rules:**
+1. **Misplaced daily notes** — `YYYY-MM-DD.md` outside the vault's canonical Daily Notes folder → move there first, then classify for rename like any other note. Add skill-log with Daily action for the move.
+2. **Hybrid names** (`YYYY-MM-DD Some Description.md`) — this is NOT a daily note. It is a regular note with a date prefix. Process as a rename candidate — the date prefix is informative context, not a daily note pattern.
+3. **Future dates** — flag for manual review. Could be a typo (e.g. `2035` instead of `2025`). Do not auto-move.
+4. **Already in correct Daily Notes folder** — no move needed. Still classify for rename based on content.
+5. **Nested Daily Notes folders** (e.g. `inbox/Daily Notes/YYYY-MM-DD.md`) — these are misplaced. The vault has ONE canonical Daily Notes folder. Move there, avoid duplicates.
 
 ## Sensitive Content Detection (Nahbereich)
 
@@ -63,6 +82,51 @@ Move to `_secret/` if the note contains sensitive data: recovery phrases, API ke
 5. Max ~70 characters
 
 **Clusters:** If 3+ notes share a topic, suggest a common prefix before renaming.
+
+## Context Segment
+
+When renaming notes that have a date prefix, use a three-part name: `YYYY-MM-DD - Context - Detail`.
+
+The **Context** segment answers: "What gives the reader the fastest orientation?" It can be:
+- A **platform** (Instagram, YouTube, ChatGPT, Perplexity, Grok, GitHub, Reddit, LinkedIn)
+- A **project** (OMNIXIS, OpenClaw, Neckarshore)
+- A **life area** (Family, Finance, Career, Health)
+- An **activity** (Research, Interview, Meeting, Review)
+
+**Platform detection** (when primary content is a link or capture):
+
+| URL Pattern | Context Segment |
+|---|---|
+| `instagram.com` | Instagram |
+| `youtube.com`, `youtu.be` | YouTube |
+| `perplexity.ai` | Perplexity |
+| `chatgpt.com` | ChatGPT |
+| `grok.com` | Grok |
+| `linkedin.com` | LinkedIn |
+| `github.com` | GitHub |
+| `reddit.com` | Reddit |
+| Other recognizable domain | Domain name (capitalized) |
+
+See also `references/web-capture-detection.md` for social platform detection rules.
+
+**Multiple links, same platform:** One context segment. E.g. 3 Instagram links → still just "Instagram".
+**Multiple links, different platforms:** Use the dominant platform as context, or `Research` if no platform dominates.
+**No links (pure text):** Use project, life area, or activity as context.
+
+## Multi-Topic Rules
+
+When a note covers multiple unrelated topics, join them with `&` in the Detail segment:
+
+| # | Topic Count | Rule |
+|---|-------------|------|
+| 1 | 1-2 | All topics in the name with `&` |
+| 2 | 3-4 | All topics in the name with `&` if it stays readable and under ~70 characters. Skill decides. |
+| 3 | 5+ | `Context - Mixed Topics` |
+
+Examples:
+- 2 topics: `2025-12-03 - Instagram - HR Interview Tipps & SaaS.md`
+- 3 topics: `2025-12-04 - Instagram - SaaS & Dev Tools & Karpathy LLM.md`
+- 5+ topics: `2025-12-06 - Research - Mixed Topics.md`
 
 ## Workflow
 
