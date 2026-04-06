@@ -61,7 +61,18 @@ Soft-delete to `_trash/` if ALL true: (1) generic filename, (2) no content beyon
 6. **Check backlinks** — find all `[[Old Name]]` references across vault.
 7. **Preview and confirm** — show table (old name, new name, backlink count). **Wait for user confirmation.**
 8. **Execute** — rename files, update all `[[Old Name]]` and `[[Old Name|` references.
-9. **Skill Log** — for each renamed file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`).
+9. **Skill Log** — for each renamed file, write the skill log (see `references/skill-log.md` for full spec):
+   - **Tag:** Add `VaultAutopilot` to the `tags` list in YAML frontmatter. Skip if already present.
+   - **Callout:** Append the following block at the end of the note (after all content):
+     ```
+     > [!info] Vault Autopilot
+     >
+     > | Date | Skill | Action |
+     > |------|-------|--------|
+     > | YYYY-MM-DD | note-rename | Renamed from [old filename without .md] |
+     ```
+   - If a `> [!info] Vault Autopilot` callout already exists at the end of the file, append only a new table row — do not create a second callout.
+   - Ensure one blank line separates the callout from the preceding content.
 10. **Report and log** — write summary, append to `logs/run-history.md`.
 
 ## Report Format
@@ -86,3 +97,5 @@ Soft-delete to `_trash/` if ALL true: (1) generic filename, (2) no content beyon
 - [ ] All backlinks updated (no broken `[[]]`)
 - [ ] No Daily Notes renamed
 - [ ] User confirmed before execution
+- [ ] Every renamed file has `VaultAutopilot` tag in frontmatter
+- [ ] Every renamed file has skill log callout at the end
