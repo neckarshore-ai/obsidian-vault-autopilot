@@ -41,6 +41,10 @@ Rename notes with **uninformative** filenames: `Untitled`, `Unbenannt`, `New Not
 
 Soft-delete to `_trash/` if ALL true: (1) generic filename, (2) no content beyond template boilerplate, (3) frontmatter has only generic tags and no real title. Add trash metadata per `references/trash-concept.md`. When in doubt → TBD prefix instead.
 
+## Sensitive Content Detection (Nahbereich)
+
+Move to `_secret/` if the note contains sensitive data: recovery phrases, API keys, passwords, tokens, or other credentials stored as plaintext. These notes are a security risk and must not remain in the vault unprotected. Add trash metadata with `trash_source: note-rename` and the original path. The `_secret/` folder signals to the user that these files need manual review and secure handling — not just deletion.
+
 ## Naming Rules
 
 1. Capture **core topic** — scannable at a glance
@@ -59,7 +63,38 @@ Soft-delete to `_trash/` if ALL true: (1) generic filename, (2) no content beyon
 4. **Classify** — read title, tags, first ~30 lines (skip template boilerplate). Mark as: rename, keep, or TBD.
 5. **Detect clusters** — 3+ candidates on same topic → prepare prefix suggestion.
 6. **Check backlinks** — find all `[[Old Name]]` references across vault.
-7. **Preview and confirm** — show table with columns: #, Note, Action, New Name, Skill-Log. Use status icons: ✅ Done, ⚠️ Pending, ❌ Failed. After the table, show a summary line: "X renames, Y trashes, Z reviewed. Confirm?" **Do not execute until the user explicitly confirms.**
+7. **Preview and confirm** — show the preview table below. Match the language the user is speaking. **Do not execute until the user explicitly confirms.**
+
+   **English preview (when user speaks English):**
+
+   ```
+   | # | Note | Action | New Name | Skill-Log |
+   |---|------|--------|----------|-----------|
+   | 1 | `Old Name.md` | ✏️ Rename | `New Name` | ⚠️ Pending |
+   | 2 | `Empty.md` | 🗑️ Trash | Reason for trashing | ⚠️ Pending |
+   | 4 | `Secret.md` | 🔒 Secret | Sensitive content found | ⚠️ Pending |
+   | 3 | `Good Name.md` | ✅ Keep | Reviewed | ⚠️ Pending |
+
+   **X Renames, Y Trashes, Z Reviewed. Confirm?**
+   ```
+
+   **German preview (when user speaks German):**
+
+   ```
+   | # | Notiz | Aktion | Neuer Name | Skill-Log |
+   |---|-------|--------|------------|-----------|
+   | 1 | `Alter Name.md` | ✏️ Umbenennen | `Neuer Name` | ⚠️ Ausstehend |
+   | 2 | `Leer.md` | 🗑️ Löschen | Begründung | ⚠️ Ausstehend |
+   | 4 | `Geheim.md` | 🔒 Sensibel | Sensible Inhalte gefunden | ⚠️ Ausstehend |
+   | 3 | `Guter Name.md` | ✅ Behalten | Geprüft | ⚠️ Ausstehend |
+
+   **X Umbenennungen, Y Löschungen, Z Geprüft. Bestätigen?**
+   ```
+
+   **Column rules:**
+   - **New Name:** For Rename → new filename. For Trash → reason for trashing. For Keep → "Reviewed" / "Geprüft".
+   - **Skill-Log:** ⚠️ Pending before execution, ✅ Done after, ❌ Failed on error.
+   - **Action values are not bold** — the icon provides enough visual weight.
 8. **Execute** — rename files, update all `[[Old Name]]` and `[[Old Name|` references.
 9. **Skill Log** — for every processed note (renamed, reviewed, or trashed), write the skill log. See `references/skill-log.md` for the full spec.
 
@@ -85,6 +120,7 @@ Soft-delete to `_trash/` if ALL true: (1) generic filename, (2) no content beyon
    - Renamed: `Renamed from [old filename without .md]`
    - Reviewed (name was already good): `Reviewed — name already descriptive`
    - Trashed (Nahbereich): `Trashed — accidental note (soft-delete to _trash/)`
+   - Secret (Nahbereich): `Secret — sensitive content (moved to _secret/)`
 
 10. **Report and log** — write summary, append to `logs/run-history.md`.
 
