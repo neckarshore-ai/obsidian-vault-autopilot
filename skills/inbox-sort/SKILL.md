@@ -49,7 +49,8 @@ The `_` prefix keeps sort buckets visually grouped and distinguishes them from c
    - Genuinely ambiguous → `_Edge Cases`
 9. **Preview** — show routing plan grouped by bucket with note counts. Wait for user confirmation. User can override individual assignments.
 10. **Move files** — use Bash `mv` with proper quoting for special characters. Preserve original filenames.
-11. **Write report** — see format below.
+11. **Provenance** — for each moved file: add `VaultAutopilot` tag and append provenance callout row (see `references/provenance.md`).
+12. **Write report** — see format below.
 
 ## Protected Files
 

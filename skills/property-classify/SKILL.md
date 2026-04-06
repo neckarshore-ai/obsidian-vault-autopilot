@@ -71,7 +71,8 @@ Existing `type` (not `TBD`/`inbox`) + different proposed value = **conflict**, d
 3. **Classify** — apply status hierarchy + type layers. Detect conflicts.
 4. **Preview** — group by action (no change, upgrades, downgrades, conflicts). Wait for confirmation.
 5. **Write** — set `status` and `type` in frontmatter. Preserve all other fields.
-6. **Report and log** — append to `logs/run-history.md`.
+6. **Provenance** — for each classified file: add `VaultAutopilot` tag and append provenance callout row (see `references/provenance.md`).
+7. **Report and log** — append to `logs/run-history.md`.
 
 ## Report Format
 

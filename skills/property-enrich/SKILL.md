@@ -55,7 +55,8 @@ Never process or modify these files (see `references/vault-autopilot-note.md`):
 3. **Compute** — determine which fields are missing, compute values. Skip properties that already have valid content.
 4. **Preview** — summary + 3-5 sample changes. Wait for confirmation.
 5. **Write** — add fields in YAML frontmatter. Preserve all existing values.
-6. **Report and log** — append to `logs/run-history.md`.
+6. **Provenance** — for each enriched file: add `VaultAutopilot` tag and append provenance callout row (see `references/provenance.md`).
+7. **Report and log** — append to `logs/run-history.md`.
 
 ## Boundaries
 
