@@ -65,9 +65,17 @@ Notes matching the Daily Note pattern (`YYYY-MM-DD.md`) get special handling. Th
 **Detection rules:**
 1. **Misplaced daily notes** — `YYYY-MM-DD.md` outside the vault's canonical Daily Notes folder → move there first, then classify for rename like any other note. Add skill-log with Daily action for the move.
 2. **Hybrid names** (`YYYY-MM-DD Some Description.md`) — this is NOT a daily note. It is a regular note with a date prefix. Process as a rename candidate — the date prefix is informative context, not a daily note pattern.
-3. **Future dates** — flag for manual review. Could be a typo (e.g. `2035` instead of `2025`). Do not auto-move.
+3. **Future dates** — if the note has a `created` date in frontmatter, use it as the correct date and rename accordingly. If a note with the corrected date already exists, resolve via naming (e.g. add a suffix). If no `created` date is available, flag for manual review. Always log the date correction in the skill-log action: `Renamed from [original] (date corrected)`.
 4. **Already in correct Daily Notes folder** — no move needed. Still classify for rename based on content.
 5. **Nested Daily Notes folders** (e.g. `inbox/Daily Notes/YYYY-MM-DD.md`) — these are misplaced. The vault has ONE canonical Daily Notes folder. Move there, avoid duplicates.
+
+## Corrupted File Detection (Nahbereich)
+
+Detect files with multiple YAML frontmatter blocks (two or more `---`/`---` pairs). This happens when two notes get accidentally merged — typically an append error during sync or import. These files cannot be reliably processed.
+
+**Action:** Rename with a descriptive corruption label (e.g. `YYYY-MM-DD - Korrupte Datei - Zwei Notizen verschmolzen`). Write skill-log. Do not attempt to split the file — that requires manual review by the user.
+
+**Detection:** Count `---` lines at positions that look like frontmatter boundaries (start of file, after content blocks). Two complete frontmatter blocks = corrupted.
 
 ## Sensitive Content Detection (Nahbereich)
 
@@ -172,7 +180,7 @@ Examples:
 
    **Column rules:**
    - **New Name:** For Rename → new filename. For Trash → reason for trashing. For Keep → "Reviewed" / "Geprüft".
-   - **Skill-Log:** ⚠️ Pending before execution, ✅ Done after, ❌ Failed on error.
+   - **Skill-Log:** ⚠️ Pending before execution, ✅ Done after, ❌ Failed on error. Never show implementation details (e.g. "Append" for notes with existing callouts). The user sees status, not internals.
    - **Action values are not bold** — the icon provides enough visual weight.
 
    **Rationale section (below the table):**
