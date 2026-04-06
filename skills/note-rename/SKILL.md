@@ -121,14 +121,16 @@ When a note covers multiple unrelated topics, join them with `&` in the Detail s
 |---|-------------|-----------|------|
 | 1 | 1-2 | any | All topics in the name with `&` |
 | 2 | 3-4 | any | All topics in the name with `&` if it stays readable and under ~70 characters. Skill decides. |
-| 3 | 5+ | one dominant | All topics as keywords with `&`. One keyword per topic — enough to find the note later. |
+| 3 | 5-6 | one dominant | All topics as keywords with `&`. One keyword per topic — enough to find the note later. |
 | 4 | 5+ | multiple | `YYYY-MM-DD - Mixed Content - Mixed Topics.md`. Too chaotic for a meaningful name. |
+| 5 | 7+ | any | `YYYY-MM-DD - Mixed Content - Mixed Topics.md`. Topic Override — content this fragmented cannot produce a meaningful name regardless of platform dominance. |
 
 Examples:
 - 2 topics: `2025-12-03 - Instagram - HR Interview Tipps & SaaS.md`
 - 3 topics: `2025-12-04 - Instagram - SaaS & Dev Tools & Karpathy LLM.md`
-- 5+ topics, one platform: `2025-12-11 - Instagram - Product & Interview & Claude & AI Cases & Cursor.md`
+- 5-6 topics, one platform: `2025-12-11 - Instagram - Product & Interview & Claude & AI Cases & Cursor.md`
 - 5+ topics, multiple platforms: `2025-12-08 - Mixed Content - Mixed Topics.md`
+- 7+ topics, one platform: `2026-01-08 - Mixed Content - Mixed Topics.md` (Topic Override — 7 topics, 93% Instagram, still too fragmented)
 
 ## Workflow
 
