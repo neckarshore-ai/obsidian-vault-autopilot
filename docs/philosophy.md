@@ -37,15 +37,13 @@ This does not mean "be wasteful." It means: when forced to choose between a chea
 
 Every skill ships with strong defaults that work out of the box. A new user installs the plugin and immediately gets value — inbox gets sorted, files get renamed, properties get standardized.
 
-But every default is overridable. Different vaults have different folder structures, different naming conventions, different property schemas. The configuration is where personal vaults become personal, and where enterprise customers get what they pay consulting for.
+But every default is overridable. Different vaults have different folder structures, different naming conventions, different property schemas. The configuration is where personal vaults become personal.
 
-### 5. Open Source First, Consulting on Top
+### 5. Open Source First
 
 The plugin is free and open source. The code lives on GitHub. Anyone can install it, use it, modify it, contribute to it.
 
-The business is consulting: helping people who can't (or don't want to) set it up themselves. Enterprise knowledge workers at companies like Mercedes-Benz, Bosch, or Porsche have Obsidian, have Claude, but don't have time. They buy expertise to configure, customize, and optimize — not to install a plugin.
-
-The open source plugin is the proof of competence. The consulting is the revenue.
+The open source plugin is the proof of competence. Contributions, issues, and discussions are welcome.
 
 ## Skill Design Rules
 
@@ -122,14 +120,3 @@ No hardcoded paths. No assumptions about vault location. One variable, one truth
 
 Plus: a future **config/onboarding skill** that analyzes a vault and proposes configuration.
 
-## Business Context
-
-This plugin is one of the "Gelddruckmaschinchen" — small, focused products that generate revenue through competence demonstration and consulting.
-
-**Part of the Neckarshore AI product portfolio:**
-- **OMNIXIS Documentor** — Enterprise documentation engine (the flagship)
-- **Obsidian Vault Manager** — Knowledge management plugin (this project)
-- **Prod or Pretend** — LinkedIn tech hype detector (parked)
-- **Comedy Execution Engine** — Stand-up material management (side project)
-
-The Vault Manager serves a dual purpose: it makes the founder's own vault manageable (dogfooding), and it demonstrates AI-assisted knowledge management competence to potential OMNIXIS customers. A CTO who sees a well-managed vault plugin thinks: "If they can do this for personal knowledge, what can they do for our enterprise documentation?"

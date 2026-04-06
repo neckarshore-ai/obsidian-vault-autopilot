@@ -4,6 +4,8 @@ status: deferred
 description: Use when an Obsidian vault needs tag auditing, cleanup, or content-based tag suggestions. Trigger phrases - "analyze tags", "audit tags", "fix tags", "suggest tags", "tag cleanup", "find duplicate tags", "unused tags", "tag consistency", "auto-tag notes". Also trigger when the user mentions orphan tags, tag hierarchy issues, convention violations, or untagged notes needing tags.
 ---
 
+> **Deferred** — This skill is not active in v0.1.0. It is planned for a future release.
+
 # Tag Manage
 
 Audit vault tags for issues and suggest new tags from content. Two modes: **audit** (find problems) and **suggest** (fill gaps). Authority: `references/tag-convention.md`.

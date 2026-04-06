@@ -97,7 +97,7 @@ When renaming notes that have a date prefix, use a three-part name: `YYYY-MM-DD 
 
 The **Context** segment answers: "What gives the reader the fastest orientation?" It can be:
 - A **platform** (Instagram, YouTube, ChatGPT, Perplexity, Grok, GitHub, Reddit, LinkedIn)
-- A **project** (OMNIXIS, OpenClaw, Neckarshore)
+- A **project** (the project or product name the note relates to)
 - A **life area** (Family, Finance, Career, Health)
 - An **activity** (Research, Interview, Meeting, Review)
 

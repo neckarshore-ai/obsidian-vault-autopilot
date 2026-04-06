@@ -72,7 +72,7 @@ export OBSIDIAN_VAULT_PATH="/path/to/your/vault"
 
 No hardcoded paths in skills. No assumptions about vault location.
 
-**Dev/Test vault (Nexus):** `~/vaults/nexus` — used for all live testing and integration tests.
+**Dev/Test vault:** Set up a local test vault for live testing and integration tests.
 
 ## Design Philosophy
 
