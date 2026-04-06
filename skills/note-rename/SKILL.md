@@ -11,7 +11,12 @@ Give poorly named vault notes clear, descriptive filenames. Rename and fix backl
 ## Principle: Core + Nahbereich + Report
 
 - **Core:** Rename uninformative filenames, update backlinks across vault
-- **Nahbereich:** Trash accidental notes via soft-delete (see rule below and `references/trash-concept.md`). Minimal YAML syntax repairs when already editing frontmatter: `*` → `-` in tag lists, remove duplicate `---` separators, convert inline tags `[X]` to block format. Syntactic fixes only — never add or change field values (that is property-enrich's job).
+- **Nahbereich:** Trash accidental notes via soft-delete (see rule below and `references/trash-concept.md`). Minimal YAML syntax repairs when already editing frontmatter. Syntactic fixes only — never add or change field values (that is property-enrich's job). Allowed repairs:
+  - `*` → `-` in tag lists
+  - Remove duplicate `---` separators
+  - Convert inline tags `[X]` to block format
+  - Remove junk text before opening `---` (e.g. dictation artifacts like `Thx ---` → `---`)
+  - Fix quoted keys with embedded colon: `"type:"` → `type` (the colon belongs to YAML syntax, not the key name)
 - **Report:** Renames, backlink updates, findings for other skills
 
 ## Parameters
@@ -41,6 +46,10 @@ Rename notes with **uninformative** filenames: `Untitled`, `Unbenannt`, `New Not
 
 Soft-delete to `_trash/` if ALL true: (1) generic filename, (2) no content beyond template boilerplate, (3) frontmatter has only generic tags and no real title. Add trash metadata per `references/trash-concept.md`. When in doubt → TBD prefix instead.
 
+## Daily Note Detection (Nahbereich)
+
+If a note matches the Daily Note pattern (`YYYY-MM-DD.md`) but is outside the Daily Notes folder, move it to the vault's Daily Notes folder. These are misplaced daily notes, not rename candidates. Add skill-log with 📅 Daily action.
+
 ## Sensitive Content Detection (Nahbereich)
 
 Move to `_secret/` if the note contains sensitive data: recovery phrases, API keys, passwords, tokens, or other credentials stored as plaintext. These notes are a security risk and must not remain in the vault unprotected. Add trash metadata with `trash_source: note-rename` and the original path. The `_secret/` folder signals to the user that these files need manual review and secure handling — not just deletion.
@@ -58,8 +67,8 @@ Move to `_secret/` if the note contains sensitive data: recovery phrases, API ke
 ## Workflow
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. Default scope: inbox root. Confirm with user.
-2. **Scan** — list `.md` files. Skip Daily Notes.
-3. **Nahbereich** — detect and trash accidental notes (soft-delete to `_trash/`). Log each.
+2. **Scan** — list `.md` files.
+3. **Nahbereich** — detect and trash accidental notes (soft-delete to `_trash/`). Move misplaced Daily Notes to the Daily Notes folder. Log each.
 4. **Classify** — read title, tags, first ~30 lines (skip template boilerplate). Mark as: rename, keep, or TBD.
 5. **Detect clusters** — 3+ candidates on same topic → prepare prefix suggestion.
 6. **Check backlinks** — find all `[[Old Name]]` references across vault.
@@ -72,8 +81,9 @@ Move to `_secret/` if the note contains sensitive data: recovery phrases, API ke
    |---|------|--------|----------|-----------|
    | 1 | `Old Name.md` | ✏️ Rename | `New Name` | ⚠️ Pending |
    | 2 | `Empty.md` | 🗑️ Trash | Reason for trashing | ⚠️ Pending |
-   | 4 | `Secret.md` | 🔒 Secret | Sensitive content found | ⚠️ Pending |
-   | 3 | `Good Name.md` | ✅ Keep | Reviewed | ⚠️ Pending |
+   | 3 | `Secret.md` | 🔒 Secret | Sensitive content found | ⚠️ Pending |
+   | 4 | `2026-01-15.md` | 📅 Daily | → Daily Notes folder | ⚠️ Pending |
+   | 5 | `Good Name.md` | ✅ Keep | Reviewed | ⚠️ Pending |
 
    **X Renames, Y Trashes, Z Reviewed. Confirm?**
    ```
@@ -85,8 +95,9 @@ Move to `_secret/` if the note contains sensitive data: recovery phrases, API ke
    |---|-------|--------|------------|-----------|
    | 1 | `Alter Name.md` | ✏️ Umbenennen | `Neuer Name` | ⚠️ Ausstehend |
    | 2 | `Leer.md` | 🗑️ Löschen | Begründung | ⚠️ Ausstehend |
-   | 4 | `Geheim.md` | 🔒 Sensibel | Sensible Inhalte gefunden | ⚠️ Ausstehend |
-   | 3 | `Guter Name.md` | ✅ Behalten | Geprüft | ⚠️ Ausstehend |
+   | 3 | `Geheim.md` | 🔒 Sensibel | Sensible Inhalte gefunden | ⚠️ Ausstehend |
+   | 4 | `2026-01-15.md` | 📅 Daily | → Daily Notes Ordner | ⚠️ Ausstehend |
+   | 5 | `Guter Name.md` | ✅ Behalten | Geprüft | ⚠️ Ausstehend |
 
    **X Umbenennungen, Y Löschungen, Z Geprüft. Bestätigen?**
    ```
@@ -121,6 +132,7 @@ Move to `_secret/` if the note contains sensitive data: recovery phrases, API ke
    - Reviewed (name was already good): `Reviewed — name already descriptive`
    - Trashed (Nahbereich): `Trashed — accidental note (soft-delete to _trash/)`
    - Secret (Nahbereich): `Secret — sensitive content (moved to _secret/)`
+   - Daily (Nahbereich): `Daily — moved to Daily Notes folder`
 
 10. **Report and log** — write summary, append to `logs/run-history.md`.
 
