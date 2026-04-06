@@ -123,7 +123,7 @@ Beispiel: `1A 2K` oder `alle A` oder `1-5 A, 6T`
 9. Show max `batch_size` notes per table (default 5). If a cluster has more, continue with a second table after the user decides.
 10. Wait for user decisions. Accept shorthand (e.g. `1A 2A 3K`) or cluster-wide (e.g. `alle A`).
 11. Execute actions immediately after each round (move files, add trash metadata).
-12. **Provenance** — for each actioned file: add `VaultAutopilot` tag and append provenance callout row (see `references/provenance.md`).
+12. **Skill Log** — for each actioned file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`).
 13. Continue to next round or next cluster.
 
 ### Phase 4: Report

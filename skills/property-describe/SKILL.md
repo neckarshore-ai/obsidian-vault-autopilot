@@ -55,7 +55,7 @@ Process only if ALL true:
 3. **Generate** — read content, produce 250-char summary per note. For long notes (5000+ words): read title, first 50 lines, headings, last 10 lines.
 4. **Preview** — show table (filename, generated description, char count). Wait for confirmation. User can approve all, review individually, or reject specific entries.
 5. **Write** — set `description` in YAML frontmatter. Line-by-line replacement only (never `str.replace`). Preserve all other fields. Single-quote the value, escape apostrophes by doubling (`'`→`''`).
-6. **Provenance** — for each described file: add `VaultAutopilot` tag and append provenance callout row (see `references/provenance.md`).
+6. **Skill Log** — for each described file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`).
 7. **Report and log** — append to `logs/run-history.md`.
 
 ## Boundaries

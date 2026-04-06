@@ -61,7 +61,7 @@ Soft-delete to `_trash/` if ALL true: (1) generic filename, (2) no content beyon
 6. **Check backlinks** — find all `[[Old Name]]` references across vault.
 7. **Preview and confirm** — show table (old name, new name, backlink count). **Wait for user confirmation.**
 8. **Execute** — rename files, update all `[[Old Name]]` and `[[Old Name|` references.
-9. **Provenance** — for each renamed file: add `VaultAutopilot` tag and append provenance callout row (see `references/provenance.md`).
+9. **Skill Log** — for each renamed file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`).
 10. **Report and log** — write summary, append to `logs/run-history.md`.
 
 ## Report Format
