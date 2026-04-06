@@ -24,17 +24,17 @@ logs/
   run-history.md           <- Skill execution log
 ```
 
-## Skills (7)
+## Skills (6 stable/beta + 1 deferred)
 
-| # | Skill | Core Task |
-|---|-------|-----------|
-| 1 | inbox-sort | Move files from inbox to correct folders |
-| 2 | note-rename | Rename poorly named files |
-| 3 | note-quality-check | Score notes, suggest deletions |
-| 4 | property-classify | Classify note status and type |
-| 5 | property-describe | Generate note descriptions |
-| 6 | property-enrich | Fill missing metadata fields |
-| 7 | tag-manage | Assign, clean up, and standardize tags |
+| # | Skill | Core Task | Status |
+|---|-------|-----------|--------|
+| 1 | inbox-sort | Move files from inbox to correct folders | stable |
+| 2 | note-rename | Rename poorly named files | stable |
+| 3 | note-quality-check | Score notes, suggest deletions | beta |
+| 4 | property-classify | Classify note status and type | beta |
+| 5 | property-describe | Generate note descriptions | beta |
+| 6 | property-enrich | Fill missing metadata fields | stable |
+| 7 | tag-manage | Assign, clean up, and standardize tags | deferred (v0.2.0) |
 
 ## Quality Checklist per Skill
 
@@ -70,7 +70,9 @@ description: Use when [specific triggering conditions]. Trigger phrases - "phras
 export OBSIDIAN_VAULT_PATH="/path/to/your/vault"
 ```
 
-No hardcoded paths. No assumptions about vault location.
+No hardcoded paths in skills. No assumptions about vault location.
+
+**Dev/Test vault (Nexus):** `~/vaults/nexus` — used for all live testing and integration tests.
 
 ## Design Philosophy
 

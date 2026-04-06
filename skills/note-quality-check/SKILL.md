@@ -1,5 +1,6 @@
 ---
 name: note-quality-check
+status: beta
 description: Use when an Obsidian vault has accumulated old, low-value, or obsolete notes that need quality review. Trigger phrases - "check note quality", "find old notes", "cleanup notes", "prune notes", "stale notes", "quality audit", "review notes". Also trigger when the user mentions notes from an iOS migration, Apple Notes import, or too many unreviewed notes.
 ---
 

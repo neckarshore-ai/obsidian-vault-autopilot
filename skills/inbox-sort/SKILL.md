@@ -1,15 +1,16 @@
 ---
 name: inbox-sort
+status: stable
 description: Use when an Obsidian vault inbox is cluttered and notes need sorting into subfolders. Trigger phrases - "sort inbox", "clean up inbox", "triage inbox", "organize inbox", "inbox is cluttered", "too many notes in inbox". Also trigger when the user mentions reducing inbox size or doing a first pass on unprocessed notes.
 ---
 
 # Inbox Sort
 
-Move notes from inbox root into existing subfolders. Fast, reliable, no over-analysis.
+Move notes from inbox root into three buckets: `_Work`, `_Personal`, `_Edge Cases`. Fast, reliable, no over-analysis.
 
 ## Principle: Core + Nahbereich + Report
 
-- **Core:** Categorize and move notes into subfolders
+- **Core:** Categorize and move notes into three buckets
 - **Nahbereich:** Delete confirmed empty files (0 bytes). Whitespace-only files: soft-delete to `_trash/` (see `references/trash-concept.md`)
 - **Report:** Summary of moves, findings, improvement suggestions
 
@@ -19,24 +20,36 @@ Move notes from inbox root into existing subfolders. Fast, reliable, no over-ana
 |-----------|---------|-------------|
 | `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. Use file creation date (birthtime), not modification date. |
 
+## Three Buckets
+
+Every note goes into exactly one bucket inside the inbox folder:
+
+| Bucket | Prefix | What goes here |
+|--------|--------|---------------|
+| `_Work` | `_` | Business, products, dev, tools, clients, content creation |
+| `_Personal` | `_` | Health, family, household, personal finance, career history |
+| `_Edge Cases` | `_` | Genuinely ambiguous — could be Work or Personal, needs human decision |
+
+The `_` prefix keeps sort buckets visually grouped and distinguishes them from content subfolders. When in doubt between Work and Personal, use `_Edge Cases` — never guess.
+
 ## Workflow
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. If unset, ask the user.
 2. **Find inbox** — scan top-level folders for one containing "inbox" (case-insensitive). If ambiguous, ask.
-3. **Read subfolders** — list all immediate subdirectories of the inbox. These are the available categories. If none exist, stop and tell the user to create subfolders first.
+3. **Ensure buckets exist** — create `_Work`, `_Personal`, and `_Edge Cases` inside the inbox if they do not exist.
 4. **List inbox root notes** — only `.md` files directly in the inbox root, not in subfolders.
 5. **Apply cooldown** — skip notes created less than `cooldown_days` ago (grace period for active work). Use file creation date, not modification date.
 6. **Nahbereich pass** — permanently delete files that are 0 bytes. Soft-delete whitespace-only files to `_trash/` with trash metadata (see `references/trash-concept.md`). Log each action.
 7. **Pre-sort routing** — before categorizing, auto-route by pattern:
-   - `YYYY-MM-DD.md` or `YYYY-MM-DD *.md` → subfolder containing "daily" (case-insensitive)
-   - Web captures and social posts (see `references/web-capture-detection.md`) → matching subfolder
-   - Skip if no matching subfolder exists
-8. **Categorize remaining notes** — read title, tags, and first ~30 lines. Assign to one subfolder:
-   - Match note content against subfolder names semantically
-   - When truly ambiguous, prefer the subfolder whose name suggests "TBD", "unsorted", or similar
-   - When no TBD folder exists, skip the note and list it in the report
-9. **Move files** — use Bash `mv` with proper quoting for special characters. Preserve original filenames.
-10. **Write report** — see format below.
+   - `YYYY-MM-DD.md` or `YYYY-MM-DD *.md` → subfolder containing "daily" (case-insensitive), not into buckets
+   - Web captures and social posts (see `references/web-capture-detection.md`) → `_Work`
+8. **Categorize remaining notes** — read title, tags, and first ~30 lines. Assign to one bucket:
+   - Business/product/dev/tool content → `_Work`
+   - Personal/family/health/household content → `_Personal`
+   - Genuinely ambiguous → `_Edge Cases`
+9. **Preview** — show routing plan grouped by bucket with note counts. Wait for user confirmation. User can override individual assignments.
+10. **Move files** — use Bash `mv` with proper quoting for special characters. Preserve original filenames.
+11. **Write report** — see format below.
 
 ## Protected Files
 
@@ -56,19 +69,20 @@ Never move, rename, or process these files (see `references/vault-autopilot-note
 ## Inbox Sort Report — [Date]
 
 ### Done
-- [Subfolder]: X notes moved
+- _Work: X notes moved
+- _Personal: X notes moved
+- _Edge Cases: X notes moved
 - Nahbereich: X files removed (0-byte deleted: X, whitespace-only trashed: X)
 
 ### Skipped
 - Cooldown (< [cooldown_days] days): X notes
-- Ambiguous (no clear category): X notes
 - Non-markdown files: X
 
 ### Findings
 - [Observations for other skills — e.g., broken frontmatter, suspicious duplicates]
 
 ### Suggestions
-- [Improvements for this skill — e.g., new subfolder needed, criteria unclear for X topic]
+- [Improvements for this skill — e.g., criteria unclear for X topic]
 ```
 
 ## Logging

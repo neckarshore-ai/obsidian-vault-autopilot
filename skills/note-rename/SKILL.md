@@ -1,5 +1,6 @@
 ---
 name: note-rename
+status: stable
 description: Use when Obsidian vault notes have poor, generic, or uninformative filenames and need clear, descriptive names. Trigger phrases - "rename notes", "fix note names", "clean up filenames", "give notes better names". Also trigger for single notes - "rename this note", "give this a better name". Trigger when the user mentions "Untitled notes", "unnamed notes", or notes that are hard to find by name.
 ---
 

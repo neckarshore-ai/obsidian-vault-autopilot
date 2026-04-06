@@ -7,17 +7,20 @@ enriches your metadata — so you can focus on thinking instead of filing.
 
 ## What This Does
 
-Seven skills that manage your vault automatically:
+Six skills that manage your vault automatically:
 
-| # | Skill | What it does |
-|---|-------|-------------|
-| 1 | **inbox-sort** | Moves notes from inbox root into existing subfolders based on content |
-| 2 | **note-rename** | Renames poorly named files and updates all backlinks |
-| 3 | **note-quality-check** | Scores notes by quality, recommends what to keep or delete |
-| 4 | **property-describe** | Generates concise `description` frontmatter from note content |
-| 5 | **property-classify** | Sets lifecycle `status` and `type` properties automatically |
-| 6 | **property-enrich** | Fills missing metadata: title, dates, aliases, source, priority |
-| 7 | **tag-manage** | Audits tag quality, suggests tags from content, cleans duplicates |
+| # | Skill | What it does | Status |
+|---|-------|-------------|--------|
+| 1 | **inbox-sort** | Moves notes from inbox root into existing subfolders based on content | stable |
+| 2 | **note-rename** | Renames poorly named files and updates all backlinks | stable |
+| 3 | **note-quality-check** | Scores notes by quality, recommends what to keep or delete | beta |
+| 4 | **property-describe** | Generates concise `description` frontmatter from note content | beta |
+| 5 | **property-classify** | Sets lifecycle `status` and `type` properties automatically | beta |
+| 6 | **property-enrich** | Fills missing metadata: title, dates, aliases, source, priority | stable |
+
+Skills marked **beta** work but may change behavior based on community feedback.
+
+**Coming in v0.2.0:** tag-manage — audits tag quality, suggests tags from content, cleans duplicates.
 
 Each skill follows the **Core + Nahbereich + Report** principle: do the job,
 fix adjacent issues, and report everything else.
@@ -83,6 +86,7 @@ Then in Claude Code:
 | **Acts on your vault** | No | No | Yes |
 | **AI-powered metadata** | No | No | Yes |
 | **Quality gates** | No | No | Yes |
+| **Skills count** | ~20 | ~10 | 6 (+ tag-manage in v0.2.0) |
 
 ## Design Philosophy
 

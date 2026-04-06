@@ -1,5 +1,6 @@
 ---
 name: tag-manage
+status: deferred
 description: Use when an Obsidian vault needs tag auditing, cleanup, or content-based tag suggestions. Trigger phrases - "analyze tags", "audit tags", "fix tags", "suggest tags", "tag cleanup", "find duplicate tags", "unused tags", "tag consistency", "auto-tag notes". Also trigger when the user mentions orphan tags, tag hierarchy issues, convention violations, or untagged notes needing tags.
 ---
 

@@ -1,5 +1,6 @@
 ---
 name: property-describe
+status: beta
 description: Use when Obsidian vault notes need AI-generated description properties in their YAML frontmatter. Trigger phrases - "add descriptions", "fill descriptions", "generate summaries", "description property", "empty description", "missing description". Also trigger when notes have placeholder descriptions (TBD, TODO) or when batch-filling descriptions across a folder. This is a token-intensive operation (reads full note content) — run it deliberately, not as part of every property pass.
 ---
 

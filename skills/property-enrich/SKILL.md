@@ -1,5 +1,6 @@
 ---
 name: property-enrich
+status: stable
 description: Use when Obsidian vault notes have incomplete or missing YAML frontmatter and need structural metadata filled in. Trigger phrases - "add properties", "enrich metadata", "fill frontmatter", "add aliases", "set parent links", "missing metadata", "incomplete frontmatter", "standardize properties". Also trigger when notes lack title, created/modified dates, aliases, parent links, source URLs, or priority fields.
 ---
 
