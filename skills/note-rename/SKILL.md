@@ -11,7 +11,7 @@ Give poorly named vault notes clear, descriptive filenames. Rename and fix backl
 ## Principle: Core + Nahbereich + Report
 
 - **Core:** Rename uninformative filenames, update backlinks across vault
-- **Nahbereich:** Trash accidental notes via soft-delete (see rule below and `references/trash-concept.md`)
+- **Nahbereich:** Trash accidental notes via soft-delete (see rule below and `references/trash-concept.md`). Minimal YAML syntax repairs when already editing frontmatter: `*` → `-` in tag lists, remove duplicate `---` separators, convert inline tags `[X]` to block format. Syntactic fixes only — never add or change field values (that is property-enrich's job).
 - **Report:** Renames, backlink updates, findings for other skills
 
 ## Parameters
@@ -59,20 +59,33 @@ Soft-delete to `_trash/` if ALL true: (1) generic filename, (2) no content beyon
 4. **Classify** — read title, tags, first ~30 lines (skip template boilerplate). Mark as: rename, keep, or TBD.
 5. **Detect clusters** — 3+ candidates on same topic → prepare prefix suggestion.
 6. **Check backlinks** — find all `[[Old Name]]` references across vault.
-7. **Preview and confirm** — show table (old name, new name, backlink count). **Wait for user confirmation.**
+7. **Preview and confirm** — show table with columns: #, Note, Action, New Name, Skill-Log. Use status icons: ✅ Done, ⚠️ Pending, ❌ Failed. After the table, show a summary line: "X renames, Y trashes, Z reviewed. Confirm?" **Do not execute until the user explicitly confirms.**
 8. **Execute** — rename files, update all `[[Old Name]]` and `[[Old Name|` references.
-9. **Skill Log** — for each renamed file, write the skill log (see `references/skill-log.md` for full spec):
-   - **Tag:** Add `VaultAutopilot` to the `tags` list in YAML frontmatter. Skip if already present.
-   - **Callout:** Append the following block at the end of the note (after all content):
+9. **Skill Log** — for every processed note (renamed, reviewed, or trashed), write the skill log. See `references/skill-log.md` for the full spec.
+
+   **Tag (idempotent):**
+   - Check if `VaultAutopilot` already exists in the `tags` list in YAML frontmatter.
+   - If missing: add it. If present: do nothing. Never duplicate.
+   - If no `tags` field exists: create one with `VaultAutopilot` as the first entry.
+
+   **Callout (append-only):**
+   - Check if `> [!info] Vault Autopilot` exists at the end of the note.
+   - If missing: create the full callout block:
      ```
      > [!info] Vault Autopilot
      >
      > | Date | Skill | Action |
      > |------|-------|--------|
-     > | YYYY-MM-DD | note-rename | Renamed from [old filename without .md] |
+     > | YYYY-MM-DD | note-rename | [action] |
      ```
-   - If a `> [!info] Vault Autopilot` callout already exists at the end of the file, append only a new table row — do not create a second callout.
+   - If present: append only a new `> | YYYY-MM-DD | note-rename | [action] |` row to the existing table. Never create a second callout.
    - Ensure one blank line separates the callout from the preceding content.
+
+   **Action types:**
+   - Renamed: `Renamed from [old filename without .md]`
+   - Reviewed (name was already good): `Reviewed — name already descriptive`
+   - Trashed (Nahbereich): `Trashed — accidental note (soft-delete to _trash/)`
+
 10. **Report and log** — write summary, append to `logs/run-history.md`.
 
 ## Report Format
@@ -88,7 +101,8 @@ Soft-delete to `_trash/` if ALL true: (1) generic filename, (2) no content beyon
 - Already descriptive: X | Daily Notes: X | TBD: X
 
 ### Findings
-- [Observations for other skills]
+- Broken YAML frontmatter: X notes (→ property-enrich)
+- [Other observations for other skills]
 ```
 
 ## Quality Check
@@ -97,5 +111,7 @@ Soft-delete to `_trash/` if ALL true: (1) generic filename, (2) no content beyon
 - [ ] All backlinks updated (no broken `[[]]`)
 - [ ] No Daily Notes renamed
 - [ ] User confirmed before execution
-- [ ] Every renamed file has `VaultAutopilot` tag in frontmatter
-- [ ] Every renamed file has skill log callout at the end
+- [ ] Every processed file has `VaultAutopilot` tag in frontmatter (exactly once)
+- [ ] Every processed file has skill log callout at the end
+- [ ] Reviewed notes have "Reviewed" action, not "Renamed"
+- [ ] Re-renamed notes have multiple callout rows, not multiple callouts
