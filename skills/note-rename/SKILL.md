@@ -117,16 +117,18 @@ See also `references/web-capture-detection.md` for social platform detection rul
 
 When a note covers multiple unrelated topics, join them with `&` in the Detail segment:
 
-| # | Topic Count | Rule |
-|---|-------------|------|
-| 1 | 1-2 | All topics in the name with `&` |
-| 2 | 3-4 | All topics in the name with `&` if it stays readable and under ~70 characters. Skill decides. |
-| 3 | 5+ | `Context - Mixed Topics` |
+| # | Topic Count | Platforms | Rule |
+|---|-------------|-----------|------|
+| 1 | 1-2 | any | All topics in the name with `&` |
+| 2 | 3-4 | any | All topics in the name with `&` if it stays readable and under ~70 characters. Skill decides. |
+| 3 | 5+ | one dominant | All topics as keywords with `&`. One keyword per topic — enough to find the note later. |
+| 4 | 5+ | multiple | `YYYY-MM-DD - Mixed Content - Mixed Topics.md`. Too chaotic for a meaningful name. |
 
 Examples:
 - 2 topics: `2025-12-03 - Instagram - HR Interview Tipps & SaaS.md`
 - 3 topics: `2025-12-04 - Instagram - SaaS & Dev Tools & Karpathy LLM.md`
-- 5+ topics: `2025-12-06 - Research - Mixed Topics.md`
+- 5+ topics, one platform: `2025-12-11 - Instagram - Product & Interview & Claude & AI Cases & Cursor.md`
+- 5+ topics, multiple platforms: `2025-12-08 - Mixed Content - Mixed Topics.md`
 
 ## Workflow
 
@@ -170,6 +172,16 @@ Examples:
    - **New Name:** For Rename → new filename. For Trash → reason for trashing. For Keep → "Reviewed" / "Geprüft".
    - **Skill-Log:** ⚠️ Pending before execution, ✅ Done after, ❌ Failed on error.
    - **Action values are not bold** — the icon provides enough visual weight.
+
+   **Rationale section (below the table):**
+   After the summary line, add a numbered rationale for each non-trivial decision:
+   ```
+   **Rationale:**
+   - **#1:** 6 Links, 3 platforms (Instagram 4, GitHub 1, Google 1), 5+ topics → Rule 4: Mixed Content.
+   - **#3:** 5 Links, 3 topics with AI dev thread. `&`-chain under 70 chars.
+   - **#7:** IBAN, BIC, full name in plaintext → _secret/.
+   ```
+   Always include rationale — it is part of the standard output, not optional. The table shows the "what", rationale explains the "why". Format per entry: link count, platform breakdown, topic count, which rule was applied.
 8. **Execute** — rename files, update all `[[Old Name]]` and `[[Old Name|` references.
 9. **Skill Log** — for every processed note (renamed, reviewed, or trashed), write the skill log. See `references/skill-log.md` for the full spec.
 
