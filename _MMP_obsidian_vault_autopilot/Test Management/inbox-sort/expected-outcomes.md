@@ -38,8 +38,8 @@ Repeat for each test run. Add new test files to `vault/` and update this manifes
 | G1 | `Untitled.md` | Delete | (removed) | Nahbereich: 0-byte file | Permanently deleted, not trashed |
 | G2 | `Quick Thought.md` | Delete | (removed) | Nahbereich: 0-byte file | Permanently deleted, not trashed |
 | G3 | `Draft Ideas.md` | Trash | `_trash/` | Nahbereich: whitespace-only | Verify trash metadata (trashed date, trash_source, trash_origin) |
-| H1 | `meeting-photo.png` | Skip | (unchanged) | Non-markdown file | Remains in Inbox root |
-| H2 | `project-brief.pdf` | Skip | (unchanged) | Non-markdown file | Remains in Inbox root |
+| H1 | `meeting-photo.png` | Move | `Inbox/_Attachments/` | Pre-sort: non-markdown file (image) | |
+| H2 | `project-brief.pdf` | Move | `Inbox/_Attachments/` | Pre-sort: non-markdown file (PDF) | |
 | H3 | `Fresh Idea from Today.md` | Skip | (unchanged) | Cooldown: created < 3 days ago | Remains in Inbox root |
 | I1 | `Notes & Thoughts (Brainstorm).md` | Move | `Inbox/_Work/` | Categorize: work/automation content | Verify `mv` handles `&` and `()` correctly |
 | I2 | `broken-frontmatter.md` | Move | `Inbox/_Work/` | Categorize: market research content | Should appear in Report Findings (broken YAML: no closing `---`) |
@@ -55,13 +55,13 @@ _Personal: 4 notes moved (E1-E4)
 _Edge Cases: 3 notes moved (F1-F3)
 WebCaptures & Social: 5 notes moved (B1-B3, C1-C2)
 Daily: 2 notes moved (A1-A2)
+_Attachments: 2 files moved (H1, H2)
 Nahbereich: 3 files removed (0-byte deleted: 2, whitespace-only trashed: 1)
 Skipped — Cooldown: 1 note (H3)
-Skipped — Non-markdown: 2 files (H1, H2)
 Findings: 1 broken frontmatter (I2), 1 sensitive data warning (J1)
 ```
 
-Total processed: 21 notes moved + 3 cleanup + 3 skipped = 27 files accounted for
+Total processed: 21 notes moved + 2 attachments + 3 cleanup + 1 skipped = 27 files accounted for
 
 ---
 
@@ -73,6 +73,7 @@ Total processed: 21 notes moved + 3 cleanup + 3 skipped = 27 files accounted for
 - [ ] `Inbox/_Personal/` was created by the skill
 - [ ] `Inbox/_Edge Cases/` was created by the skill
 - [ ] `Inbox/WebCaptures & Social/` was created by the skill
+- [ ] `Inbox/_Attachments/` was created by the skill
 
 ### Protected Files
 

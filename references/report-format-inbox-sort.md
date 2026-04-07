@@ -48,12 +48,18 @@ Show routing plan grouped by bucket with durchgehend nummerierte Zeilen. The use
 | 8 | `Empty.md` | Deleted (0-byte) |
 | 9 | `Whitespace.md` | Soft-deleted to _trash/ |
 
+### _Attachments
+
+| # | File | Type |
+|---|------|------|
+| 10 | `photo.png` | Image |
+| 11 | `document.pdf` | PDF |
+
 ### Skipped
 
 | # | File | Reason |
 |---|------|--------|
-| 10 | `Recent.md` | Cooldown: < 3 days |
-| 11 | `photo.png` | Non-markdown |
+| 12 | `Recent.md` | Cooldown: < 3 days |
 
 ### Findings
 
@@ -74,7 +80,7 @@ Show routing plan grouped by bucket with durchgehend nummerierte Zeilen. The use
 End the preview with a summary line:
 
 ```
-**X _Work, Y _Personal, Z _Edge Cases, W WebCaptures & Social, D Daily. N Nahbereich, S Skipped. Confirm?**
+**X _Work, Y _Personal, Z _Edge Cases, W WebCaptures & Social, D Daily, A _Attachments. N Nahbereich, S Skipped. Confirm?**
 ```
 
 Wait for explicit user confirmation before executing any moves.
@@ -92,11 +98,11 @@ Wait for explicit user confirmation before executing any moves.
 - _Edge Cases: X notes moved
 - WebCaptures & Social: X notes moved
 - Daily: X notes moved
+- _Attachments: X files moved (images, PDFs, etc.)
 - Nahbereich: X files removed (0-byte deleted: X, whitespace-only trashed: X)
 
 ### Skipped
 - Cooldown (< [cooldown_days] days): X notes
-- Non-markdown files: X
 
 ### Findings
 - [Observations — e.g., broken frontmatter, sensitive data, suspicious duplicates]

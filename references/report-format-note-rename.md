@@ -11,11 +11,11 @@ Show rename plan with bilingual support (match the language the user is speaking
 ```
 | # | Note | Action | New Name | Skill-Log |
 |---|------|--------|----------|-----------|
-| 1 | `Old Name.md` | Rename | `New Name` | Pending |
-| 2 | `Empty.md` | Trash | Reason for trashing | Pending |
-| 3 | `Secret.md` | Secret | Sensitive content found | Pending |
-| 4 | `2026-01-15.md` | Daily | Daily Notes folder | Pending |
-| 5 | `Good Name.md` | Keep | Reviewed | Pending |
+| 1 | `Old Name.md` | ✏️ Rename | `New Name` | ⚠️ Pending |
+| 2 | `Empty.md` | 🗑️ Trash | Reason for trashing | ⚠️ Pending |
+| 3 | `Secret.md` | 🔒 Secret | Sensitive content found | ⚠️ Pending |
+| 4 | `2026-01-15.md` | 📅 Daily | → Daily Notes folder | ⚠️ Pending |
+| 5 | `Good Name.md` | ✅ Keep | Reviewed | ⚠️ Pending |
 
 **X Renames, Y Trashes, Z Reviewed. Confirm?**
 ```
@@ -25,22 +25,20 @@ Show rename plan with bilingual support (match the language the user is speaking
 ```
 | # | Notiz | Aktion | Neuer Name | Skill-Log |
 |---|-------|--------|------------|-----------|
-| 1 | `Alter Name.md` | Umbenennen | `Neuer Name` | Ausstehend |
-| 2 | `Leer.md` | Loeschen | Begruendung | Ausstehend |
-| 3 | `Geheim.md` | Sensibel | Sensible Inhalte gefunden | Ausstehend |
-| 4 | `2026-01-15.md` | Daily | Daily Notes Ordner | Ausstehend |
-| 5 | `Guter Name.md` | Behalten | Geprueft | Ausstehend |
+| 1 | `Alter Name.md` | ✏️ Umbenennen | `Neuer Name` | ⚠️ Ausstehend |
+| 2 | `Leer.md` | 🗑️ Löschen | Begründung | ⚠️ Ausstehend |
+| 3 | `Geheim.md` | 🔒 Sensibel | Sensible Inhalte gefunden | ⚠️ Ausstehend |
+| 4 | `2026-01-15.md` | 📅 Daily | → Daily Notes Ordner | ⚠️ Ausstehend |
+| 5 | `Guter Name.md` | ✅ Behalten | Geprüft | ⚠️ Ausstehend |
 
-**X Umbenennungen, Y Loeschungen, Z Geprueft. Bestaetigen?**
+**X Umbenennungen, Y Löschungen, Z Geprüft. Bestätigen?**
 ```
 
 ### Column Rules
 
-- **#** — sequential across all rows (not restarting per action type)
-- **Note** — original filename in backticks
-- **Action** — one of: Rename, Trash, Secret, Daily, Keep. Action values are not bold — the icon provides enough visual weight.
-- **New Name** — for Rename: new filename. For Trash: reason for trashing. For Secret: detection type. For Daily: target folder. For Keep: "Reviewed" / "Geprueft"
-- **Skill-Log** — "Pending" before execution. "Done" after successful execution. "Failed" on error. Never show implementation details (e.g., "Append" for notes with existing callouts). The user sees status, not internals.
+- **New Name:** For Rename → new filename. For Trash → reason for trashing. For Keep → "Reviewed" / "Geprüft".
+- **Skill-Log:** ⚠️ Pending before execution, ✅ Done after, ❌ Failed on error. Never show implementation details (e.g. "Append" for notes with existing callouts). The user sees status, not internals.
+- **Action values are not bold** — the icon provides enough visual weight.
 
 ### Rationale Section
 
