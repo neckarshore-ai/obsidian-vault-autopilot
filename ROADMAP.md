@@ -6,7 +6,7 @@ Six skills that automate Obsidian vault management:
 
 | # | Skill | What it does | Status |
 |---|-------|-------------|--------|
-| 1 | inbox-sort | Moves notes from inbox to correct subfolders based on content | stable |
+| 1 | inbox-sort | Moves notes from inbox to correct subfolders based on content | beta |
 | 2 | note-rename | Renames poorly named files, updates all backlinks | stable |
 | 3 | note-quality-check | Scores notes by quality, recommends what to keep or delete | beta |
 | 4 | property-describe | Generates concise description frontmatter from note content | beta |
@@ -143,6 +143,7 @@ These are not committed — they depend on community interest and feedback.
 | 4 | Social post | Draft social media posts from vault notes |
 | 5 | Bring Your Own Context | Let skills reference external knowledge bases or project-specific conventions |
 | 6 | Scheduled runs | Automated skill execution on a schedule (daily inbox sort, weekly quality check) |
+| 7 | Test data generator | Generate test fixtures for any skill to validate before running on your real vault |
 
 ---
 

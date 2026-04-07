@@ -148,50 +148,7 @@ Examples:
 4. **Classify** — read title, tags, first ~30 lines (skip template boilerplate). Mark as: rename, keep, or TBD.
 5. **Detect clusters** — 3+ candidates on same topic → prepare prefix suggestion.
 6. **Check backlinks** — find all `[[Old Name]]` references across vault.
-7. **Preview and confirm** — show the preview table below. Match the language the user is speaking. **Do not execute until the user explicitly confirms.**
-
-   **English preview (when user speaks English):**
-
-   ```
-   | # | Note | Action | New Name | Skill-Log |
-   |---|------|--------|----------|-----------|
-   | 1 | `Old Name.md` | ✏️ Rename | `New Name` | ⚠️ Pending |
-   | 2 | `Empty.md` | 🗑️ Trash | Reason for trashing | ⚠️ Pending |
-   | 3 | `Secret.md` | 🔒 Secret | Sensitive content found | ⚠️ Pending |
-   | 4 | `2026-01-15.md` | 📅 Daily | → Daily Notes folder | ⚠️ Pending |
-   | 5 | `Good Name.md` | ✅ Keep | Reviewed | ⚠️ Pending |
-
-   **X Renames, Y Trashes, Z Reviewed. Confirm?**
-   ```
-
-   **German preview (when user speaks German):**
-
-   ```
-   | # | Notiz | Aktion | Neuer Name | Skill-Log |
-   |---|-------|--------|------------|-----------|
-   | 1 | `Alter Name.md` | ✏️ Umbenennen | `Neuer Name` | ⚠️ Ausstehend |
-   | 2 | `Leer.md` | 🗑️ Löschen | Begründung | ⚠️ Ausstehend |
-   | 3 | `Geheim.md` | 🔒 Sensibel | Sensible Inhalte gefunden | ⚠️ Ausstehend |
-   | 4 | `2026-01-15.md` | 📅 Daily | → Daily Notes Ordner | ⚠️ Ausstehend |
-   | 5 | `Guter Name.md` | ✅ Behalten | Geprüft | ⚠️ Ausstehend |
-
-   **X Umbenennungen, Y Löschungen, Z Geprüft. Bestätigen?**
-   ```
-
-   **Column rules:**
-   - **New Name:** For Rename → new filename. For Trash → reason for trashing. For Keep → "Reviewed" / "Geprüft".
-   - **Skill-Log:** ⚠️ Pending before execution, ✅ Done after, ❌ Failed on error. Never show implementation details (e.g. "Append" for notes with existing callouts). The user sees status, not internals.
-   - **Action values are not bold** — the icon provides enough visual weight.
-
-   **Rationale section (below the table):**
-   After the summary line, add a numbered rationale for each non-trivial decision:
-   ```
-   **Rationale:**
-   - **#1:** 6 Links, 3 platforms (Instagram 4, GitHub 1, Google 1), 5+ topics → Rule 4: Mixed Content.
-   - **#3:** 5 Links, 3 topics with AI dev thread. `&`-chain under 70 chars.
-   - **#7:** IBAN, BIC, full name in plaintext → _secret/.
-   ```
-   Always include rationale — it is part of the standard output, not optional. The table shows the "what", rationale explains the "why". Format per entry: link count, platform breakdown, topic count, which rule was applied.
+7. **Preview and confirm** — show the preview table (see `references/report-format-note-rename.md` for format and bilingual templates). Match the language the user is speaking. Include a rationale section below the table explaining non-trivial decisions. **Do not execute until the user explicitly confirms.**
 8. **Execute** — rename files, update all `[[Old Name]]` and `[[Old Name|` references.
 9. **Skill Log** — for every processed note (renamed, reviewed, or trashed), write the skill log. See `references/skill-log.md` for the full spec.
 
@@ -224,20 +181,7 @@ Examples:
 
 ## Report Format
 
-```
-## Note Rename Report — [Date]
-
-### Done
-- Renamed: X notes | Backlinks updated: X refs in Y notes
-- Accidental notes trashed: X (Nahbereich, soft-delete to `_trash/`)
-
-### Skipped
-- Already descriptive: X | Daily Notes: X | TBD: X
-
-### Findings
-- Broken YAML frontmatter: X notes (→ property-enrich)
-- [Other observations for other skills]
-```
+See `references/report-format-note-rename.md` for the full preview table format (bilingual), report template, and action types for skill log.
 
 ## Quality Check
 

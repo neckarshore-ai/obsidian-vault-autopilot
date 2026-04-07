@@ -1,18 +1,18 @@
 ---
 name: inbox-sort
-status: stable
+status: beta
 description: Use when an Obsidian vault inbox is cluttered and notes need sorting into subfolders. Trigger phrases - "sort inbox", "clean up inbox", "triage inbox", "organize inbox", "inbox is cluttered", "too many notes in inbox". Also trigger when the user mentions reducing inbox size or doing a first pass on unprocessed notes.
 ---
 
 # Inbox Sort
 
-Move notes from inbox root into three buckets: `_Work`, `_Personal`, `_Edge Cases`. Fast, reliable, no over-analysis.
+Move notes from inbox root into four buckets: `_Work`, `_Personal`, `_Edge Cases`, `WebCaptures & Social`. Fast, reliable, no over-analysis.
 
 ## Principle: Core + Nahbereich + Report
 
-- **Core:** Categorize and move notes into three buckets
-- **Nahbereich:** Delete confirmed empty files (0 bytes). Whitespace-only files: soft-delete to `_trash/` (see `references/trash-concept.md`)
-- **Report:** Summary of moves, findings, improvement suggestions
+- **Core:** Categorize and move notes into four buckets
+- **Nahbereich:** Delete confirmed empty files (0 bytes). Whitespace-only files: soft-delete to `_trash/` (see `references/trash-concept.md`). Flag notes with sensitive content (see Secret Scan below).
+- **Report:** Summary of moves, findings (including sensitive data warnings), improvement suggestions
 
 ## Parameters
 
@@ -20,37 +20,39 @@ Move notes from inbox root into three buckets: `_Work`, `_Personal`, `_Edge Case
 |-----------|---------|-------------|
 | `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. Use file creation date (birthtime), not modification date. |
 
-## Three Buckets
+## Four Buckets
 
 Every note goes into exactly one bucket inside the inbox folder:
 
-| Bucket | Prefix | What goes here |
-|--------|--------|---------------|
-| `_Work` | `_` | Business, products, dev, tools, clients, content creation |
-| `_Personal` | `_` | Health, family, household, personal finance, career history |
-| `_Edge Cases` | `_` | Genuinely ambiguous — could be Work or Personal, needs human decision |
+| Bucket | What goes here |
+|--------|---------------|
+| `_Work` | Business, products, dev, tools, clients, content creation |
+| `_Personal` | Health, family, household, personal finance, career history |
+| `_Edge Cases` | Genuinely ambiguous — could be Work or Personal, needs human decision |
+| `WebCaptures & Social` | Web clippings, social media saves, external captures |
 
-The `_` prefix keeps sort buckets visually grouped and distinguishes them from content subfolders. When in doubt between Work and Personal, use `_Edge Cases` — never guess.
+The `_` prefix on Work, Personal, and Edge Cases keeps sort buckets visually grouped. When in doubt between Work and Personal, use `_Edge Cases` — never guess.
 
 ## Workflow
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. If unset, ask the user.
 2. **Find inbox** — scan top-level folders for one containing "inbox" (case-insensitive). If ambiguous, ask.
-3. **Ensure buckets exist** — create `_Work`, `_Personal`, and `_Edge Cases` inside the inbox if they do not exist.
+3. **Ensure buckets exist** — create `_Work`, `_Personal`, `_Edge Cases`, and `WebCaptures & Social` inside the inbox if they do not exist.
 4. **List inbox root notes** — only `.md` files directly in the inbox root, not in subfolders.
 5. **Apply cooldown** — skip notes created less than `cooldown_days` ago (grace period for active work). Use file creation date, not modification date.
 6. **Nahbereich pass** — permanently delete files that are 0 bytes. Soft-delete whitespace-only files to `_trash/` with trash metadata (see `references/trash-concept.md`). Log each action.
-7. **Pre-sort routing** — before categorizing, auto-route by pattern:
+7. **Secret scan** — check each remaining note for sensitive patterns: recovery phrases (12/24 word sequences), IBAN/BIC, API keys, passwords/tokens. If detected: do NOT move to `_secret` automatically. Continue with normal categorization but flag the note in the report under Findings with the specific pattern type. The user decides what to do.
+8. **Pre-sort routing** — before categorizing, auto-route by pattern:
    - `YYYY-MM-DD.md` or `YYYY-MM-DD *.md` → subfolder containing "daily" (case-insensitive), not into buckets
-   - Web captures and social posts (see `references/web-capture-detection.md`) → `_Work`
-8. **Categorize remaining notes** — read title, tags, and first ~30 lines. Assign to one bucket:
+   - Web captures and social posts (see `references/web-capture-detection.md`) → `WebCaptures & Social`
+9. **Categorize remaining notes** — read title, tags, and first ~30 lines. Assign to one bucket:
    - Business/product/dev/tool content → `_Work`
    - Personal/family/health/household content → `_Personal`
    - Genuinely ambiguous → `_Edge Cases`
-9. **Preview** — show routing plan grouped by bucket with note counts. Wait for user confirmation. User can override individual assignments.
-10. **Move files** — use Bash `mv` with proper quoting for special characters. Preserve original filenames.
-11. **Skill Log** — for each moved file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`).
-12. **Write report** — see format below.
+10. **Preview** — show routing plan grouped by bucket (see `references/report-format-inbox-sort.md`). Include secret-flagged notes with a warning marker. Wait for user confirmation. User can override individual assignments.
+11. **Move files** — use Bash `mv` with proper quoting for special characters. Preserve original filenames.
+12. **Skill Log** — for each moved file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`).
+13. **Write report** — see format below.
 
 ## Protected Files
 
@@ -66,25 +68,7 @@ Never move, rename, or process these files (see `references/vault-autopilot-note
 
 ## Report Format
 
-```
-## Inbox Sort Report — [Date]
-
-### Done
-- _Work: X notes moved
-- _Personal: X notes moved
-- _Edge Cases: X notes moved
-- Nahbereich: X files removed (0-byte deleted: X, whitespace-only trashed: X)
-
-### Skipped
-- Cooldown (< [cooldown_days] days): X notes
-- Non-markdown files: X
-
-### Findings
-- [Observations for other skills — e.g., broken frontmatter, suspicious duplicates]
-
-### Suggestions
-- [Improvements for this skill — e.g., criteria unclear for X topic]
-```
+See `references/report-format-inbox-sort.md` for the full preview table format, report template, and findings catalog.
 
 ## Logging
 
