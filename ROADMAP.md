@@ -115,11 +115,12 @@ These are not committed — they depend on community interest and feedback.
 
 | # | Idea | Description |
 |---|------|-------------|
-| 1 | Social scraper | Import content from external platforms into vault notes |
-| 2 | Research report | Generate research summaries from a list of URLs |
-| 3 | Social post | Draft social media posts from vault notes |
-| 4 | Bring Your Own Context | Let skills reference external knowledge bases or project-specific conventions |
-| 5 | Scheduled runs | Automated skill execution on a schedule (daily inbox sort, weekly quality check) |
+| 1 | Attachment detect | Scan folders for non-Markdown files (images, PDFs, media, scripts), classify as companion/orphan/sensitive, report inventory. [Plan](docs/plans/non-markdown-detection-skill.md) |
+| 2 | Social scraper | Import content from external platforms into vault notes |
+| 3 | Research report | Generate research summaries from a list of URLs |
+| 4 | Social post | Draft social media posts from vault notes |
+| 5 | Bring Your Own Context | Let skills reference external knowledge bases or project-specific conventions |
+| 6 | Scheduled runs | Automated skill execution on a schedule (daily inbox sort, weekly quality check) |
 
 ---
 
