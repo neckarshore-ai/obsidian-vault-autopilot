@@ -34,6 +34,28 @@ The **Settings Layer** — making skills adapt to your vault instead of the othe
 
 Today, skills ship with opinionated defaults that work out of the box. v0.2.0 adds a configuration layer so every default becomes overridable.
 
+We have identified **40 configurable attributes** across all skills, prioritized by user impact. See the full specification in [references/config-spec.md](references/config-spec.md).
+
+### What Comes First (Tier 1)
+
+These 11 attributes cause the most friction when they do not match your vault. They ship first:
+
+| # | Attribute | Default | What it controls |
+|---|-----------|---------|-----------------|
+| 1 | `folders.inbox` | Auto-detect | Which folder skills scan by default |
+| 2 | `folders.trash` | `_trash` | Where soft-deleted notes go |
+| 3 | `folders.secret` | `_secret` | Where sensitive notes are moved |
+| 4 | `folders.daily_notes` | Auto-detect | Your Daily Notes folder location |
+| 5 | `cooldown_days` | `3` | Grace period before automation touches new notes |
+| 6 | `scope` | `inbox` | Default scan scope (inbox, vault-wide, or specific folder) |
+| 7 | `folders.excluded_prefixes` | `["_", "."]` | Folder prefixes to skip during scans |
+| 8 | `skill_log.tag` | `true` | Toggle the VaultAutopilot tracking tag |
+| 9 | `skill_log.callout` | `true` | Toggle the history callout at the end of notes |
+| 10 | `uninformative_patterns` | 7 patterns (EN+DE) | Filename patterns that trigger rename — extensible for any language |
+| 11 | `confirm` | `true` | Require confirmation before execution (disable for automation) |
+
+7 of these 11 attributes are **global** — they affect all skills, not just note-rename. The configuration infrastructure benefits the entire plugin.
+
 ### Folder Names
 
 Different vaults use different naming conventions. The inbox might be `Inbox`, `_Inbox`, `00-Inbox`, or `Eingang`. Same for trash, secret, and daily notes folders.
