@@ -41,13 +41,13 @@ Append an Obsidian callout block at the **end** of the note. If the callout alre
 >
 > | Date | Skill | Action |
 > |------|-------|--------|
-> | 2026-04-06 | inbox-sort | Moved from Inbox root to _Work |
+> | 2026-04-06 14:32 | inbox-sort | Moved from Inbox root to _Work |
 ```
 
 ### Rules
 
 1. **Position:** Always the last block in the note. No content after it.
-2. **Date:** `YYYY-MM-DD` format, use current date.
+2. **Date:** `YYYY-MM-DD HH:MM` format (24h), use current date and time. Older entries with `YYYY-MM-DD` only are valid — no need to backfill.
 3. **Skill:** Skill name as listed in plugin.json (e.g., `inbox-sort`, `note-rename`, `property-enrich`).
 4. **Action:** One-line summary of what happened. Be specific:
    - inbox-sort: `Moved from [source] to [target bucket]`
@@ -65,7 +65,7 @@ Every skill must follow these rules to prevent duplicates and ensure safe re-run
 
 1. **Tag:** Check if `VaultAutopilot` exists in `tags` before adding. Never duplicate. If no `tags` field exists, create one.
 2. **Callout:** Check if `> [!info] Vault Autopilot` exists at end of file before creating. If it exists, append a row — never create a second callout block.
-3. **Rows:** Do not duplicate identical rows (same date + same skill + same action). A re-run on the same day with the same outcome should not add a second identical row.
+3. **Rows:** Do not duplicate identical rows (same date/time + same skill + same action). A re-run with the same outcome should not add a second identical row.
 4. **Re-processing:** If a skill runs again and performs a different action (e.g., re-rename), add a new row. The callout is a history — multiple entries from the same skill are valid when the actions differ.
 
 ## Detection
