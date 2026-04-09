@@ -8,7 +8,7 @@
 
 When skills scan vault folders, they encounter non-Markdown files (images, PDFs, media, scripts, calendar files). Currently, these are completely invisible — no report, no classification, no guidance for the user.
 
-Real vault data (Nexus, 2026-04-07):
+Real vault data (OMNIXIS, 2026-04-07):
 
 | # | Type Group | Count | Examples |
 |---|-----------|-------|----------|
@@ -135,7 +135,7 @@ Decision deferred to implementation time.
 
 1. Create `references/non-markdown-detection.md` (shared type groups + keyword list)
 2. Create `skills/attachment-detect/SKILL.md`
-3. Live test against Nexus vault (XX Invest folder: 4 PDFs, verify Lernvertrag.pdf = Companion)
+3. Live test against OMNIXIS vault (XX Invest folder: 4 PDFs, verify Lernvertrag.pdf = Companion)
 4. Optionally add cross-skill pointer to note-rename and inbox-sort reports
 
 ## v0.2.0+ Extensions (not in first version)
