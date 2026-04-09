@@ -1,0 +1,38 @@
+name: "General"
+description: "Question, feedback, or anything else"
+labels: ["to-do"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "What's on your mind?"
+      description: "Question, feedback, observation — anything goes."
+      placeholder: "I was wondering about..."
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: "Type"
+      description: "What kind of item is this?"
+      options:
+        - Feedback
+        - Question
+        - Task
+        - Other
+    validations:
+      required: false
+  - type: dropdown
+    id: skill
+    attributes:
+      label: "Related skill"
+      description: "Does this relate to a specific skill?"
+      options:
+        - inbox-sort
+        - note-rename
+        - property-enrich
+        - Plugin Core
+        - Documentation
+        - Other
+    validations:
+      required: false

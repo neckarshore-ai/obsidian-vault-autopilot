@@ -1,0 +1,62 @@
+name: "Bug Report"
+description: "Something broke? Tell us what happened."
+labels: ["bug", "to-do"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Modern way:** Paste your bug description as a prompt. Use your favorite AI weapon of choice, dictate it with [Wispr Flow](https://wisprflow.ai/r?GERMAN46), or just write it down in your own words. A raw half-page dump tells us more than a perfectly structured but half-empty form.
+
+        **Classic way:** If you prefer structure, use the fields below.
+
+        Either way works. We'll ask if we need more details.
+
+        **Reward:** Quality bug reports earn a free month of [Wispr Flow Pro](https://wisprflow.ai/r?GERMAN46) (unlimited dictation). We'll send you the invite after review.
+  - type: textarea
+    id: description
+    attributes:
+      label: "What happened?"
+      description: "Describe the bug. Free-form, dictated, pasted from AI chat — all welcome. The more context, the better."
+      placeholder: "I ran inbox-sort on my vault with ~200 notes and noticed that..."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to reproduce (optional)"
+      description: "If you can reproduce it, how?"
+      placeholder: |
+        1. Open vault with ...
+        2. Run skill ...
+        3. Observe ...
+    validations:
+      required: false
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected vs. actual behavior (optional)"
+      description: "What should have happened? What happened instead?"
+      placeholder: "Expected: files sorted into _Work/. Actual: files moved to _trash/."
+    validations:
+      required: false
+  - type: dropdown
+    id: skill
+    attributes:
+      label: "Which skill?"
+      description: "Which skill were you using?"
+      options:
+        - inbox-sort
+        - note-rename
+        - property-enrich
+        - Plugin Core
+        - Other / Not sure
+    validations:
+      required: false
+  - type: input
+    id: environment
+    attributes:
+      label: "Environment (optional)"
+      description: "Obsidian version, OS, plugin version"
+      placeholder: "Obsidian 1.8.x, macOS 15, Vault Autopilot v0.1.0"
+    validations:
+      required: false

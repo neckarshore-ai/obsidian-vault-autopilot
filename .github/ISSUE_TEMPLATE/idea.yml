@@ -1,0 +1,46 @@
+name: "Feature Request / Idea"
+description: "Got an idea? New skill, improvement, workflow — tell us."
+labels: ["idea", "to-do"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Rough is fine. Dictate it with [Wispr Flow](https://wisprflow.ai/r?GERMAN46), paste it from your AI chat, or just type it out.
+
+        **Reward:** Quality feature requests earn a free month of [Wispr Flow Pro](https://wisprflow.ai/r?GERMAN46) (unlimited dictation).
+  - type: textarea
+    id: description
+    attributes:
+      label: "What's the idea?"
+      description: "Speech-to-text, AI-generated, handwritten — all welcome."
+      placeholder: "It would be great if the plugin could..."
+    validations:
+      required: true
+  - type: dropdown
+    id: skill
+    attributes:
+      label: "Related skill"
+      description: "Does this relate to an existing skill?"
+      options:
+        - inbox-sort
+        - note-rename
+        - property-enrich
+        - New skill idea
+        - Plugin Core
+        - Documentation
+        - Other
+    validations:
+      required: false
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: "Urgency"
+      description: "How important is this to you?"
+      default: 1
+      options:
+        - "Nice to have"
+        - "Would improve my workflow"
+        - "Missing this is a real pain point"
+        - "Blocking me from using the plugin"
+    validations:
+      required: false
