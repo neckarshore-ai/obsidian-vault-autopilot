@@ -4,7 +4,11 @@
 
 1. Copy `vault/` to a temporary location: `cp -R vault/ /tmp/inbox-sort-test/`
 2. Set `export OBSIDIAN_VAULT_PATH=/tmp/inbox-sort-test`
-3. Set birthtimes on all files to > 3 days ago, EXCEPT `Fresh Idea from Today.md` (keep recent)
+3. Set dates:
+   a. Set birthtimes on all files to > 3 days ago: `cd /tmp/inbox-sort-test/Inbox && for f in *; do touch -t 202604060900 "$f"; done`
+   b. Set `Fresh Idea from Today.md` YAML `created` to yesterday: `sed -i '' "s/created: DYNAMIC/created: $(date -v-1d +%Y-%m-%dT%H:%M)/" "Fresh Idea from Today.md"`
+   c. `Edited Old Note.md`: do NOT touch birthtime — leave it as "now" (copy time). YAML `created` (2026-02-20) must conflict with birthtime (today). This is the birthday bug test.
+   d. `No Dates Note.md`: birthtime was set in step 3a (old) — no YAML `created`. Tests the fallback path.
 4. Run inbox-sort skill with `cooldown_days=3`
 5. Compare results against this manifest
 6. Delete the copy after verification. Master data in `vault/` stays untouched.
@@ -40,17 +44,19 @@ Repeat for each test run. Add new test files to `vault/` and update this manifes
 | G3 | `Draft Ideas.md` | Trash | `_trash/` | Nahbereich: whitespace-only | Verify trash metadata (trashed date, trash_source, trash_origin) |
 | H1 | `meeting-photo.png` | Move | `Inbox/_Attachments/` | Pre-sort: non-markdown file (image) | |
 | H2 | `project-brief.pdf` | Move | `Inbox/_Attachments/` | Pre-sort: non-markdown file (PDF) | |
-| H3 | `Fresh Idea from Today.md` | Skip | (unchanged) | Cooldown: created < 3 days ago | Remains in Inbox root |
+| H3 | `Fresh Idea from Today.md` | Skip | (unchanged) | Cooldown: YAML `created` < 3 days ago (dynamic, set by setup script) | Remains in Inbox root. Tests YAML-based cooldown. |
 | I1 | `Notes & Thoughts (Brainstorm).md` | Move | `Inbox/_Work/` | Categorize: work/automation content | Verify `mv` handles `&` and `()` correctly |
 | I2 | `broken-frontmatter.md` | Move | `Inbox/_Work/` | Categorize: market research content | Should appear in Report Findings (broken YAML: no closing `---`) |
 | J1 | `Crypto Wallet Setup.md` | Move | `Inbox/_Work/` | Categorize: crypto/dev content | Should appear in Report Findings (sensitive data: recovery phrase). NOT moved to `_secret` — flag only. |
+| K1 | `Edited Old Note.md` | Move | `Inbox/_Work/` | Categorize: dev/architecture content | **Birthday bug test:** YAML `created` is old (2026-02-20), birthtime is fresh (today). Must be processed — YAML wins over birthtime. |
+| K2 | `No Dates Note.md` | Move | `Inbox/_Work/` | Categorize: productivity/tools content | **Fallback test:** No YAML `created`. Birthtime set to > 3 days ago by setup. Tests filesystem fallback path. |
 
 ---
 
 ## Expected Report Summary
 
 ```
-_Work: 7 notes moved (D1-D4, I1, I2, J1)
+_Work: 9 notes moved (D1-D4, I1, I2, J1, K1, K2)
 _Personal: 4 notes moved (E1-E4)
 _Edge Cases: 3 notes moved (F1-F3)
 WebCaptures & Social: 5 notes moved (B1-B3, C1-C2)
@@ -61,7 +67,17 @@ Skipped — Cooldown: 1 note (H3)
 Findings: 1 broken frontmatter (I2), 1 sensitive data warning (J1)
 ```
 
-Total processed: 21 notes moved + 2 attachments + 3 cleanup + 1 skipped = 27 files accounted for
+Total processed: 23 notes moved + 2 attachments + 3 cleanup + 1 skipped = 29 files accounted for
+
+## Date/Cooldown Test Matrix
+
+| # | File | YAML `created` | Birthtime (setup) | Cooldown Result | What This Tests |
+|---|------|---------------|-------------------|-----------------|-----------------|
+| 1 | Most files (20) | Old (Feb-Apr) | Old (step 3a) | Not triggered | Normal case: both sources agree |
+| 2 | `Fresh Idea from Today.md` | Yesterday (dynamic) | Old (step 3a) | **Triggered** → skip | YAML `created` is primary source for cooldown |
+| 3 | `Edited Old Note.md` | 2026-02-20 (old) | Today (fresh, not touched) | **Not triggered** → process | **Birthday bug test:** YAML wins over fresh birthtime |
+| 4 | `No Dates Note.md` | — (none) | Old (step 3a) | Not triggered | Fallback: no YAML → use birthtime |
+| 5 | `broken-frontmatter.md` | — (broken YAML) | Old (step 3a) | Not triggered | Edge case: unparseable YAML, fallback to birthtime |
 
 ---
 

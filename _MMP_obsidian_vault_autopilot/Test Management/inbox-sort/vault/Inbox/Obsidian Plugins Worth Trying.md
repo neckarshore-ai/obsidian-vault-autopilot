@@ -3,6 +3,8 @@ tags:
   - clippings
   - Productivity
 source: https://medium.com/@vaultgeek/obsidian-plugins-2026-edition
+created: 2026-02-28T16:00
+modified: 2026-03-05T12:00
 ---
 
 # Obsidian Plugins Worth Trying in 2026

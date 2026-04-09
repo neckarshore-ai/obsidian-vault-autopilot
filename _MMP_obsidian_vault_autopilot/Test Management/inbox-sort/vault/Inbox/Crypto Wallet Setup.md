@@ -2,6 +2,8 @@
 tags:
   - Crypto
   - Security
+created: 2026-03-10T19:00
+modified: 2026-03-10T20:30
 ---
 
 # Crypto Wallet Setup — Ledger Nano X

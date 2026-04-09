@@ -2,6 +2,8 @@
 source: https://blog.example.com/building-cli-tools-in-2026
 tags:
   - DevTools
+created: 2026-03-01T12:00
+modified: 2026-03-01T12:00
 ---
 
 # How to Build a CLI Tool

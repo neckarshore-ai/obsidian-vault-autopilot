@@ -1,6 +1,8 @@
 ---
 tags:
   - Architecture
+created: 2026-03-03T15:00
+modified: 2026-03-03T15:00
 ---
 
 # Serverless Architecture Patterns

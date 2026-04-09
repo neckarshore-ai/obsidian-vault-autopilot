@@ -2,6 +2,8 @@
 tags:
   - Clients
   - Process
+created: 2026-03-05T11:00
+modified: 2026-03-05T11:45
 ---
 
 # Client Onboarding Checklist

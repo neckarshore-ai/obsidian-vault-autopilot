@@ -2,6 +2,8 @@
 tags:
   - Architecture
   - API
+created: 2026-03-08T09:15
+modified: 2026-03-08T11:30
 ---
 
 # API Rate Limiting Strategy

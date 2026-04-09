@@ -1,6 +1,7 @@
 ---
 tags:
   - Ideas
+created: DYNAMIC
 ---
 
 # Fresh Idea from Today

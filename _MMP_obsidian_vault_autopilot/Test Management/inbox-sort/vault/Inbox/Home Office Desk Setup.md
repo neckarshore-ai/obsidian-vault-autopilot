@@ -1,6 +1,8 @@
 ---
 tags:
   - HomeOffice
+created: 2026-03-12T18:00
+modified: 2026-03-14T09:00
 ---
 
 # Home Office Desk Setup Research

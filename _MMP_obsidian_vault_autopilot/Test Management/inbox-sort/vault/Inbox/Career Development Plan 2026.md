@@ -2,6 +2,8 @@
 tags:
   - Career
   - Learning
+created: 2026-02-15T10:00
+modified: 2026-03-01T08:30
 ---
 
 # Career Development Plan 2026

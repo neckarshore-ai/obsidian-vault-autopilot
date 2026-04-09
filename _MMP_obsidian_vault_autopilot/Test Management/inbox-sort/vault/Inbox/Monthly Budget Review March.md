@@ -2,6 +2,8 @@
 tags:
   - Finance
   - Budget
+created: 2026-04-01T20:00
+modified: 2026-04-02T09:00
 ---
 
 # Monthly Budget Review — March 2026

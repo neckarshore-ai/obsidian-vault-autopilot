@@ -1,6 +1,8 @@
 ---
 tags:
   - Networking
+created: 2026-03-12T21:00
+modified: 2026-03-13T08:00
 ---
 
 # Networking Event Notes — TechMeetup Stuttgart

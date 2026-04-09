@@ -2,6 +2,8 @@
 tags:
   - BookNotes
   - Systems
+created: 2026-03-09T14:00
+modified: 2026-03-09T16:45
 ---
 
 # Book Notes — Thinking in Systems
