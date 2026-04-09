@@ -23,7 +23,7 @@ Give poorly named vault notes clear, descriptive filenames. Rename and fix backl
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. Use file creation date (birthtime), not modification date. |
+| `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. **Date source hierarchy:** (1) YAML `created` field in frontmatter, (2) filesystem birthtime as fallback if no YAML `created` exists. Never use modification date. |
 | `scope` | inbox | Which folder to scan. `inbox` = inbox root only. `vault` = entire vault (excluding vault root). `folder:path` = specific subfolder. User confirms before execution. |
 
 ## Scope Rules
@@ -150,7 +150,7 @@ Examples:
 6. **Check backlinks** — find all `[[Old Name]]` references across vault.
 7. **Preview and confirm** — show the preview table (see `references/report-format-note-rename.md` for format and bilingual templates). Match the language the user is speaking. Include a rationale section below the table explaining non-trivial decisions. **Do not execute until the user explicitly confirms.**
 8. **Execute** — rename files, update all `[[Old Name]]` and `[[Old Name|` references.
-9. **Skill Log** — for every processed note (renamed, reviewed, or trashed), write the skill log. See `references/skill-log.md` for the full spec.
+9. **Skill Log** — for every processed note (renamed, reviewed, or trashed), write the skill log. See `references/skill-log.md` for the full spec. **After writing tag/callout, restore filesystem birthtime** from the YAML `created` value read during classification. Use `touch -t` (see `references/skill-log.md` § Birthtime Preservation). Skip if no date source was available.
 
    **Tag (idempotent):**
    - Check if `VaultAutopilot` already exists in the `tags` list in YAML frontmatter.

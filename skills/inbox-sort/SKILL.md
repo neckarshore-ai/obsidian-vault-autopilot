@@ -18,7 +18,7 @@ Move notes from inbox root into four buckets: `_Work`, `_Personal`, `_Edge Cases
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. Use file creation date (birthtime), not modification date. |
+| `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. **Date source hierarchy:** (1) YAML `created` field in frontmatter, (2) filesystem birthtime as fallback if no YAML `created` exists. Never use modification date. |
 
 ## Five Buckets
 
@@ -40,7 +40,7 @@ The `_` prefix on Work, Personal, Edge Cases, and Attachments keeps sort buckets
 2. **Find inbox** — scan top-level folders for one containing "inbox" (case-insensitive). If ambiguous, ask.
 3. **Ensure buckets exist** — create `_Work`, `_Personal`, `_Edge Cases`, `WebCaptures & Social`, and `_Attachments` inside the inbox if they do not exist.
 4. **List inbox root files** — all files directly in the inbox root, not in subfolders. Separate into markdown (`.md`) and non-markdown files.
-5. **Apply cooldown** — skip notes created less than `cooldown_days` ago (grace period for active work). Use file creation date, not modification date.
+5. **Apply cooldown** — skip notes created less than `cooldown_days` ago (grace period for active work). **Date source:** Read `created` from YAML frontmatter first. If no YAML `created` exists, fall back to filesystem birthtime (`stat -f %B`). Never use modification date. Why: Claude Code's Edit/Write tools create a new inode on APFS, resetting filesystem birthtime to "now". YAML `created` survives writes and is the only reliable source.
 6. **Nahbereich pass** — permanently delete files that are 0 bytes. Soft-delete whitespace-only files to `_trash/` with trash metadata (see `references/trash-concept.md`). Log each action.
 7. **Secret scan** — check each remaining note for sensitive patterns: recovery phrases (12/24 word sequences), IBAN/BIC, API keys, passwords/tokens. If detected: do NOT move to `_secret` automatically. Continue with normal categorization but flag the note in the report under Findings with the specific pattern type. The user decides what to do.
 8. **Pre-sort routing** — before categorizing, auto-route by pattern:
@@ -54,7 +54,8 @@ The `_` prefix on Work, Personal, Edge Cases, and Attachments keeps sort buckets
 10. **Preview** — show routing plan grouped by bucket (see `references/report-format-inbox-sort.md`). Include secret-flagged notes with a warning marker. Wait for user confirmation. User can override individual assignments.
 11. **Move files** — use Bash `mv` with proper quoting for special characters. Preserve original filenames.
 12. **Skill Log** — for each moved file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`).
-13. **Write report** — see format below.
+13. **Birthtime preservation** — after writing tag/callout, restore filesystem birthtime from the YAML `created` value saved in step 5. Use `touch -t` (see `references/skill-log.md` § Birthtime Preservation). Skip if no date source was available.
+14. **Write report** — see format below.
 
 ## Protected Files
 

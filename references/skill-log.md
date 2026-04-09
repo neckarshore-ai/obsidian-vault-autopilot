@@ -68,6 +68,25 @@ Every skill must follow these rules to prevent duplicates and ensure safe re-run
 3. **Rows:** Do not duplicate identical rows (same date/time + same skill + same action). A re-run with the same outcome should not add a second identical row.
 4. **Re-processing:** If a skill runs again and performs a different action (e.g., re-rename), add a new row. The callout is a history — multiple entries from the same skill are valid when the actions differ.
 
+## Birthtime Preservation
+
+Every skill that writes to a note (tag, callout, or any edit) **must restore the filesystem birthtime** after the write. On APFS, Claude Code's Edit/Write tools create a new inode, resetting birthtime to "now". This destroys the original creation date.
+
+### Procedure
+
+1. **Before writing:** Read YAML `created` from frontmatter. If absent, read filesystem birthtime via `stat -f %B` (macOS) or `stat -c %W` (Linux). Store the timestamp.
+2. **After writing:** Restore birthtime via `touch -t YYYYMMDDhhmm.ss <file>`. On APFS, `touch -t` sets birthtime when the target timestamp is older than the current birthtime.
+3. **If no date source exists:** Skip restoration. Do not fabricate timestamps.
+
+### Why This Matters
+
+Without preservation, every skill run resets the file's creation date. Cooldown logic (`cooldown_days`) uses YAML `created` as primary source and filesystem birthtime as fallback. If both are wrong, cooldown decisions become unreliable — the skill processes files it should skip, or skips files it should process.
+
+### Cross-Platform Notes
+
+- **macOS (APFS):** `touch -t` updates birthtime if the new timestamp is older than current. `stat -f %B` reads birthtime as epoch.
+- **Linux (ext4):** Birthtime support varies by kernel version and filesystem. `stat -c %W` returns birthtime if available (0 if not). `touch -t` only sets mtime/atime — birthtime cannot be restored on ext4. On Linux, YAML `created` is the only reliable source.
+
 ## Detection
 
 To check if a note has been processed by any skill:
