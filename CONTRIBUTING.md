@@ -4,6 +4,8 @@ Thanks for your interest in Obsidian Vault Autopilot.
 
 ## Reporting Issues
 
+> **Security vulnerabilities:** Do not open a public issue. Follow the [Security Policy](SECURITY.md) instead.
+
 Open a [GitHub issue](https://github.com/neckarshore-ai/mmp-obsidian-vault-autopilot/issues) with:
 
 1. **What you expected** to happen
@@ -29,8 +31,8 @@ Before submitting a skill PR, verify:
 
 ## Code of Conduct
 
-Be kind, be constructive, be patient. We are building tools for knowledge workers,
-not fighting about tabs vs. spaces.
+This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
+By participating, you agree to uphold its standards.
 
 ## License
 
