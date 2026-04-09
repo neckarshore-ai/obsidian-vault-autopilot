@@ -83,6 +83,16 @@ Read `docs/philosophy.md` for the full product philosophy. Key principles:
 3. **No vendor lock-in** — works on Markdown + YAML, not Obsidian APIs
 4. **Opinionated defaults, configurable everything**
 
+## Production Vault Safety Rules
+
+> **Incident-backed (2026-04-09).** These rules exist because an agent scanned a production vault without permission. They are non-negotiable.
+
+1. **Gate, not step.** Every transition from test vault to production vault is a **gate** — it requires an explicit user confirmation, regardless of how safe the operation appears. "Continue with production?" is mandatory. Blanket approvals for work blocks do NOT extend to environment switches.
+2. **No filesystem discovery.** Never run `find ~`, `ls ~/`, `mdfind`, or any command that scans outside the configured `OBSIDIAN_VAULT_PATH`. You operate on the vault the user pointed you to — nothing else. If you need to know where other vaults are, **ask the user**.
+3. **Read-only is not harmless.** Production vault access requires explicit user approval even for read-only operations (scans, counts, audits). Reading production data without permission is a trust violation, not a technical issue.
+4. **Confirm before bulk operations.** Before touching more than 10 files in any vault (test or production), state: "I will [action] [N] files in [vault-name]. Confirm?" Wait for approval.
+5. **Scope of approval.** A user saying "yes" to a plan approves that plan's scope. It does not approve switching environments, accessing new vaults, or expanding the file set beyond what was described.
+
 ## What NOT to Do
 
 - Do not hardcode project names or vault paths
@@ -90,6 +100,7 @@ Read `docs/philosophy.md` for the full product philosophy. Key principles:
 - Do not skip the quality checklist
 - Do not create flat skill files — always use subdirectories (`skills/name/SKILL.md`)
 - Do not duplicate Obsidian syntax reference (that's kepano/obsidian-skills)
+- **Do not access any vault not explicitly provided by the user** (see Production Vault Safety Rules)
 
 ## Token Efficiency
 
