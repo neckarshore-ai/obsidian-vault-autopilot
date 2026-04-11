@@ -45,7 +45,7 @@ The launch flow runs four phases in order and verifies that note-rename and inbo
 
 | # | File | Action | New Name / Destination | Rule |
 |---|------|--------|------------------------|------|
-| 1 | `2026-03-15.md` | Reviewed | (unchanged) | Daily note, has content → kept. Note: classification-as-content is a v0.1.0 simplification. |
+| 1 | `2026-03-15.md` | **Daily (Nahbereich)** | `Inbox/daily/2026-03-15.md` | Pure daily pattern (`YYYY-MM-DD.md`). note-rename's Daily Note Detection moves misplaced daily notes to the canonical Daily Notes folder. Skill-log callout: `Daily — moved to Daily Notes folder`. |
 | 2 | `2026-03-20 Friday Reflection.md` | Reviewed | (unchanged) | Hybrid name (date + description) — not a pure daily pattern. Descriptive. |
 | 3 | `API Rate Limiting Strategy.md` | Reviewed | (unchanged) | Already descriptive |
 | 4 | `Book Notes - Thinking in Systems.md` | Reviewed | (unchanged) | Already descriptive |
@@ -53,7 +53,7 @@ The launch flow runs four phases in order and verifies that note-rename and inbo
 | 6 | `Career Development Plan 2026.md` | Reviewed | (unchanged) | Already descriptive |
 | 7 | `Client Onboarding Checklist.md` | Reviewed | (unchanged) | Already descriptive |
 | 8 | `Content Calendar Q2.md` | Reviewed | (unchanged) | Already descriptive |
-| 9 | `Crypto Wallet Setup.md` | Reviewed | (unchanged) | Already descriptive. Sensitive content detection is inbox-sort's job (flag, not move). Note-rename's own sensitive-content rule targets `_secret/`, but only if the filename signals it — it does not re-scan content. Verify in run. |
+| 9 | `Crypto Wallet Setup.md` | **Secret (Nahbereich)** | `_secret/Crypto Wallet Setup.md` | Sensitive content detection: body contains recovery-phrase / seed keywords. note-rename's Sensitive Content Detection moves the note to `_secret/` with `trash_source: note-rename`, `trash_origin: Inbox/Crypto Wallet Setup.md`. Skill-log callout: `Secret — sensitive content (moved to _secret/)`. |
 | 10 | `Draft Ideas.md` | **Trashed** | `_trash/Draft Ideas.md` | Accidental note: generic name + whitespace-only content. `trash_source: note-rename` |
 | 11 | `Edited Old Note.md` | **Renamed** | TBD (content-based, verify at run) | Generic name, has content. Exact new name not predicted — assertion is "was renamed to a descriptive name". |
 | 12 | `Fresh Idea from Today.md` | **Skipped** | (unchanged) | Cooldown: YAML `created` = yesterday (< 3 days). Generic-ish name, but cooldown wins. |
@@ -79,23 +79,27 @@ The launch flow runs four phases in order and verifies that note-rename and inbo
 
 ```
 Renamed: 2 notes (Edited Old Note, No Dates Note)
-Reviewed: 22 notes (all descriptive names, skill log row added)
+Reviewed: 20 notes (descriptive names, skill log row added)
+Daily (Nahbereich): 1 note (2026-03-15.md → Inbox/daily/)
+Secret (Nahbereich): 1 note (Crypto Wallet Setup.md → _secret/)
 Trashed (Nahbereich): 3 notes (Untitled.md, Quick Thought.md, Draft Ideas.md → _trash/)
 Skipped (cooldown): 1 note (Fresh Idea from Today.md)
 Not processed (non-markdown): 2 files (meeting-photo.png, project-brief.pdf)
 Findings: 1 broken frontmatter (broken-frontmatter.md: missing closing ---)
 ```
 
-Total accounted for: 2 + 22 + 3 + 1 + 2 = **30 files**.
+Total accounted for: 2 + 20 + 1 + 1 + 3 + 1 + 2 = **30 files**.
 
 ### Phase 1 Verification
 
 - [ ] `_trash/` contains `Untitled.md`, `Quick Thought.md`, `Draft Ideas.md`
 - [ ] Each trashed file has YAML `trashed`, `trash_source: note-rename`, `trash_origin: Inbox/...`
+- [ ] `_secret/` contains `Crypto Wallet Setup.md` with `trash_source: note-rename`, `trash_origin: Inbox/Crypto Wallet Setup.md`
+- [ ] `Inbox/daily/` contains `2026-03-15.md` with `Daily — moved to Daily Notes folder` callout row
 - [ ] `Edited Old Note.md` no longer exists — the renamed file does
 - [ ] `No Dates Note.md` no longer exists — the renamed file does
-- [ ] Every reviewed/renamed file has `VaultAutopilot` tag (exactly once) in frontmatter
-- [ ] Every reviewed/renamed file has exactly ONE `> [!info] Vault Autopilot` callout at the end, with one data row
+- [ ] Every reviewed/renamed/daily/secret file has `VaultAutopilot` tag (exactly once) in frontmatter
+- [ ] Every reviewed/renamed/daily/secret file has exactly ONE `> [!info] Vault Autopilot` callout at the end, with one data row
 - [ ] `broken-frontmatter.md` is in the Findings section of the Phase 1 report
 - [ ] `Fresh Idea from Today.md` still in `Inbox/` root, untouched
 
@@ -105,64 +109,67 @@ Total accounted for: 2 + 22 + 3 + 1 + 2 = **30 files**.
 
 **Command:** run `inbox-sort` skill with `cooldown_days=3`.
 
-Input: state after Phase 1. The three accidental notes are already gone. 22 markdown files + 2 attachments remain to be sorted (plus the cooldown-skip file, which stays in inbox root).
+Input: state after Phase 1. Three accidental notes are in `_trash/`, one sensitive note is in `_secret/`, and one daily note is already in `Inbox/daily/`. 21 markdown files + 2 attachments remain at the inbox root to be sorted (plus the cooldown-skip file, which stays in inbox root).
 
 ### Expected Actions per File
 
+Phase 2 processes files still at the inbox root. Files handled by Phase 1's Nahbereich (trash / secret / daily) are already gone and not listed here.
+
 | # | File (post-Phase-1 name) | Action | Destination | Routing Rule |
 |---|--------------------------|--------|-------------|--------------|
-| 1 | `2026-03-15.md` | Move | `Inbox/daily/` | Pre-sort: `YYYY-MM-DD.md` pattern |
-| 2 | `2026-03-20 Friday Reflection.md` | Move | `Inbox/daily/` | Pre-sort: `YYYY-MM-DD *.md` pattern |
-| 3 | `How to Build a CLI Tool.md` | Move | `Inbox/WebCaptures & Social/` | Pre-sort: `source:` URL in frontmatter |
-| 4 | `Obsidian Plugins Worth Trying.md` | Move | `Inbox/WebCaptures & Social/` | Pre-sort: `clippings` tag in frontmatter |
-| 5 | `Serverless Architecture Patterns.md` | Move | `Inbox/WebCaptures & Social/` | Pre-sort: inline `#clippings` in body |
-| 6 | `Interesting Thread on AI Agents.md` | Move | `Inbox/WebCaptures & Social/` | Pre-sort: bare link to x.com |
-| 7 | `Leadership Post from CEO.md` | Move | `Inbox/WebCaptures & Social/` | Pre-sort: bare link to linkedin.com |
-| 8 | `API Rate Limiting Strategy.md` | Move | `Inbox/_Work/` | Categorize: dev/engineering |
-| 9 | `Client Onboarding Checklist.md` | Move | `Inbox/_Work/` | Categorize: business/client management |
-| 10 | `Content Calendar Q2.md` | Move | `Inbox/_Work/` | Categorize: content/marketing |
-| 11 | `Meeting Notes - Product Roadmap.md` | Move | `Inbox/_Work/` | Categorize: product meeting |
-| 12 | `Notes & Thoughts (Brainstorm).md` | Move | `Inbox/_Work/` | Categorize: work/automation. Verify `mv` handles `&` and `()`. |
-| 13 | `broken-frontmatter.md` | Move | `Inbox/_Work/` | Categorize: market research. Also reported under Findings (broken YAML). |
-| 14 | `Crypto Wallet Setup.md` | Move | `Inbox/_Work/` | Categorize: crypto/dev content. **Flagged under Findings** (sensitive data: recovery phrase). NOT moved to `_secret` — flag only. |
-| 15 | `Edited Old Note.md` *(or its Phase 1 renamed form)* | Move | `Inbox/_Work/` | **Birthday bug test:** YAML `created` is old (2026-02-20), birthtime was fresh. YAML wins → processed. |
-| 16 | `No Dates Note.md` *(or its Phase 1 renamed form)* | Move | `Inbox/_Work/` | **Fallback test:** no YAML `created`, birthtime (old) used for cooldown. |
-| 17 | `Morning Routine Overhaul.md` | Move | `Inbox/_Personal/` | Categorize: health/habits |
-| 18 | `Summer Vacation Planning.md` | Move | `Inbox/_Personal/` | Categorize: family/travel |
-| 19 | `Home Office Desk Setup.md` | Move | `Inbox/_Personal/` | Categorize: household purchases |
-| 20 | `Monthly Budget Review March.md` | Move | `Inbox/_Personal/` | Categorize: personal finance |
-| 21 | `Career Development Plan 2026.md` | Move | `Inbox/_Edge Cases/` | Categorize: ambiguous work/personal |
-| 22 | `Book Notes - Thinking in Systems.md` | Move | `Inbox/_Edge Cases/` | Categorize: ambiguous domain |
-| 23 | `Networking Event Notes.md` | Move | `Inbox/_Edge Cases/` | Categorize: mixed business/personal |
-| 24 | `meeting-photo.png` | Move | `Inbox/_Attachments/` | Pre-sort: non-markdown (image) |
-| 25 | `project-brief.pdf` | Move | `Inbox/_Attachments/` | Pre-sort: non-markdown (PDF) |
-| 26 | `Fresh Idea from Today.md` | Skip | (unchanged) | Cooldown: YAML `created` < 3 days ago |
+| 1 | `2026-03-20 Friday Reflection.md` | Move | `Inbox/daily/` | Pre-sort: `YYYY-MM-DD *.md` pattern |
+| 2 | `How to Build a CLI Tool.md` | Move | `Inbox/WebCaptures & Social/` | Pre-sort: `source:` URL in frontmatter |
+| 3 | `Obsidian Plugins Worth Trying.md` | Move | `Inbox/WebCaptures & Social/` | Pre-sort: `clippings` tag in frontmatter |
+| 4 | `Serverless Architecture Patterns.md` | Move | `Inbox/WebCaptures & Social/` | Pre-sort: inline `#clippings` in body |
+| 5 | `Interesting Thread on AI Agents.md` | Move | `Inbox/WebCaptures & Social/` | Pre-sort: bare link to x.com |
+| 6 | `Leadership Post from CEO.md` | Move | `Inbox/WebCaptures & Social/` | Pre-sort: bare link to linkedin.com |
+| 7 | `API Rate Limiting Strategy.md` | Move | `Inbox/_Work/` | Categorize: dev/engineering |
+| 8 | `Client Onboarding Checklist.md` | Move | `Inbox/_Work/` | Categorize: business/client management |
+| 9 | `Content Calendar Q2.md` | Move | `Inbox/_Work/` | Categorize: content/marketing |
+| 10 | `Meeting Notes - Product Roadmap.md` | Move | `Inbox/_Work/` | Categorize: product meeting |
+| 11 | `Notes & Thoughts (Brainstorm).md` | Move | `Inbox/_Work/` | Categorize: work/automation. Verify `mv` handles `&` and `()`. |
+| 12 | `broken-frontmatter.md` | Move | `Inbox/_Work/` | Categorize: market research. Also reported under Findings (broken YAML). |
+| 13 | `Edited Old Note.md` *(or its Phase 1 renamed form — e.g. `Microservices - Communication Patterns.md`)* | Move | `Inbox/_Work/` | **Birthday bug test:** YAML `created` is old (2026-02-20), birthtime was fresh. YAML wins → processed. Categorize: dev/architecture. |
+| 14 | `No Dates Note.md` *(or its Phase 1 renamed form — e.g. `Focus Timer - Techniques.md`)* | Move | `Inbox/_Personal/` | **Fallback test:** no YAML `created`, birthtime (old) used for cooldown. Categorize: productivity/habits (deep-work routines). See Routing Review Notes. |
+| 15 | `Morning Routine Overhaul.md` | Move | `Inbox/_Personal/` | Categorize: health/habits |
+| 16 | `Summer Vacation Planning.md` | Move | `Inbox/_Personal/` | Categorize: family/travel |
+| 17 | `Home Office Desk Setup.md` | Move | `Inbox/_Personal/` | Categorize: household purchases |
+| 18 | `Monthly Budget Review March.md` | Move | `Inbox/_Personal/` | Categorize: personal finance |
+| 19 | `Career Development Plan 2026.md` | Move | `Inbox/_Edge Cases/` | Categorize: ambiguous work/personal |
+| 20 | `Book Notes - Thinking in Systems.md` | Move | `Inbox/_Edge Cases/` | Categorize: ambiguous domain |
+| 21 | `Networking Event Notes.md` | Move | `Inbox/_Edge Cases/` | Categorize: mixed business/personal |
+| 22 | `meeting-photo.png` | Move | `Inbox/_Attachments/` | Pre-sort: non-markdown (image) |
+| 23 | `project-brief.pdf` | Move | `Inbox/_Attachments/` | Pre-sort: non-markdown (PDF) |
+| 24 | `Fresh Idea from Today.md` | Skip | (unchanged) | Cooldown: YAML `created` < 3 days ago |
 
 ### Phase 2 Report Summary (expected)
 
 ```
-_Work: 9 notes moved
-_Personal: 4 notes moved
+_Work: 7 notes moved
+_Personal: 5 notes moved
 _Edge Cases: 3 notes moved
 WebCaptures & Social: 5 notes moved
-daily: 2 notes moved
+daily: 1 note moved
 _Attachments: 2 files moved
-Nahbereich: 0 files removed  <-- KEY DIFFERENCE vs. inbox-sort-solo
+Nahbereich: 0 files removed  <-- KEY DIFFERENCE vs. inbox-sort-solo: Phase 1 already handled trash/secret/daily
 Skipped (cooldown): 1 note (Fresh Idea from Today.md)
-Findings: 1 broken frontmatter (broken-frontmatter.md), 1 sensitive data warning (Crypto Wallet Setup.md)
+Findings: 1 broken frontmatter (broken-frontmatter.md)
 ```
 
-Total processed: 23 notes + 2 attachments + 0 cleanup + 1 skipped = **26 files accounted for** (vs. 30 before Phase 1 minus 3 trashed minus 1 cooldown = 26, checksum holds).
+Total processed: 21 notes moved + 2 attachments moved + 1 cooldown skip = **24 items accounted for**.
+
+Checksum: 30 total - 3 trashed (P1 Nahbereich) - 1 secret (P1 Nahbereich) - 1 daily (P1 Nahbereich) - 1 cooldown skip = 24 items Phase 2 routes out of the inbox root. ✓
 
 ### Phase 2 Verification
 
 - [ ] `Inbox/_Work/`, `Inbox/_Personal/`, `Inbox/_Edge Cases/`, `Inbox/WebCaptures & Social/`, `Inbox/_Attachments/` all auto-created
-- [ ] Nahbereich counter in report is 0 (NOT 3)
+- [ ] Nahbereich counter in report is 0 (NOT 3 — Phase 1 already handled accidentals)
 - [ ] `_vault-autopilot.md` at vault root was not moved, renamed, or modified
-- [ ] Every moved file has a SECOND row in its existing `> [!info] Vault Autopilot` callout (not a second callout block)
-- [ ] Every moved file still has `VaultAutopilot` tag exactly once (not duplicated)
-- [ ] Birthday bug: `Edited Old Note.md` (or renamed form) was processed, not skipped
-- [ ] Fallback: `No Dates Note.md` (or renamed form) was processed
+- [ ] The 2 files that were renamed in Phase 1 (e.g. `Microservices - Communication Patterns.md`, `Focus Timer - Techniques.md`) each have exactly ONE `> [!info] Vault Autopilot` callout block with **2 data rows** (P1 Renamed + P2 Moved) — row appended, no second block created
+- [ ] The other 19 moved `.md` files each have exactly ONE `> [!info] Vault Autopilot` callout block with **1 data row** (P2 Moved only)
+- [ ] Every moved `.md` file has `VaultAutopilot` tag exactly once in frontmatter (not duplicated)
+- [ ] Birthday bug: `Edited Old Note.md` (or renamed form) was processed, not skipped — routed to `_Work/`
+- [ ] Fallback: `No Dates Note.md` (or renamed form) was processed — routed to `_Personal/`
 
 ---
 
@@ -215,7 +222,7 @@ For `Unbekannt.md` and `Neue Notiz.md`, the existing `> [!info] Vault Autopilot`
 
 ```
 Renamed: 2 notes (Unbekannt.md, Neue Notiz.md → new descriptive names)
-Reviewed: 7 notes (remaining _Work/ files)
+Reviewed: 5 notes (remaining _Work/ files — _Work has 7 total, minus the 2 rename candidates)
 Trashed (Nahbereich): 0
 Skipped (cooldown): 0
 Findings: 1 broken frontmatter (broken-frontmatter.md — still flagged, still not auto-fixed)
@@ -268,7 +275,11 @@ For each of `_trash/Untitled.md`, `_trash/Quick Thought.md`, `_trash/Draft Ideas
 
 - [ ] No file has more than one `> [!info] Vault Autopilot` callout block
 - [ ] No file has the `VaultAutopilot` tag listed twice in frontmatter
-- [ ] Callout tables have the correct number of data rows per file: 1 for cooldown-skipped/unprocessed, 2 for moved-only, 2 for renamed-but-not-moved-again, 3 for moved-then-renamed
+- [ ] Callout tables have the correct number of data rows per file at the end of Phase 4:
+  - **0 rows** — cooldown-skipped file (`Fresh Idea from Today.md`) and non-markdown attachments (no callout block at all)
+  - **1 row** — Phase-1-Nahbereich files (trashed, secret, daily) that Phase 2 never re-processed
+  - **2 rows** — files moved in Phase 2 but not in Phase 4 scope (`_Personal/`, `_Edge Cases/`, `WebCaptures & Social/`, `daily/` additions from Phase 2, `_Attachments/`): P1 Reviewed/Renamed + P2 Moved
+  - **3 rows** — files in `_Work/` after Phase 4: P1 Reviewed/Renamed + P2 Moved + P4 Reviewed/Renamed
 
 ### Birthtime Preservation
 
@@ -293,6 +304,10 @@ Only `YYYY-MM-DD.md` and `YYYY-MM-DD *.md` are detected. Users with `DD.MM.YYYY`
 
 Web-capture-detection says "bare-link note (just a URL, no real content)." But what counts as "no real content"? URL + one-line comment — bare or not? A future test file should probe this boundary (URL + 1 sentence vs. URL + 3 paragraphs).
 
-### 4. 0-byte file handling differs between note-rename and inbox-sort
+### 4. Focus Timer — productivity/habits boundary (_Personal vs _Edge Cases)
+
+Test file `Focus Timer - Techniques.md` (the Phase 1 rename target for `No Dates Note.md`) is categorized as `_Personal` in Phase 2. Rationale: content is a deep-work routine (Flowtime / Pomodoro / 52-17), which matches the existing `_Personal` examples `Morning Routine Overhaul` and `Home Office Desk Setup`. An `_Edge Cases` assignment would also be defensible — productivity techniques can belong to either context depending on the user's framing. For v0.1.0 we accept `_Personal`; user can override at preview.
+
+### 5. 0-byte file handling differs between note-rename and inbox-sort
 
 In rename-first, 0-byte files land in `_trash/` (note-rename soft-deletes). In inbox-sort-solo, 0-byte files are permanently deleted. Both behaviors are internally consistent; the difference only matters for test expectations. Whether the two skills should align on a single behavior is a v0.1.1 design question.
