@@ -19,5 +19,16 @@ Thumbs.db
 *.swo
 *.bak
 
+# Build output
+dist/
+build/
+coverage/
+
+# Package artifacts
+*.tgz
+
+# Lint cache
+.eslintcache
+
 # Logs
 *.log
