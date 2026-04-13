@@ -1,18 +1,22 @@
 ---
 name: property-enrich
 status: stable
-description: Use when Obsidian vault notes have incomplete or missing YAML frontmatter and need structural metadata filled in. Trigger phrases - "add properties", "enrich metadata", "fill frontmatter", "add aliases", "set parent links", "missing metadata", "incomplete frontmatter", "standardize properties". Also trigger when notes lack title, created/modified dates, aliases, parent links, source URLs, or priority fields.
+description: Use when Obsidian vault notes have incomplete or missing YAML frontmatter and need structural metadata filled in. Run this FIRST on a cloned vault before running note-rename or inbox-sort. Trigger phrases - "add properties", "enrich metadata", "fill frontmatter", "prepare my vault", "backfill created", "enrich before sort", "missing metadata", "incomplete frontmatter".
 ---
 
 # Property Enrich
 
-Fill missing structural metadata: `title`, `created`, `modified`, `aliases`, `parent`, `source`, `priority`. Additive only — never overwrites (except `modified`).
+Fill missing structural metadata: `title`, `created`, `modified`. Additive only — never overwrites (except `modified`).
+
+## Run This First
+
+If you cloned your vault (recommended before running any destructive skill), run property-enrich first. Cloning resets filesystem birthtimes, which breaks cooldown logic in note-rename and inbox-sort. property-enrich fills the YAML `created` field from filename dates or Git history, making cooldown reliable on any vault — cloned or native.
 
 ## Principle: Core + Nahbereich + Report
 
 - **Core:** Fill missing metadata from content, path, filesystem
 - **Nahbereich:** Create frontmatter if none exists
-- **Report:** Fields added per type, enriched vs. complete
+- **Report:** Fields added per type, source per note
 
 ## Parameters
 
@@ -27,35 +31,50 @@ Never process or modify these files (see `references/vault-autopilot-note.md`):
 - `_vault-autopilot.md` in vault root
 - Any file starting with `_` in vault root (reserved for plugin management)
 
-## Properties and Rules
-
-### Scaffold (always ensured)
+## Properties (v0.1.0)
 
 | Property | Source | Overwrite? |
 |----------|--------|-----------|
 | `title` | First H1 heading, fallback: filename without `.md` | Never |
-| `created` | Frontmatter `created`/`date`, fallback: filesystem birth time | Never |
+| `created` | Source Hierarchy (see below) | Never |
 | `modified` | Filesystem mtime | **Always** (refreshed on every write) |
 
-### Relational (only if missing)
+### `created` Source Hierarchy
 
-| Property | Source | Format |
-|----------|--------|--------|
-| `aliases` | Bold terms + wiki links from first 2 paragraphs, shortened title for names > 50 chars | YAML list, append to existing |
-| `parent` | Parent folder's index file (search: `Folder MOC.md`, `Folder.md`, `_index.md`) | `"[[Folder MOC]]"` (wiki link) |
-| `source` | First URL in note body, or first referenced PDF | Quoted string |
-| `priority` | Default `3`, override to `1` if path contains "Active" or note has `#urgent` tag | Integer |
+When `created` is missing from YAML, derive it from the highest-priority available source:
 
-**Aliases are cumulative:** Even when `aliases` exists, scan for new candidates and **append**. Never remove or reorder existing entries.
+| Prio | Source | How | When reliable |
+|------|--------|-----|---------------|
+| 1 | YAML `created` exists | Skip (additive-only, unchanged) | Always |
+| 2 | Filename date pattern | Parse `YYYY-MM-DD` from filename, e.g. `2024-03-14 Meeting Notes.md` | When user names files with dates |
+| 3 | Git first-commit timestamp | `git log --follow --diff-filter=A --format=%aI -- <file>` | When vault is under Git |
+| 4 | Filesystem birthtime (last resort) | `stat -f %SB` (macOS) / `stat -c %W` (Linux) | Only on native (non-cloned) vaults |
+
+**Rules:**
+- Try 1 through 4 in order, use the first valid date
+- Log which source was used per note in the Report (Source column)
+- If no source yields a valid date, skip the note and report it as a Finding
+
+### Clone Detection Warning
+
+When Source 4 (filesystem birthtime) is used AND all birthtimes in the batch cluster within a 1-hour window: log a warning in the Report.
+
+> **Warning:** All created dates derived from filesystem birthtime within a narrow window. This vault may be a clone. Consider verifying dates manually.
+
+The warning does NOT block execution — it informs only.
+
+### Relational Properties (v0.2.0)
+
+> **Deferred to v0.2.0.** Properties like `aliases`, `parent`, `source`, and `priority` are not filled in the current release. The full design is preserved in `SKILL.v0.2.0-draft.md` in this directory.
 
 ## Workflow
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. Ask for scope. Confirm if 50+ notes.
-2. **Scan** — read frontmatter, path, filesystem timestamps, first 2 paragraphs per note.
-3. **Compute** — determine which fields are missing, compute values. Skip properties that already have valid content.
-4. **Preview** — summary + 3-5 sample changes. Wait for confirmation.
+2. **Scan** — read frontmatter, path, filesystem timestamps per note.
+3. **Compute** — for each note missing `created`: walk the Source Hierarchy (Prio 1 through 4). Compute `title` from H1 or filename. Read `modified` from filesystem.
+4. **Preview** — summary table with sample changes including Source column. Wait for confirmation.
 5. **Write** — add fields in YAML frontmatter. Preserve all existing values.
-6. **Skill Log** — for each enriched file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`).
+6. **Skill Log** — for each enriched file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`). Action format: `Added [field list] (created source: [source])`.
 7. **Report and log** — append to `logs/run-history.md`.
 
 ## Boundaries
@@ -63,7 +82,7 @@ Never process or modify these files (see `references/vault-autopilot-note.md`):
 - Additive only (except `modified`)
 - Does not write `description` (property-describe), `status` or `type` (property-classify)
 - Does not modify note body, delete, move, or rename files
-- Bulk import detection: many files with identical `created` → flag in report, don't modify
+- Does not fill `aliases`, `parent`, `source`, `priority` in v0.1.0
 
 ## Report Format
 
@@ -71,18 +90,28 @@ Never process or modify these files (see `references/vault-autopilot-note.md`):
 ## Property Enrich Report — [Date]
 
 ### Done
-- Notes enriched: X | Already complete: X
-- title added: X | created added: X | aliases appended: X
-- parent added: X | source added: X | priority added: X
+
+| # | Note | title | created | Source | modified | Findings |
+|---|------|-------|---------|--------|----------|----------|
+| 1 | Budget Review.md | Budget Review | 2024-06-15 | filename | 2026-04-13 | — |
+| 2 | Architecture.md | Architecture | 2025-11-20 | git | 2026-04-13 | — |
+
+- Notes enriched: X | Already complete: X | Skipped (no valid date): X
+
+### Clone Detection
+
+[If triggered:] Warning — all birthtime-derived dates cluster within 1 hour. This vault may be a clone.
+[If not triggered:] No clone indicators detected.
 
 ### Findings
-- Bulk import suspected: X notes (identical created timestamp)
+
 - [Observations for other skills]
 ```
 
 ## Quality Check
 
 - [ ] No existing property values were overwritten (except `modified`)
-- [ ] `parent` values use `[[wiki link]]` format
-- [ ] `priority` values are integers (1-5)
+- [ ] `created` Source Hierarchy was followed (filename > git > birthtime)
+- [ ] Source column in report shows derivation per note
 - [ ] Preview shown and confirmed before writing
+- [ ] No `aliases`, `parent`, `source`, or `priority` fields were written
