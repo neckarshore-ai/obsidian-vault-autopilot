@@ -40,27 +40,30 @@ It automates your vault. Nobody else does that.
 
 Three repos, three different jobs. They teach and visualize. We automate.
 
-## Safety
+## ⚠️ Safety
+
+> **No backup, no mercy.** This tool moves, renames, and deletes files in your vault. Always back up first.
 
 ### Before You Start
 
-1. **Back up your vault** before running any automation skill
-2. **Test on a copy first** — clone your vault and run skills there before touching production
-3. **Start small** — pick a single folder, not your entire vault
+1. ⚠️ **[Back up your vault](docs/backup-and-recovery.md)** before running any automation skill
+2. 🧪 **[Test on a copy first](docs/cloning-guide.md)** — clone your vault and run skills there before touching production
+3. 📂 **Start small** — pick a single folder, not your entire vault
+4. 📋 **[Check metadata requirements](docs/metadata-requirements.md)** — skills depend on YAML frontmatter, especially `created`
 
 ### How Your Data Stays Safe
 
 | # | Feature | What it does |
 |---|---------|-------------|
-| 1 | **Soft-delete** | Removed files go to `_trash/` with recovery metadata — nothing is permanently deleted |
-| 2 | **Preview + Confirm** | Every destructive action shows what will change and waits for your approval |
-| 3 | **Cooldown** | New files are protected for 3 days (configurable) before automation touches them |
-| 4 | **Skill Log** | Every action is logged with timestamp, skill name, and what changed |
-| 5 | **Secret Detection** | Files containing API keys, passwords, or financial data are flagged, not auto-moved |
+| 1 | 🗑️ **Soft-delete** | Removed files go to `_trash/` with recovery metadata — nothing is permanently deleted |
+| 2 | 👀 **Preview + Confirm** | Every destructive action shows what will change and waits for your approval |
+| 3 | ⏳ **Cooldown** | New files are protected for 3 days (configurable) before automation touches them |
+| 4 | 📝 **Skill Log** | Every action is logged with timestamp, skill name, and what changed |
+| 5 | 🔒 **Secret Detection** | Files containing API keys, passwords, or financial data are flagged, not auto-moved |
 
 ### Disclaimer
 
-This tool modifies your vault files. You are responsible for maintaining backups.
+⚠️ This tool modifies your vault files. You are responsible for maintaining backups.
 See the [MIT License](LICENSE) for full warranty and liability terms.
 
 By using this software, you acknowledge that you have read and understood the
