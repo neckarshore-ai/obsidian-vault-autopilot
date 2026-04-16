@@ -108,14 +108,14 @@ Then in Claude Code:
 
 ## How We Compare
 
-| | Kepano | Axton | Vault Autopilot |
-|---|--------|-------|----------------|
-| **Focus** | Format reference | Visualization | Vault automation |
-| **Skills type** | Passive (documentation) | Generative (creates visuals) | Active (manages files) |
-| **Acts on your vault** | No | No | Yes |
-| **AI-powered metadata** | No | No | Yes |
-| **Quality gates** | No | No | Yes |
-| **Skills count** | ~20 | ~10 | 6 (+ tag-manage in v0.2.0) |
+| | **Vault Autopilot** | [kepano-obsidian](https://github.com/kepano/kepano-obsidian) | [axton-obsidian-visual-skills](https://github.com/axtonliu/axton-obsidian-visual-skills) |
+|---|---|---|---|
+| **Focus** | 🤖 Vault automation | 📖 Format reference | 🎨 Visualization |
+| **Skills type** | Active (manages files) | Passive (documentation) | Generative (creates visuals) |
+| **Acts on your vault** | ✅ Yes | ❌ No | ❌ No |
+| **AI-powered metadata** | ✅ Yes | ❌ No | ❌ No |
+| **Quality gates** | ✅ Yes | ❌ No | ❌ No |
+| **Skills count** | 7 (3 stable, 4 in dev) | ~20 | ~10 |
 
 ## Design Philosophy
 
