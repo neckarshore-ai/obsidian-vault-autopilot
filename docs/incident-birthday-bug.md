@@ -62,7 +62,7 @@ Both tests were accepted under the project's test-acceptance rule: the developer
 
 - The [Cloning Guide](cloning-guide.md) now explains which clone methods preserve birthtime and which do not.
 - The [Metadata Requirements](metadata-requirements.md) document explains YAML `created` coverage and how to check it.
-- The [Getting Started](getting-started.md) guide makes `property-enrich` the mandatory first step on any fresh or cloned vault.
+- The [Getting Started](getting-started.md) guide recommends `property-enrich` for bulk enrichment. As of v0.1.0, note-rename and inbox-sort auto-enrich `created` per-note (Nahbereich), so `property-enrich` is no longer a strict prerequisite.
 - Clone Detection warnings fire when the plugin detects that all files have birthtimes clustering in a narrow window (indicating a recent clone).
 
 We will keep this document updated as future incidents happen. We hope it stays short.

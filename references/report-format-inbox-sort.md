@@ -100,6 +100,7 @@ Wait for explicit user confirmation before executing any moves.
 - Daily: X notes moved
 - _Attachments: X files moved (images, PDFs, etc.)
 - Nahbereich: X files removed (0-byte deleted: X, whitespace-only trashed: X)
+- Auto-enriched `created`: X notes (Nahbereich)
 
 ### Skipped
 - Cooldown (< [cooldown_days] days): X notes

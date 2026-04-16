@@ -17,13 +17,14 @@ Give poorly named vault notes clear, descriptive filenames. Rename and fix backl
   - Convert inline tags `[X]` to block format
   - Remove junk text before opening `---` (e.g. dictation artifacts like `Thx ---` → `---`)
   - Fix quoted keys with embedded colon: `"type:"` → `type` (the colon belongs to YAML syntax, not the key name)
+  - Fill missing YAML `created` from the Source Hierarchy (filename date > Git first-commit > filesystem birthtime) before evaluating cooldown. See `docs/metadata-requirements.md`. This prevents birthtime corruption on subsequent skill runs.
 - **Report:** Renames, backlink updates, findings for other skills
 
 ## Parameters
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. **Date source hierarchy:** (1) YAML `created` field in frontmatter, (2) filesystem birthtime as fallback if no YAML `created` exists. Never use modification date. |
+| `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. **Date source:** YAML `created` field in frontmatter. If missing, the skill auto-enriches `created` from the Source Hierarchy (filename date > Git first-commit > filesystem birthtime) before evaluating cooldown — see Nahbereich. Never use modification date. |
 | `scope` | inbox | Which folder to scan. `inbox` = inbox root only. `vault` = entire vault (excluding vault root). `folder:path` = specific subfolder. User confirms before execution. |
 
 ## Scope Rules
@@ -145,12 +146,12 @@ Examples:
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. Default scope: inbox root. Confirm with user.
 2. **Scan** — list `.md` files.
 3. **Nahbereich** — detect and trash accidental notes (soft-delete to `_trash/`). Move misplaced Daily Notes to the Daily Notes folder. Log each.
-4. **Classify** — read title, tags, first ~30 lines (skip template boilerplate). Mark as: rename, keep, or TBD.
+4. **Classify** — read title, tags, first ~30 lines (skip template boilerplate). For each note missing YAML `created`: derive the value using the Source Hierarchy (see `docs/metadata-requirements.md`). Write `created` to frontmatter immediately (Nahbereich). Record the source for the report. If no source yields a valid date, read and store the current filesystem birthtime for later restoration. Mark as: rename, keep, or TBD.
 5. **Detect clusters** — 3+ candidates on same topic → prepare prefix suggestion.
 6. **Check backlinks** — find all `[[Old Name]]` references across vault.
 7. **Preview and confirm** — show the preview table (see `references/report-format-note-rename.md` for format and bilingual templates). Match the language the user is speaking. Include a rationale section below the table explaining non-trivial decisions. **Do not execute until the user explicitly confirms.**
 8. **Execute** — rename files, update all `[[Old Name]]` and `[[Old Name|` references.
-9. **Skill Log** — for every processed note (renamed, reviewed, or trashed), write the skill log. See `references/skill-log.md` for the full spec. **After writing tag/callout, restore filesystem birthtime** from the YAML `created` value read during classification. Use `touch -t` (see `references/skill-log.md` § Birthtime Preservation). Skip if no date source was available.
+9. **Skill Log** — for every processed note (renamed, reviewed, or trashed), write the skill log. See `references/skill-log.md` for the full spec. **After writing tag/callout, restore filesystem birthtime** from the YAML `created` value read during classification. Use `touch -t` (see `references/skill-log.md` § Birthtime Preservation). After auto-enrich in step 4, YAML `created` is almost always available. Restore birthtime from it. In the rare case that auto-enrich found no source (no filename date, no Git, no readable birthtime), restore from the pre-write filesystem birthtime captured in step 4.
 
    **Tag (idempotent):**
    - Check if `VaultAutopilot` already exists in the `tags` list in YAML frontmatter.

@@ -76,11 +76,13 @@ Every skill that writes to a note (tag, callout, or any edit) **must restore the
 
 1. **Before writing:** Read YAML `created` from frontmatter. If absent, read filesystem birthtime via `stat -f %B` (macOS) or `stat -c %W` (Linux). Store the timestamp.
 2. **After writing:** Restore birthtime via `touch -t YYYYMMDDhhmm.ss <file>`. On APFS, `touch -t` sets birthtime when the target timestamp is older than the current birthtime.
-3. **If no date source exists:** Skip restoration. Do not fabricate timestamps.
+3. **If no date source exists after auto-enrich:** This is rare — it means no filename date, no Git history, and no readable filesystem birthtime. If it occurs, restore from the pre-write filesystem birthtime captured before the write. Report the note as a Finding. Do not fabricate timestamps.
 
 ### Why This Matters
 
 Without preservation, every skill run resets the file's creation date. Cooldown logic (`cooldown_days`) uses YAML `created` as primary source and filesystem birthtime as fallback. If both are wrong, cooldown decisions become unreliable — the skill processes files it should skip, or skips files it should process.
+
+As of v0.1.0, note-rename and inbox-sort auto-enrich the YAML `created` field when missing (Nahbereich), using the Source Hierarchy from `docs/metadata-requirements.md`. This ensures a date source is almost always available for birthtime restoration.
 
 ### Cross-Platform Notes
 

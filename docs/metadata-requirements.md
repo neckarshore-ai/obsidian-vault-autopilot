@@ -50,7 +50,7 @@ If the format is not supported, the skill treats `created` as missing and falls 
 
 | # | Field | Filled by | When |
 |---|-------|-----------|------|
-| 1 | `created` | `property-enrich` | Initial backfill or when missing |
+| 1 | `created` | `property-enrich` (bulk), `note-rename` / `inbox-sort` (per-note, Nahbereich) | Initial backfill or auto-enriched during skill run |
 | 2 | `modified` | (Obsidian handles this) | On every edit |
 | 3 | `title` | `property-enrich` | When missing or mismatched with filename |
 | 4 | `aliases` | `property-enrich` | When aliases can be derived from filename history |
@@ -73,7 +73,7 @@ echo "Coverage:          $((WITH_CREATED * 100 / TOTAL))%"
 
 - **95% or higher:** safe to run any skill.
 - **80-95%:** run `property-enrich` first to fill missing `created` fields, then re-check.
-- **Below 80%:** treat the vault as metadata-sparse. `property-enrich` is your mandatory first step. See [Getting Started](getting-started.md).
+- **Below 80%:** consider running `property-enrich` first for efficient bulk enrichment. Other skills auto-enrich `created` per-note, but a bulk pass is faster for large vaults. See [Getting Started](getting-started.md).
 
 ## Edge Cases Skills Tolerate
 

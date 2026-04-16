@@ -1,16 +1,16 @@
 ---
 name: property-enrich
 status: stable
-description: Use when Obsidian vault notes have incomplete or missing YAML frontmatter and need structural metadata filled in. Run this FIRST on a cloned vault before running note-rename or inbox-sort. Trigger phrases - "add properties", "enrich metadata", "fill frontmatter", "prepare my vault", "backfill created", "enrich before sort", "missing metadata", "incomplete frontmatter".
+description: Use when Obsidian vault notes have incomplete or missing YAML frontmatter and need structural metadata filled in. Best for bulk enrichment of an entire vault. Trigger phrases - "add properties", "enrich metadata", "fill frontmatter", "prepare my vault", "backfill created", "enrich before sort", "missing metadata", "incomplete frontmatter".
 ---
 
 # Property Enrich
 
 Fill missing structural metadata: `title`, `created`, `modified`. Additive only — never overwrites (except `modified`).
 
-## Run This First
+## When to Run This
 
-If you cloned your vault (recommended before running any destructive skill), run property-enrich first. Cloning resets filesystem birthtimes, which breaks cooldown logic in note-rename and inbox-sort. property-enrich fills the YAML `created` field from filename dates or Git history, making cooldown reliable on any vault — cloned or native.
+**Recommended for bulk enrichment.** property-enrich fills `created`, `title`, and `modified` across your entire vault in one pass — efficient for initial setup or after a clone. Note-rename and inbox-sort auto-enrich `created` per-note during their runs (Nahbereich), so property-enrich is no longer a strict prerequisite. It remains the best choice for bulk metadata coverage and for filling `title` and `modified`, which other skills do not auto-enrich.
 
 ## Principle: Core + Nahbereich + Report
 

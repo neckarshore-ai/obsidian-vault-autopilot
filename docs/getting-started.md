@@ -25,9 +25,9 @@ Create a working copy to test on. **Never run skills on your production vault fi
 ditto -V "$HOME/Vaults/MyVault" "$HOME/Vaults/MyVault-Clone"
 ```
 
-**macOS (Finder):** Right-click your vault folder → Duplicate. This works, but birthtimes reset to "now". You will need to run `property-enrich` first (Step 4).
+**macOS (Finder):** Right-click your vault folder → Duplicate. Birthtimes are preserved on macOS (tested with both `ditto` and Finder). Works without extra steps.
 
-**Windows:** Copy your vault folder in File Explorer (Ctrl+C → Ctrl+V in a new location). Birthtimes reset — `property-enrich` first is mandatory.
+**Windows:** Copy your vault folder in File Explorer (Ctrl+C → Ctrl+V in a new location). Birthtimes reset on Windows. Running `property-enrich` first is recommended for bulk coverage, but other skills auto-enrich `created` per-note during their runs.
 
 **Linux:**
 
@@ -52,9 +52,9 @@ Set your vault path to point at the **clone** (not your production vault):
 export OBSIDIAN_VAULT_PATH="$HOME/Vaults/MyVault-Clone"
 ```
 
-## Step 4 — Run `property-enrich` First
+## Step 4 — Check Metadata Coverage (Optional)
 
-This is the most important step. `property-enrich` fills missing YAML `created` fields in your notes. Without these fields, the cooldown logic falls back to filesystem birthtime, which is unreliable on clones. See [Metadata Requirements](metadata-requirements.md) for the full explanation.
+For the best experience on large vaults, run `property-enrich` to fill missing YAML `created` fields in bulk. Other skills (note-rename, inbox-sort) auto-enrich `created` per-note during their runs, so this step is optional but efficient for vaults with low metadata coverage. See [Metadata Requirements](metadata-requirements.md).
 
 **Check your coverage first:**
 
@@ -66,7 +66,7 @@ echo "Coverage: $((WITH_CREATED * 100 / TOTAL))% ($WITH_CREATED / $TOTAL)"
 ```
 
 - **95% or higher:** you can skip to Step 5.
-- **Below 95%:** run `property-enrich` now. It fills `created` from filename date patterns, filesystem metadata, or Git history. It does not move, rename, or delete any file.
+- **Below 95%:** running `property-enrich` now is recommended for efficiency. It fills `created` from filename date patterns, filesystem metadata, or Git history. It does not move, rename, or delete any file. You can also skip this and let skills auto-enrich per-note.
 
 After `property-enrich`, re-run the coverage check. It should be near 100%.
 
@@ -117,7 +117,7 @@ Once you are satisfied with the results on the clone:
 
 | # | Symptom | Likely cause | Fix |
 |---|---------|-------------|-----|
-| 1 | "0 files processed" on a vault with hundreds of notes | Cooldown is protecting everything — low YAML `created` coverage + fresh clone birthtimes | Run `property-enrich` first (Step 4) |
+| 1 | "0 files processed" on a vault with hundreds of notes | Cooldown is protecting everything — all files appear recently created (clone with reset birthtimes) | Run `property-enrich` to backfill `created` in bulk, or check that auto-enrich is working (skills should fill `created` per-note) |
 | 2 | Skill skips files you expected it to process | Files are newer than 3 days (cooldown) or match a protected pattern | Check `created` dates; adjust cooldown if needed |
 | 3 | Files moved to `_secret/` unexpectedly | Secret detection found sensitive content (API keys, passwords, financial data) | Review the files — this is a safety feature |
 | 4 | "Invalid frontmatter" errors in Obsidian after a run | Corrupted YAML — rare but possible | Restore from backup and file an [issue](https://github.com/neckarshore-ai/obsidian-vault-autopilot/issues) |

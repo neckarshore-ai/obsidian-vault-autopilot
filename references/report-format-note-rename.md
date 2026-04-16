@@ -69,6 +69,7 @@ Wait for explicit user confirmation before executing any renames or moves.
 - Accidental notes trashed: X (Nahbereich, soft-delete to _trash/)
 - Sensitive notes moved: X (Nahbereich, moved to _secret/)
 - Daily notes moved: X (Nahbereich, moved to Daily Notes folder)
+- Auto-enriched `created`: X notes (Nahbereich)
 
 ### Skipped
 - Already descriptive: X | Daily Notes: X | TBD: X
@@ -91,3 +92,4 @@ Each processed note gets a skill-log callout entry with one of these action type
 | 3 | Trashed | `Trashed — accidental note (soft-delete to _trash/)` |
 | 4 | Secret | `Secret — sensitive content (moved to _secret/)` |
 | 5 | Daily | `Daily — moved to Daily Notes folder` |
+| 6 | Auto-enriched | `Auto-enriched created: YYYY-MM-DD (source: filename\|git\|birthtime)` |
