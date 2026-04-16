@@ -7,20 +7,19 @@ enriches your metadata — so you can focus on thinking instead of filing.
 
 ## What This Does
 
-Six skills that manage your vault automatically:
+Seven skills that manage your vault automatically:
 
 | # | Skill | What it does | Status |
 |---|-------|-------------|--------|
-| 1 | **inbox-sort** | Moves notes from inbox root into existing subfolders based on content | stable |
-| 2 | **note-rename** | Renames poorly named files and updates all backlinks | stable |
-| 3 | **note-quality-check** | Scores notes by quality, recommends what to keep or delete | beta |
-| 4 | **property-describe** | Generates concise `description` frontmatter from note content | beta |
-| 5 | **property-classify** | Sets lifecycle `status` and `type` properties automatically | beta |
-| 6 | **property-enrich** | Fills missing metadata: title, dates, aliases, source, priority | stable |
+| 1 | **inbox-sort** | Moves notes from inbox root into existing subfolders based on content | ✅ stable |
+| 2 | **note-rename** | Renames poorly named files and updates all backlinks | ✅ stable |
+| 3 | **property-enrich** | Fills missing metadata: title, dates, aliases, source, priority | ✅ stable |
+| 4 | **note-quality-check** | Scores notes by quality, recommends what to keep or delete | 🚧 in development |
+| 5 | **property-describe** | Generates concise `description` frontmatter from note content | 🚧 in development |
+| 6 | **property-classify** | Sets lifecycle `status` and `type` properties automatically | 🚧 in development |
+| 7 | **tag-manage** | Audits tag quality, suggests tags from content, cleans duplicates | 🚧 in development |
 
-Skills marked **beta** work but may change behavior based on community feedback.
-
-**Coming in v0.2.0:** tag-manage — audits tag quality, suggests tags from content, cleans duplicates.
+Skills marked **🚧 in development** are not ready for use — behavior will change.
 
 Each skill follows the **Core + Nahbereich + Report** principle: do the job,
 fix adjacent issues, and report everything else.
