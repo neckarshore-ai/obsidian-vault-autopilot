@@ -80,7 +80,7 @@ see [CONTRIBUTING.md](CONTRIBUTING.md). For community guidelines, see
 Add the marketplace and install the plugin:
 
 ```bash
-/plugin marketplace add neckarshore-ai/mmp-obsidian-vault-autopilot
+/plugin marketplace add neckarshore-ai/obsidian-vault-autopilot
 /plugin install obsidian-vault-autopilot@neckarshore-ai
 ```
 
@@ -89,7 +89,7 @@ Add the marketplace and install the plugin:
 Clone the repo and register it as a local marketplace:
 
 ```bash
-git clone https://github.com/neckarshore-ai/mmp-obsidian-vault-autopilot.git \
+git clone https://github.com/neckarshore-ai/obsidian-vault-autopilot.git \
   ~/.claude/plugins/obsidian-vault-autopilot
 ```
 
