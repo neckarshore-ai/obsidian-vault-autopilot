@@ -54,34 +54,50 @@ Three repos, three different jobs. They teach and visualize. We automate.
 | **Quality gates** | ✅ Yes | ❌ No | ❌ No |
 | **Skills count** | 7 (3 stable, 4 in dev) | ~20 | ~10 |
 
-## ⚠️ Safety
+## Safety
 
-> **No backup, no mercy.** This tool moves, renames, and deletes files in your vault. Always back up first.
+> **This plugin performs destructive file operations on your Obsidian vault.** It moves files, renames files, changes frontmatter, and soft-deletes files to `_trash/`. There is no undo button at the plugin level. Read this section before your first run.
 
-### Before You Start
+### No Backup, No Mercy
 
-1. ⚠️ **[Back up your vault](docs/backup-and-recovery.md)** before running any automation skill
-2. 🧪 **[Test on a copy first](docs/cloning-guide.md)** — clone your vault and run skills there before touching production
-3. 📂 **Start small** — pick a single folder, not your entire vault
-4. 📋 **[Check metadata requirements](docs/metadata-requirements.md)** — skills depend on YAML frontmatter, especially `created`
+Before you run any skill, you need a backup you can restore from. Not "I have Obsidian Sync" (Sync is not a backup). Not "I have iCloud" (iCloud is not a backup for this purpose). A real, restorable backup: Time Machine, rsync snapshot, Git commit, or a vault copy on another disk. See [Backup and Recovery](docs/backup-and-recovery.md).
+
+### Before Your First Run
+
+1. **[Back up your vault](docs/backup-and-recovery.md)** — a real, restorable backup, not a sync service.
+2. **[Clone your vault](docs/cloning-guide.md)** and run skills on the clone first. The clone method matters — Finder copy and `cp -R` reset birthtimes, which affects cooldown logic.
+3. **[Check your metadata](docs/metadata-requirements.md)** — skills depend on YAML `created` fields. Low coverage? Run `property-enrich` first.
+4. **[Read the Birthday Bug](docs/incident-birthday-bug.md)** — we damaged our own vault early in development. If the plugin ever damages yours, we want you to see how we learned.
+5. **Start small** — pick a single folder, not your whole vault. Run `--preview` before any real execution.
+
+New to this plugin? Follow the **[Getting Started](docs/getting-started.md)** guide for a step-by-step first run.
 
 ### How Your Data Stays Safe
 
 | # | Feature | What it does |
 |---|---------|-------------|
-| 1 | 🗑️ **Soft-delete** | Removed files go to `_trash/` with recovery metadata — nothing is permanently deleted |
-| 2 | 👀 **Preview + Confirm** | Every destructive action shows what will change and waits for your approval |
-| 3 | ⏳ **Cooldown** | New files are protected for 3 days (configurable) before automation touches them |
-| 4 | 📝 **Skill Log** | Every action is logged with timestamp, skill name, and what changed |
-| 5 | 🔒 **Secret Detection** | Files containing API keys, passwords, or financial data are flagged, not auto-moved |
+| 1 | **Soft-delete** | Removed files go to `_trash/` with recovery metadata (`trash_source`, `trash_origin`). Nothing is permanently deleted by a skill. |
+| 2 | **Preview + Confirm** | Every destructive action shows what will change and waits for your approval. `--preview` is also available as a standalone mode. |
+| 3 | **Cooldown** | Files newer than 3 days (configurable) are protected from automation. Gives you time to notice new notes before automation touches them. |
+| 4 | **Skill Log** | Every action is logged with timestamp, skill name, and what changed — in the note frontmatter and in `logs/run-history.md`. |
+| 5 | **Secret Detection** | Files containing API keys, recovery phrases, or financial data are flagged and moved to `_secret/`, never touched by sorting logic. |
+
+### Known Limitations
+
+- **Fresh clones confuse cooldown.** A vault cloned with Finder, `cp -R`, or Windows Explorer has fresh birthtimes on every file. Without YAML `created` coverage, cooldown will protect everything and skills will no-op. Run `property-enrich` first. See [Cloning Guide](docs/cloning-guide.md).
+- **Obsidian Sync + clone-in-neighbor-folder is dangerous.** If Sync is active and you clone into a folder Sync can see, operations on the clone may propagate back. Always disable Sync on the clone first.
 
 ### Disclaimer
 
-⚠️ This tool modifies your vault files. You are responsible for maintaining backups.
-See the [MIT License](LICENSE) for full warranty and liability terms.
+This software performs destructive file operations on your Obsidian vault. There is no warranty, express or implied.
 
-By using this software, you acknowledge that you have read and understood the
-[MIT License](LICENSE) terms.
+By running any skill, you confirm that:
+
+1. You are responsible for maintaining backups of your vault.
+2. You have read the [Cloning Guide](docs/cloning-guide.md) and will test on a clone first.
+3. You accept that destructive automation on your own files is your decision and your responsibility.
+
+See the [MIT License](LICENSE) for full warranty and liability terms.
 
 For security issues, see [SECURITY.md](SECURITY.md). For contribution guidelines,
 see [CONTRIBUTING.md](CONTRIBUTING.md). For community guidelines, see
