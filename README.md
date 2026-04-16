@@ -40,6 +40,17 @@ It automates your vault. Nobody else does that.
 
 Three repos, three different jobs. They teach and visualize. We automate.
 
+## How We Compare
+
+| | **Vault Autopilot** | [kepano-obsidian](https://github.com/kepano/kepano-obsidian) | [axton-obsidian-visual-skills](https://github.com/axtonliu/axton-obsidian-visual-skills) |
+|---|---|---|---|
+| **Focus** | 🤖 Vault automation | 📖 Format reference | 🎨 Visualization |
+| **Skills type** | Active (manages files) | Passive (documentation) | Generative (creates visuals) |
+| **Acts on your vault** | ✅ Yes | ❌ No | ❌ No |
+| **AI-powered metadata** | ✅ Yes | ❌ No | ❌ No |
+| **Quality gates** | ✅ Yes | ❌ No | ❌ No |
+| **Skills count** | 7 (3 stable, 4 in dev) | ~20 | ~10 |
+
 ## ⚠️ Safety
 
 > **No backup, no mercy.** This tool moves, renames, and deletes files in your vault. Always back up first.
@@ -109,17 +120,6 @@ Then in Claude Code:
   export OBSIDIAN_VAULT_PATH="/path/to/your/vault"
   ```
 
-## How We Compare
-
-| | **Vault Autopilot** | [kepano-obsidian](https://github.com/kepano/kepano-obsidian) | [axton-obsidian-visual-skills](https://github.com/axtonliu/axton-obsidian-visual-skills) |
-|---|---|---|---|
-| **Focus** | 🤖 Vault automation | 📖 Format reference | 🎨 Visualization |
-| **Skills type** | Active (manages files) | Passive (documentation) | Generative (creates visuals) |
-| **Acts on your vault** | ✅ Yes | ❌ No | ❌ No |
-| **AI-powered metadata** | ✅ Yes | ❌ No | ❌ No |
-| **Quality gates** | ✅ Yes | ❌ No | ❌ No |
-| **Skills count** | 7 (3 stable, 4 in dev) | ~20 | ~10 |
-
 ## Design Philosophy
 
 Every skill ships with **opinionated defaults** that work out of the box.
@@ -134,7 +134,9 @@ Move your vault to another Markdown tool tomorrow. These skills still work.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Found a bug? Have a skill idea? **[Open an issue](https://github.com/neckarshore-ai/obsidian-vault-autopilot/issues)** — that's how we track and prioritize all work. New skill proposals start as issues, not pull requests.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
 
 ## License
 
