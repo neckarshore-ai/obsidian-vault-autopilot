@@ -147,4 +147,4 @@ These are not committed — they depend on community interest and feedback.
 
 ---
 
-Have an idea? [Open an issue](https://github.com/neckarshore-ai/mmp-obsidian-vault-autopilot/issues) or check [CONTRIBUTING.md](CONTRIBUTING.md).
+Have an idea? [Open an issue](https://github.com/neckarshore-ai/obsidian-vault-autopilot/issues) or check [CONTRIBUTING.md](CONTRIBUTING.md).

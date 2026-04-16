@@ -2,7 +2,7 @@
 
 ## What This Repo Is
 
-`mmp-obsidian-vault-autopilot` is an open-source Claude Code plugin that automates Obsidian vault management. It sorts inboxes, renames notes, checks quality, standardizes properties, and manages tags — so humans can focus on thinking, not organizing.
+`obsidian-vault-autopilot` is an open-source Claude Code plugin that automates Obsidian vault management. It sorts inboxes, renames notes, checks quality, standardizes properties, and manages tags — so humans can focus on thinking, not organizing.
 
 **Organization:** Neckarshore AI
 **License:** MIT

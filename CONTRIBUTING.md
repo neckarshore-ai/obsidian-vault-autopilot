@@ -6,7 +6,7 @@ Thanks for your interest in Obsidian Vault Autopilot.
 
 > **Security vulnerabilities:** Do not open a public issue. Follow the [Security Policy](SECURITY.md) instead.
 
-Open a [GitHub issue](https://github.com/neckarshore-ai/mmp-obsidian-vault-autopilot/issues) with:
+Open a [GitHub issue](https://github.com/neckarshore-ai/obsidian-vault-autopilot/issues) with:
 
 1. **What you expected** to happen
 2. **What actually happened** (include the skill report output if available)
