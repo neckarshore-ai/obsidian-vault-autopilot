@@ -1,7 +1,10 @@
 # Obsidian Vault Autopilot
 
-AI-powered vault management for Claude Code. Sorts your inbox, renames your files,
-enriches your metadata — so you can focus on thinking instead of filing.
+AI-powered vault automation for Obsidian × Claude Code. Sorts your inbox,
+renames your notes, enriches your frontmatter — so you can focus on finding,
+collecting, and thinking instead of filing.
+
+Build your Second Brain rapidly. Let the Autopilot handle the tedious stuff.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
