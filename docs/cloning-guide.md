@@ -37,13 +37,13 @@ Not all copy methods are equal. The critical difference is **filesystem birthtim
 | # | Method | Preserves birthtime? | Recommended? | Notes |
 |---|--------|---------------------|--------------|-------|
 | 1 | **`ditto -V` (Terminal)** | **Yes** | **Yes — best option** | Preserves birthtimes, xattrs, and resource forks |
-| 2 | **Finder copy** (Cmd+D, Right-click → Duplicate, drag+Option) | **No** — resets to now | Acceptable, but read the warning below | Most users will instinctively use this |
-| 3 | **`cp -R`** (Terminal) | **No** — resets to now | Acceptable if YAML `created` coverage is high | Same birthtime behavior as Finder |
+| 2 | **Finder copy** (Cmd+D, Right-click → Duplicate, drag+Option) | **Yes** — preserves on APFS (macOS 10.13+) | **Yes — safe** | Birthtimes preserved; most users will use this |
+| 3 | **`cp -R`** (Terminal) | **No** — resets to now | Acceptable if YAML `created` coverage is high | Common for scripted copies; does not preserve birthtime |
 | 4 | **APFS `cp -c`** (clonefile) | N/A (shared inodes) | **Not recommended** | Copy-on-Write clones share inodes with the original — unsafe for destructive automation |
 
-**If you use Finder copy or `cp -R`:** your clone will have fresh birthtimes on every file. The plugin's cooldown logic may treat all notes as "new" and skip them. This is the [silent clone-killer](incident-birthday-bug.md). The workaround: run `property-enrich` as your first skill on the clone to fill YAML `created` fields. After that, filesystem birthtime becomes irrelevant.
+**If you use `cp -R`:** your clone will have fresh birthtimes on every file. The plugin's cooldown logic may treat all notes as "new" and skip them. This is the [silent clone-killer](incident-birthday-bug.md). The workaround: run `property-enrich` as your first skill on the clone to fill YAML `created` fields. After that, filesystem birthtime becomes irrelevant.
 
-**If you use `ditto -V`:** birthtimes are preserved and cooldown works correctly out of the box. This is why `ditto` is recommended.
+**If you use `ditto -V` or Finder:** birthtimes are preserved and cooldown works correctly out of the box.
 
 ### Windows
 
@@ -80,7 +80,7 @@ echo "Source: $SOURCE_COUNT / Clone: $CLONE_COUNT"
 # Counts must match.
 ```
 
-**If you used Finder instead of `ditto`:** the clone works fine, but run `property-enrich` as your first skill to fill YAML `created` fields before testing any other skill.
+**If you used `cp -R` instead of `ditto` or Finder:** birthtimes are reset. Run `property-enrich` as your first skill to fill YAML `created` fields before testing any other skill.
 
 ## Post-Clone Checklist
 

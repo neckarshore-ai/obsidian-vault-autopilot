@@ -65,7 +65,7 @@ Before you run any skill, you need a backup you can restore from. Not "I have Ob
 ### Before Your First Run
 
 1. **[Back up your vault](docs/backup-and-recovery.md)** — a real, restorable backup, not a sync service.
-2. **[Clone your vault](docs/cloning-guide.md)** and run skills on the clone first. The clone method matters — Finder copy and `cp -R` reset birthtimes, which affects cooldown logic.
+2. **[Clone your vault](docs/cloning-guide.md)** and run skills on the clone first. The clone method matters — `cp -R` resets birthtimes; Finder and `ditto -V` preserve them on APFS. See the guide for details.
 3. **[Check your metadata](docs/metadata-requirements.md)** — skills depend on YAML `created` fields. Low coverage? Run `property-enrich` first.
 4. **[Read the Birthday Bug](docs/incident-birthday-bug.md)** — we damaged our own vault early in development. If the plugin ever damages yours, we want you to see how we learned.
 5. **Start small** — pick a single folder, not your whole vault. Run `--preview` before any real execution.
@@ -84,7 +84,7 @@ New to this plugin? Follow the **[Getting Started](docs/getting-started.md)** gu
 
 ### Known Limitations
 
-- **Fresh clones confuse cooldown.** A vault cloned with Finder, `cp -R`, or Windows Explorer has fresh birthtimes on every file. Without YAML `created` coverage, cooldown will protect everything and skills will no-op. Run `property-enrich` first. See [Cloning Guide](docs/cloning-guide.md).
+- **Fresh clones confuse cooldown.** A vault cloned with `cp -R`, Windows Explorer, `git clone`, or a GitHub ZIP download has fresh birthtimes on every file. Without YAML `created` coverage, cooldown will protect everything and skills will no-op. Run `property-enrich` first. Finder and `ditto -V` on macOS preserve birthtimes. See [Cloning Guide](docs/cloning-guide.md).
 - **Obsidian Sync + clone-in-neighbor-folder is dangerous.** If Sync is active and you clone into a folder Sync can see, operations on the clone may propagate back. Always disable Sync on the clone first.
 
 ### Disclaimer

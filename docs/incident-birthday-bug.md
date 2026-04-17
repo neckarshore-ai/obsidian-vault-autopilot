@@ -32,7 +32,7 @@ Three things converged:
 
 1. **Skills used filesystem birthtime as the only source of truth** for "when was this file created". There was no fallback to YAML `created` fields.
 2. **Obsidian edits create new inodes.** When Obsidian saves a file, it writes a new file and renames it over the old one. Filesystem birthtime updates silently.
-3. **Most clone methods do not preserve filesystem birthtime.** Finder copy, `cp -R`, Windows Explorer copy, and `git clone` all reset birthtime to "now". Only macOS `ditto -V` preserves it.
+3. **Most clone methods do not preserve filesystem birthtime.** `cp -R`, Windows Explorer copy, `git clone`, and GitHub ZIP downloads all reset birthtime to "now". macOS `ditto -V` and Finder copy preserve birthtimes on APFS (macOS 10.13+).
 
 Together: filesystem birthtime is a poor proxy for "how old is this note", especially on cloned vaults and especially after Obsidian edits.
 
