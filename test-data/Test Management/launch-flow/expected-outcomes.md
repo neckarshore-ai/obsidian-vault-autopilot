@@ -14,7 +14,7 @@ The launch flow runs four phases in order and verifies that note-rename and inbo
    ```bash
    TS=$(date +"%Y-%m-%d %H-%M")
    mkdir -p ~/Vaults/"$TS test-obsidian-vault-autopilot"
-   cp -R "_MMP_obsidian_vault_autopilot/Test Management/inbox-sort/vault/"* ~/Vaults/"$TS test-obsidian-vault-autopilot/"
+   cp -R "test-data/Test Management/inbox-sort/vault/"* ~/Vaults/"$TS test-obsidian-vault-autopilot/"
    export OBSIDIAN_VAULT_PATH=~/Vaults/"$TS test-obsidian-vault-autopilot"
    ```
    Naming convention: `YYYY-MM-DD HH-MM test-obsidian-vault-autopilot` — allows multiple runs per day. Clones live directly in `~/Vaults/` so Obsidian can inspect them in real time. Master data in `vault/` stays untouched.

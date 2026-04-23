@@ -20,7 +20,7 @@ Seven skills that manage your vault automatically:
 | 4 | **note-quality-check** | Scores notes by quality, recommends what to keep or delete | 🚧 in development |
 | 5 | **property-describe** | Generates concise `description` frontmatter from note content | 🚧 in development |
 | 6 | **property-classify** | Sets lifecycle `status` and `type` properties automatically | 🚧 in development |
-| 7 | **tag-manage** | Audits tag quality, suggests tags from content, cleans duplicates | 🚧 in development |
+| 7 | **tag-manage** | Audits tag quality, suggests tags from content, cleans duplicates | 📅 v0.2.0 |
 
 Skills marked **🚧 in development** are not ready for use — behavior will change.
 

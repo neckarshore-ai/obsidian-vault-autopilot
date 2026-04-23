@@ -19,6 +19,10 @@ Thumbs.db
 *.swo
 *.bak
 
+# Draft files (not for public release)
+*.draft.md
+*-draft.md
+
 # Build output
 dist/
 build/
