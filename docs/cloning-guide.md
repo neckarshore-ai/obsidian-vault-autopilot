@@ -47,13 +47,17 @@ Not all copy methods are equal. The critical difference is **filesystem birthtim
 
 ### Windows
 
-| # | Method | Preserves creation date? | Recommended? | Notes |
-|---|--------|-------------------------|--------------|-------|
-| 1 | **File Explorer copy** (Ctrl+C → Ctrl+V) | **No** — resets to now | Acceptable with workaround | Run `property-enrich` first on the clone |
-| 2 | **`robocopy /COPY:DAT`** | **Partial** — copies timestamps but behavior varies | Acceptable | Check results with `dir /TC` after copy |
-| 3 | **`xcopy /K`** | **No** | Acceptable with workaround | Same as Explorer copy |
+> **Read [Windows Considerations](windows-considerations.md) before cloning on Windows.** Empirical testing (2026-04-26) found that File Explorer / PowerShell `Copy-Item` silently drops files at long paths and resets creation dates. `robocopy` preserves both. Long paths (>260 characters) require an administrator one-time registry setting to be visible to skills at all.
 
-On Windows, all common copy methods reset the creation date. **Always run `property-enrich` as your first skill** on a Windows clone.
+| # | Method | Files preserved | CreationTime preserved | Recommended? |
+|---|--------|----------------|------------------------|--------------|
+| 1 | **File Explorer / PowerShell `Copy-Item`** | **No** — silently drops files at MAX_PATH | **No** — set to copy time | **Avoid** for vaults with deep folder structures |
+| 2 | **`robocopy /E /COPY:DAT`** | **Yes** | **Yes — preserved from source** | **Yes — best option on Windows** |
+| 3 | **`xcopy /K`** | Partial — same MAX_PATH limitation | **No** | Avoid for the same reason as #1 |
+
+**Always run `property-enrich` as your first skill** on a Windows clone, regardless of method. CreationTime is unreliable on Windows after any copy operation; YAML `created` is the source of truth.
+
+For the registry setting that enables long path support and the full Windows setup procedure, see [Windows Considerations](windows-considerations.md).
 
 ### Linux
 
