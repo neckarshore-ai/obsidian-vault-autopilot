@@ -144,6 +144,9 @@ These are not committed — they depend on community interest and feedback.
 | 5 | Bring Your Own Context | Let skills reference external knowledge bases or project-specific conventions |
 | 6 | Scheduled runs | Automated skill execution on a schedule (daily inbox sort, weekly quality check) |
 | 7 | Test data generator | Generate test fixtures for any skill to validate before running on your real vault |
+| 8 | Confidence tags in reports | Tag every AI recommendation as `high` / `medium` / `low` confidence so users know what was found vs guessed. Aligns with the "AI recommends, human decides" principle. Inspired by graphify's EXTRACTED/INFERRED/AMBIGUOUS pattern. |
+| 9 | `.vaultautopilotignore` file | Gitignore-syntax exclude file at vault root. Skills skip listed paths (templates, archive, generated folders) during scans. Inspired by graphify's `.graphifyignore`. |
+| 10 | Incremental run cache | SHA256 content cache so re-runs only process changed notes. Critical for vaults > 1k notes where full scans become slow. Inspired by graphify's per-file cache. |
 
 ---
 
