@@ -48,7 +48,7 @@ Before **every** invocation of this skill — including resumed sessions and re-
    - **5a. Repair corrupted date-key variants first.** If the YAML contains `"created:"` or `"modified:"` (quoted with embedded colon — typical Apple Notes / Drafts import artifact), normalize to `created` / `modified` and persist immediately (Nahbereich). Without this normalization a strict YAML parser cannot read the author-intended date, falls back to the Source Hierarchy → filesystem birthtime (often fresh on cloned vaults), and the cooldown evaluation in 5c silently skips legitimate candidates. Mirrors note-rename Step 4a — historical bug: repo issues #4 and #6 (2026-04-27).
    - **5b. After 5a, if YAML `created` is still missing:** auto-enrich by deriving from the Source Hierarchy (see `docs/metadata-requirements.md`): filename date > Git first-commit > filesystem birthtime. Write the derived value into YAML (Nahbereich).
    - **5c. Apply cooldown** using the now-trustworthy `created` value. If all sources failed in 5b, read filesystem birthtime via `stat -f %B` for cooldown only. Cooldown-skipped notes are reported in the Skipped section of the preview/report (not silently dropped). Why YAML over filesystem: Claude Code's Edit/Write tools create a new inode on APFS, resetting filesystem birthtime to "now". YAML `created` survives writes and is the only reliable source.
-6. **Nahbereich pass** — permanently delete files that are 0 bytes. Soft-delete whitespace-only files to `_trash/` with trash metadata (see `references/trash-concept.md`). Log each action.
+6. **Nahbereich pass** — permanently delete files that are 0 bytes. Soft-delete whitespace-only files to `_trash/` with trash metadata (see `references/trash-concept.md`). Log each action. YAML edits (e.g. trash metadata fields) MUST follow `references/yaml-edits.md`.
 7. **Secret scan** — check each remaining note for sensitive patterns: recovery phrases (12/24 word sequences), IBAN/BIC, API keys, passwords/tokens. If detected: do NOT move to `_secret` automatically. Continue with normal categorization but flag the note in the report under Findings with the specific pattern type. The user decides what to do.
 8. **Pre-sort routing** — before categorizing, auto-route by pattern:
    - Non-markdown files → `_Attachments/` (images, PDFs, etc.)
@@ -60,9 +60,10 @@ Before **every** invocation of this skill — including resumed sessions and re-
    - Genuinely ambiguous → `_Edge Cases`
 10. **Preview** — show routing plan grouped by bucket (see `references/report-format-inbox-sort.md`). Include secret-flagged notes with a warning marker. Wait for user confirmation. User can override individual assignments.
 11. **Move files** — use Bash `mv` with proper quoting for special characters. Preserve original filenames.
-12. **Skill Log** — for each moved file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`).
+12. **Skill Log** — for each moved file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`). YAML tag-list edits and skill-log callout edits MUST follow `references/yaml-edits.md` (recipes d + e).
 13. **Birthtime preservation** — after writing tag/callout, restore filesystem birthtime from the YAML `created` value saved in step 5. Use `touch -t` (see `references/skill-log.md` § Birthtime Preservation). After auto-enrich in step 5, YAML `created` is almost always available. Restore from it. If auto-enrich found no source, restore from the pre-write birthtime captured in step 5.
-14. **Write report** — see format below.
+14. **Write findings file** — for any non-trivial Findings (Class A/B/C/D as defined in `references/findings-file.md`), append a section to `<VAULT>/_vault-autopilot/findings/<YYYY-MM-DD>-inbox-sort.md`. Create the folder chain if missing. Never edit prior findings — append-only ledger.
+15. **Write report** — see format below.
 
 ## Protected Files
 

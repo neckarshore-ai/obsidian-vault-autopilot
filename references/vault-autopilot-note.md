@@ -12,6 +12,7 @@ Every vault managed by this plugin has a `_vault-autopilot.md` file in its root 
 4. **Never modify content** — only the future `autopilot-update` meta-skill may write to this file
 5. **Skip during processing** — when scanning vault root or folders, exclude this file from all skill operations (sorting, renaming, quality checks, property changes, tag changes)
 6. **Never process files inside `_trash/`** — the trash folder is plugin-managed (see `references/trash-concept.md`). Skills must skip it during all scans.
+7. **Never process files inside `_vault-autopilot/`** — this plugin-managed folder holds findings files (see `references/findings-file.md`). Skills only write inside `_vault-autopilot/findings/` during the explicit Write-findings-file step. They never read, edit, or delete prior findings, and never touch other subpaths of `_vault-autopilot/`.
 
 ## Detection
 
@@ -22,6 +23,8 @@ Skills must check for `_vault-autopilot.md` in the vault root at startup. If it 
 Always in vault root: `${OBSIDIAN_VAULT_PATH}/_vault-autopilot.md`
 
 The underscore prefix ensures it sorts to the top in file explorers.
+
+Plugin-managed companion folder: `${OBSIDIAN_VAULT_PATH}/_vault-autopilot/` — currently used for `findings/`. See `references/findings-file.md`.
 
 ## Template
 

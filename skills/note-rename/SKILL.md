@@ -151,7 +151,7 @@ Before **every** invocation of this skill — including resumed sessions and re-
 2. **Scan** — list `.md` files.
 3. **Nahbereich** — detect and trash accidental notes (soft-delete to `_trash/`). Move misplaced Daily Notes to the Daily Notes folder. Log each.
 4. **Classify** — read title, tags, first ~30 lines (skip template boilerplate). For each note:
-   - **4a. Repair corrupted date-key variants first.** If the YAML contains `"created:"` or `"modified:"` (quoted with embedded colon — see Nahbereich rule for the broader pattern), normalize to `created` / `modified` and persist immediately (Nahbereich). Without this normalization a strict YAML parser cannot read the author-intended date, falls back to the Source Hierarchy → filesystem birthtime (often fresh on cloned vaults), and the cooldown evaluation in 4c silently skips legitimate candidates. Historical bug: repo issue #4 (2026-04-27).
+   - **4a. Repair corrupted date-key variants first.** If the YAML contains `"created:"` or `"modified:"` (quoted with embedded colon — see Nahbereich rule for the broader pattern), normalize to `created` / `modified` and persist immediately (Nahbereich). YAML edits MUST follow `references/yaml-edits.md` (recipe b — line-by-line replace). Without this normalization a strict YAML parser cannot read the author-intended date, falls back to the Source Hierarchy → filesystem birthtime (often fresh on cloned vaults), and the cooldown evaluation in 4c silently skips legitimate candidates. Historical bug: repo issue #4 (2026-04-27).
    - **4b. After 4a, if YAML `created` is still missing:** derive the value using the Source Hierarchy (see `docs/metadata-requirements.md`). Write `created` to frontmatter immediately (Nahbereich). Record the source for the report. If no source yields a valid date, read and store the current filesystem birthtime for later restoration.
    - **4c. Apply cooldown** (per `cooldown_days` parameter) using the now-trustworthy `created` value. Cooldown-skipped notes are reported in the Skipped section of the report (not silently dropped) — see `references/report-format-note-rename.md`.
    - **4d. Mark** as: rename, keep, or TBD.
@@ -159,7 +159,7 @@ Before **every** invocation of this skill — including resumed sessions and re-
 6. **Check backlinks** — find all `[[Old Name]]` references across vault.
 7. **Preview and confirm** — show the preview table (see `references/report-format-note-rename.md` for format and bilingual templates). Match the language the user is speaking. Include a rationale section below the table explaining non-trivial decisions. **Do not execute until the user explicitly confirms.**
 8. **Execute** — rename files, update all `[[Old Name]]` and `[[Old Name|` references.
-9. **Skill Log** — for every processed note (renamed, reviewed, or trashed), write the skill log. See `references/skill-log.md` for the full spec. **After writing tag/callout, restore filesystem birthtime** from the YAML `created` value read during classification. Use `touch -t` (see `references/skill-log.md` § Birthtime Preservation). After auto-enrich in step 4, YAML `created` is almost always available. Restore birthtime from it. In the rare case that auto-enrich found no source (no filename date, no Git, no readable birthtime), restore from the pre-write filesystem birthtime captured in step 4.
+9. **Skill Log** — for every processed note (renamed, reviewed, or trashed), write the skill log. See `references/skill-log.md` for the full spec. YAML tag-list edits and skill-log callout edits MUST follow `references/yaml-edits.md` (recipes d + e). **After writing tag/callout, restore filesystem birthtime** from the YAML `created` value read during classification. Use `touch -t` (see `references/skill-log.md` § Birthtime Preservation). After auto-enrich in step 4, YAML `created` is almost always available. Restore birthtime from it. In the rare case that auto-enrich found no source (no filename date, no Git, no readable birthtime), restore from the pre-write filesystem birthtime captured in step 4.
 
    **Tag (idempotent):**
    - Check if `VaultAutopilot` already exists in the `tags` list in YAML frontmatter.
@@ -186,7 +186,8 @@ Before **every** invocation of this skill — including resumed sessions and re-
    - Secret (Nahbereich): `Secret — sensitive content (moved to _secret/)`
    - Daily (Nahbereich): `Daily — moved to Daily Notes folder`
 
-10. **Report and log** — write summary, append to `logs/run-history.md`.
+10. **Write findings file** — for any non-trivial Findings (Class A/B/C/D as defined in `references/findings-file.md`), append a section to `<VAULT>/_vault-autopilot/findings/<YYYY-MM-DD>-note-rename.md`. Create the folder chain if missing. Never edit prior findings — append-only ledger.
+11. **Report and log** — write summary, append to `logs/run-history.md`.
 
 ## Report Format
 

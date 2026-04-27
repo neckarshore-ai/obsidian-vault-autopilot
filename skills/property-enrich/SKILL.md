@@ -77,9 +77,10 @@ Before **every** invocation of this skill — including resumed sessions and re-
 2. **Scan** — read frontmatter, path, filesystem timestamps per note.
 3. **Compute** — for each note missing `created`: walk the Source Hierarchy (Prio 1 through 4). Compute `title` from H1 or filename. Read `modified` from filesystem.
 4. **Preview** — summary table with sample changes including Source column. Wait for confirmation.
-5. **Write** — add fields in YAML frontmatter. Preserve all existing values.
-6. **Skill Log** — for each enriched file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`). Action format: `Added [field list] (created source: [source])`.
-7. **Report and log** — append to `logs/run-history.md`.
+5. **Write** — add fields using line-by-line YAML edits per `references/yaml-edits.md`. Never use `str.replace`. Never use multi-line regex with `(?s)` or `.+`/`.*` against newline-spanning input. New fields are inserted as new lines immediately before the closing `---` (recipe c). List-field appends (e.g. `tags:`) follow recipe d in `references/yaml-edits.md` § "Append to a list field". Preserve all existing field values.
+6. **Skill Log** — for each enriched file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`). Action format: `Added [field list] (created source: [source])`. YAML tag-list edits and skill-log callout edits MUST follow `references/yaml-edits.md` (recipes d + e).
+7. **Write findings file** — for any non-trivial Findings (Class A/B/C/D as defined in `references/findings-file.md`), append a section to `<VAULT>/_vault-autopilot/findings/<YYYY-MM-DD>-property-enrich.md`. Create the folder chain if missing. Never edit prior findings — append-only ledger.
+8. **Report and log** — append to `logs/run-history.md`.
 
 ## Boundaries
 
@@ -119,3 +120,5 @@ Before **every** invocation of this skill — including resumed sessions and re-
 - [ ] Source column in report shows derivation per note
 - [ ] Preview shown and confirmed before writing
 - [ ] No `aliases`, `parent`, `source`, or `priority` fields were written
+- [ ] Tag-list edits used line-by-line procedure per `references/yaml-edits.md` (no multi-line regex, no `str.replace`)
+- [ ] Findings file written per `references/findings-file.md` for any non-trivial findings

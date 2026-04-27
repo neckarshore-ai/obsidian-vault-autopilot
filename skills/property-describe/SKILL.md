@@ -58,9 +58,10 @@ Before **every** invocation of this skill — including resumed sessions and re-
 2. **Filter** — identify notes needing descriptions (missing/placeholder/too-thin).
 3. **Generate** — read content, produce 250-char summary per note. For long notes (5000+ words): read title, first 50 lines, headings, last 10 lines.
 4. **Preview** — show table (filename, generated description, char count). Wait for confirmation. User can approve all, review individually, or reject specific entries.
-5. **Write** — set `description` in YAML frontmatter. Line-by-line replacement only (never `str.replace`). Preserve all other fields. Single-quote the value, escape apostrophes by doubling (`'`→`''`).
-6. **Skill Log** — for each described file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`).
-7. **Report and log** — append to `logs/run-history.md`.
+5. **Write** — set `description` in YAML frontmatter. Line-by-line replacement only (never `str.replace`, never multi-line regex). See `references/yaml-edits.md` for the canonical recipes (recipe b — replace single field value). Preserve all other fields. Single-quote the value, escape apostrophes by doubling (`'`→`''`).
+6. **Skill Log** — for each described file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`). YAML tag-list edits and skill-log callout edits MUST follow `references/yaml-edits.md` (recipes d + e).
+7. **Write findings file** — for any non-trivial Findings (Class A/B/C/D as defined in `references/findings-file.md`), append a section to `<VAULT>/_vault-autopilot/findings/<YYYY-MM-DD>-property-describe.md`. Create the folder chain if missing. Never edit prior findings — append-only ledger.
+8. **Report and log** — append to `logs/run-history.md`.
 
 ## Boundaries
 
