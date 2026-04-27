@@ -16,7 +16,7 @@ Six skills that automate Obsidian vault management:
 | 5 | property-classify | Sets lifecycle status and type properties automatically | beta |
 | 6 | property-enrich | Fills missing metadata: title, dates, aliases, source, priority | stable |
 
-**Launch-featured:** note-rename and inbox-sort — the two skills most users need first.
+**Launch-scope (4 skills, v0.1.1):** note-rename + inbox-sort + property-enrich (stable) + property-describe (in development). The 4 skills together cover the typical first-pass: rename poorly named files → sort the inbox → fill missing metadata → describe what each note is about. All 4 ship with the Windows pre-flight gate.
 
 Skills marked **beta** work but may change behavior based on community feedback.
 
@@ -129,7 +129,7 @@ Audits tag quality, suggests tags from content, cleans duplicates, enforces nami
 Run skills in sequence with a single command. Example workflow:
 
 ```
-inbox-sort → note-rename → property-enrich → property-classify
+inbox-sort → note-rename → property-enrich → property-describe
 ```
 
 The orchestrator handles ordering, passes findings between skills, and produces a combined report.

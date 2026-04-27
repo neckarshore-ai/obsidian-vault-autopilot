@@ -48,6 +48,10 @@ Process only if ALL true:
 - Include specifics: names, dates, tools, numbers when they fit
 - Proper nouns stay in original language ("Steuerbelege 2025")
 
+## Pre-flight
+
+Before **every** invocation of this skill — including resumed sessions and re-triggers within the same conversation: if running on Windows, follow [`references/windows-preflight.md`](../../references/windows-preflight.md). Run the registry check freshly each time. Do not assume a previous turn's pass result still holds — registry state can change between invocations and previous results are not authoritative. On macOS or Linux, skip — the preflight is a no-op there.
+
 ## Workflow
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. Ask for target scope.
