@@ -36,7 +36,7 @@ The `_` prefix on Work, Personal, Edge Cases, and Attachments keeps sort buckets
 
 ## Pre-flight
 
-Before any workflow step: if running on Windows, follow [`references/windows-preflight.md`](../../references/windows-preflight.md). On macOS or Linux, skip — the preflight is a no-op there.
+Before **every** invocation of this skill — including resumed sessions and re-triggers within the same conversation: if running on Windows, follow [`references/windows-preflight.md`](../../references/windows-preflight.md). Run the registry check freshly each time. Do not assume a previous turn's pass result still holds — registry state can change between invocations and previous results are not authoritative. On macOS or Linux, skip — the preflight is a no-op there.
 
 ## Workflow
 

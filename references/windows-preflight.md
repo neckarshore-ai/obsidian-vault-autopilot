@@ -2,6 +2,10 @@
 
 Run this procedure **before** the skill's core workflow if the host operating system is Windows. On macOS or Linux, skip the entire procedure — there is nothing to check.
 
+> **Run on EVERY skill invocation. No caching across turns.**
+>
+> Do not skip this preflight because you ran it earlier in this conversation. The registry value can change between invocations (the user toggles it, an admin tool toggles it, a domain policy refresh resets it). A previous turn's "pass" result is not authoritative for this turn. This rule applies in resumed sessions, in continued conversations, and after any tool call that could have altered system state. When in doubt: run the check again.
+
 ## Why this exists
 
 On Windows, file paths default to a 260-character limit (MAX_PATH). PowerShell-based file enumeration silently skips files at paths longer than 260 characters when this limit is not raised. Empirical measurement on a 1856-note vault: ~14 subfolders worth of files were invisible to enumeration without the registry fix. Skills running in that state would report "0 files" or operate on an incomplete subset.
@@ -50,19 +54,19 @@ Do not run the skill's core workflow. Show the user this message and wait:
 > **To fix this (one-time, requires Administrator):**
 >
 > 1. Close this terminal.
-> 2. Open PowerShell as Administrator.
-> 3. Run:
->    ```powershell
->    New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+> 2. Open Command Prompt (`cmd.exe`) **as Administrator** — Start menu → type `cmd` → right-click → "Run as administrator".
+> 3. Paste and run:
+>    ```cmd
+>    reg add HKLM\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled /t REG_DWORD /d 1 /f
 >    ```
-> 4. Close PowerShell.
-> 5. Reopen your terminal and re-run this skill.
+> 4. Close the Administrator cmd window.
+> 5. Reopen your normal terminal and re-run this skill.
 >
-> Verify the fix worked:
-> ```powershell
-> (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem").LongPathsEnabled
+> Verify the fix worked (in any terminal, no admin needed):
+> ```cmd
+> reg query HKLM\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled
 > ```
-> The output must be `1`.
+> The output must show `LongPathsEnabled    REG_DWORD    0x1`.
 >
 > Full context: [`docs/windows-considerations.md`](../docs/windows-considerations.md).
 
@@ -74,18 +78,18 @@ If the `powershell.exe` invocation in Step 2 produced "command not found" or any
 
 > **Could not automatically check Windows Long Path support.**
 >
-> Please run this command in PowerShell yourself:
-> ```powershell
-> (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem").LongPathsEnabled
+> Please run this command in any terminal (Command Prompt or PowerShell, no admin needed):
+> ```cmd
+> reg query HKLM\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled
 > ```
 >
 > Reply with the value:
-> - `1` → safe, the skill will proceed
-> - `0` or empty → STOP, see Step 3 above for the fix
+> - `0x1` → safe, the skill will proceed
+> - `0x0`, missing, or "unable to find the specified registry key" → STOP, see Step 3 above for the fix
 >
 > Full context: [`docs/windows-considerations.md`](../docs/windows-considerations.md).
 
-Wait for the user to reply with the value. Proceed only on `1`.
+Wait for the user to reply with the value. Proceed only on `0x1`.
 
 ## What this preflight does NOT check
 
