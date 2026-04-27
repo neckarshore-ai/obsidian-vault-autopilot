@@ -150,7 +150,11 @@ Before any workflow step: if running on Windows, follow [`references/windows-pre
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. Default scope: inbox root. Confirm with user.
 2. **Scan** — list `.md` files.
 3. **Nahbereich** — detect and trash accidental notes (soft-delete to `_trash/`). Move misplaced Daily Notes to the Daily Notes folder. Log each.
-4. **Classify** — read title, tags, first ~30 lines (skip template boilerplate). For each note missing YAML `created`: derive the value using the Source Hierarchy (see `docs/metadata-requirements.md`). Write `created` to frontmatter immediately (Nahbereich). Record the source for the report. If no source yields a valid date, read and store the current filesystem birthtime for later restoration. Mark as: rename, keep, or TBD.
+4. **Classify** — read title, tags, first ~30 lines (skip template boilerplate). For each note:
+   - **4a. Repair corrupted date-key variants first.** If the YAML contains `"created:"` or `"modified:"` (quoted with embedded colon — see Nahbereich rule for the broader pattern), normalize to `created` / `modified` and persist immediately (Nahbereich). Without this normalization a strict YAML parser cannot read the author-intended date, falls back to the Source Hierarchy → filesystem birthtime (often fresh on cloned vaults), and the cooldown evaluation in 4c silently skips legitimate candidates. Historical bug: repo issue #4 (2026-04-27).
+   - **4b. After 4a, if YAML `created` is still missing:** derive the value using the Source Hierarchy (see `docs/metadata-requirements.md`). Write `created` to frontmatter immediately (Nahbereich). Record the source for the report. If no source yields a valid date, read and store the current filesystem birthtime for later restoration.
+   - **4c. Apply cooldown** (per `cooldown_days` parameter) using the now-trustworthy `created` value. Cooldown-skipped notes are reported in the Skipped section of the report (not silently dropped) — see `references/report-format-note-rename.md`.
+   - **4d. Mark** as: rename, keep, or TBD.
 5. **Detect clusters** — 3+ candidates on same topic → prepare prefix suggestion.
 6. **Check backlinks** — find all `[[Old Name]]` references across vault.
 7. **Preview and confirm** — show the preview table (see `references/report-format-note-rename.md` for format and bilingual templates). Match the language the user is speaking. Include a rationale section below the table explaining non-trivial decisions. **Do not execute until the user explicitly confirms.**

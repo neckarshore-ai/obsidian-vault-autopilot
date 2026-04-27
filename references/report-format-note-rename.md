@@ -70,9 +70,12 @@ Wait for explicit user confirmation before executing any renames or moves.
 - Sensitive notes moved: X (Nahbereich, moved to _secret/)
 - Daily notes moved: X (Nahbereich, moved to Daily Notes folder)
 - Auto-enriched `created`: X notes (Nahbereich)
+- Repaired corrupted date-keys (`"created:"` → `created`): X notes (Nahbereich)
 
 ### Skipped
-- Already descriptive: X | Daily Notes: X | TBD: X
+- Already descriptive: X | Daily Notes: X | TBD: X | Cooldown (< `cooldown_days` old): X
+
+If the Cooldown count is non-zero, list the skipped filenames with their `created` date so the user can spot mis-classifications (e.g. files that look uninformative but have a recent `created` date and were therefore deferred).
 
 ### Findings
 - Broken YAML frontmatter: X notes (recommend property-enrich)
