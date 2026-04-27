@@ -1,6 +1,9 @@
 # Roadmap
 
-## v0.1.0 — Launch (current)
+## v0.1.1 — Launch (current)
+
+> Launch-scope feature set is identical to v0.1.0. v0.1.1 hardens the Windows preflight gate (non-skippable wording, shorter recovery command) and bumps the version so the marketplace cache can deliver updates to existing installs. See `logs/changelog.md`.
+
 
 Six skills that automate Obsidian vault management:
 

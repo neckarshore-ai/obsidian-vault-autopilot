@@ -7,6 +7,72 @@
 1. **Use `robocopy` to clone your vault, not File Explorer.** File Explorer (PowerShell `Copy-Item` underneath) silently drops files at long paths and resets file creation dates. `robocopy` preserves both.
 2. **Enable Long Path support before running any skill.** Windows defaults to a 260-character path limit. Vaults with deep folder hierarchies and long descriptive folder names exceed this routinely. Without long path support enabled, Vault Autopilot skills cannot see those files and will silently skip them.
 3. **Always run `property-enrich` first on a Windows clone.** Filesystem creation date is unreliable on Windows after copying. YAML `created` is the source of truth.
+4. **Start a fresh Claude Code session before invoking a skill.** "Resume Session" can short-circuit the Windows preflight gate using a cached pass-state from earlier in the conversation, even if the registry value has changed since. Fresh session = fresh gate.
+5. **Start Claude Code from your home directory or a project folder, not from `C:\WINDOWS\system32`.** Project-level config in the working directory can disable plugins that you enabled at the user level.
+
+## Session Discipline & First-Run Gotchas
+
+These are not bugs in Vault Autopilot — they are platform-level behaviors of Claude Code on Windows that affect how skills run. Worth knowing once.
+
+### 1. Resume Session can skip the preflight gate
+
+Empirically observed 2026-04-27: a Windows user toggled `LongPathsEnabled` from `1` to `0` mid-session, then used `Resume Session` to re-trigger a skill. Claude Code skipped the preflight entirely (no registry check, no STOP message), used a cached pass-state from an earlier successful run in the same conversation, and proceeded to the workflow. Had the run been against a real degraded vault, files at long paths would have been silently skipped.
+
+The preflight gate's wording was strengthened in v0.1.1 to instruct "run on EVERY invocation, no caching across turns" — but the most reliable habit is:
+
+> **Before invoking a skill on Windows, exit and start a fresh Claude Code session.** Do not rely on `Resume Session` for skill runs. The 3 seconds of restart cost are worth the certainty that the gate ran fresh.
+
+This applies to any skill that depends on registry state, environment variables, or filesystem flags — not just Vault Autopilot.
+
+### 2. PowerShell first-use authorization
+
+The first time a Vault Autopilot skill calls `powershell.exe` from Claude Code on Windows (Step 2 of the preflight), Claude Code may prompt the user to authorize the tool call. This is normal Claude Code behavior — approve once, and subsequent calls in the same session run without re-prompting.
+
+If you decline the authorization, the preflight will fall through to the manual fallback path (Step 4 in `references/windows-preflight.md`), which asks you to run the registry check yourself.
+
+### 3. Project-level vs user-level plugin enablement
+
+Claude Code stores plugin enablement in two places:
+
+| # | Scope | File | Wins when conflict? |
+|---|-------|------|---------------------|
+| 1 | User-level | `~/.claude/settings.json` | No |
+| 2 | Project-level | `<cwd>/.claude/settings.local.json` | **Yes — project wins over user** |
+
+If you start Claude Code from `C:\WINDOWS\system32` (the default `cmd.exe` working directory), Claude Code may create a project-level `settings.local.json` in `C:\WINDOWS\system32\.claude\` with the plugin auto-disabled. Symptom: `/reload-plugins` reports "0 skills loaded" despite a successful `/plugin install`.
+
+**Fix:** start Claude Code from your home directory or a project folder:
+
+```cmd
+cd %USERPROFILE%
+claude
+```
+
+Or check the offending project-level file:
+
+```cmd
+type C:\WINDOWS\system32\.claude\settings.local.json
+```
+
+If `enabledPlugins` shows your plugin as `false`, either delete that file or start Claude Code from a different directory.
+
+### 4. Right-click pastes OAuth codes (Ctrl+V does not)
+
+On Windows, the Claude Code TUI's OAuth login prompt does not respond to `Ctrl+V`. Use **right-click** to paste the OAuth code instead. This is a generic Claude Code platform behavior, not specific to Vault Autopilot, but it is the friction point most first-time Windows users hit.
+
+### 5. Why a `/plugin marketplace update` may not actually update
+
+Claude Code's marketplace caches plugin content keyed on the `plugin.json` version field, not the commit SHA. If you run `/plugin marketplace update neckarshore-ai` followed by `/reload-plugins` and both report success — but you still see old behavior — the cache likely matched on an unchanged version number and skipped the re-fetch.
+
+**User-side workaround:** full uninstall + reinstall.
+
+```
+/plugin uninstall obsidian-vault-autopilot
+/plugin install obsidian-vault-autopilot@neckarshore-ai
+/reload-plugins
+```
+
+**Process implication for Vault Autopilot itself:** every release that touches plugin content bumps the version field in `plugin.json` and `marketplace.json`, even for docs-only or wiring-only changes. Without that bump, no existing install would receive the update.
 
 ## Long Path Limit (MAX_PATH 260)
 
