@@ -125,3 +125,4 @@ Sample file used for timestamp comparison: `OPS - Phase 1.1 - Semantic Backbone 
 - [Cloning Guide](cloning-guide.md) — full clone procedure for macOS, Windows, Linux
 - [Metadata Requirements](metadata-requirements.md) — why YAML `created` matters
 - [Backup and Recovery](backup-and-recovery.md) — what to do if a skill misbehaves
+- [`references/windows-preflight.md`](../references/windows-preflight.md) — the runtime check the skills perform automatically before each run

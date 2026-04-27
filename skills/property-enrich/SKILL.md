@@ -67,6 +67,10 @@ The warning does NOT block execution — it informs only.
 
 > **Deferred to v0.2.0.** Properties like `aliases`, `parent`, `source`, and `priority` are not filled in the current release. The full design is preserved in `SKILL.v0.2.0-draft.md` in this directory.
 
+## Pre-flight
+
+Before any workflow step: if running on Windows, follow [`references/windows-preflight.md`](../../references/windows-preflight.md). On macOS or Linux, skip — the preflight is a no-op there.
+
 ## Workflow
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. Ask for scope. Confirm if 50+ notes.

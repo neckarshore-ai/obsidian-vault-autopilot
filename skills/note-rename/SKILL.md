@@ -141,6 +141,10 @@ Examples:
 - 5+ topics, multiple platforms: `2025-12-08 - Mixed Content - Mixed Topics.md`
 - 7+ topics, one platform: `2026-01-08 - Mixed Content - Mixed Topics.md` (Topic Override — 7 topics, 93% Instagram, still too fragmented)
 
+## Pre-flight
+
+Before any workflow step: if running on Windows, follow [`references/windows-preflight.md`](../../references/windows-preflight.md). On macOS or Linux, skip — the preflight is a no-op there.
+
 ## Workflow
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. Default scope: inbox root. Confirm with user.

@@ -34,6 +34,10 @@ Every note goes into exactly one bucket inside the inbox folder. Non-markdown fi
 
 The `_` prefix on Work, Personal, Edge Cases, and Attachments keeps sort buckets visually grouped. When in doubt between Work and Personal, use `_Edge Cases` — never guess.
 
+## Pre-flight
+
+Before any workflow step: if running on Windows, follow [`references/windows-preflight.md`](../../references/windows-preflight.md). On macOS or Linux, skip — the preflight is a no-op there.
+
 ## Workflow
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. If unset, ask the user.
