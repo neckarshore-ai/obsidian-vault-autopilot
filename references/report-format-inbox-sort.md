@@ -101,9 +101,12 @@ Wait for explicit user confirmation before executing any moves.
 - _Attachments: X files moved (images, PDFs, etc.)
 - Nahbereich: X files removed (0-byte deleted: X, whitespace-only trashed: X)
 - Auto-enriched `created`: X notes (Nahbereich)
+- Repaired corrupted date-keys (`"created:"` → `created`): X notes (Nahbereich)
 
 ### Skipped
 - Cooldown (< [cooldown_days] days): X notes
+
+If the Cooldown count is non-zero, list the skipped filenames with their `created` date (the table in the preview's Skipped section already does this; carry it through to the report so the user can audit afterwards).
 
 ### Findings
 - [Observations — e.g., broken frontmatter, sensitive data, suspicious duplicates]
