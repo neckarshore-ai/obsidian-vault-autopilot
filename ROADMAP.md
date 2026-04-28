@@ -1,6 +1,12 @@
 # Roadmap
 
-## v0.1.1 — Launch (current)
+## v0.1.2 — YAML-edit hardening (current)
+
+> v0.1.2 closes two mid-run regex bugs surfaced during the 2026-04-27 launch shake-out: F8 (inbox-sort callout-append regex did not handle `> ` blockquote prefix on the table separator line) and F15 (property-enrich `tags:` regex was greedy across newlines under `(?s)`). Root cause was identical: each LLM run wrote its own ad-hoc multi-line regex. v0.1.2 codifies line-by-line YAML/Markdown editing as the only allowed approach (`references/yaml-edits.md`) and introduces a vault-side findings ledger (`references/findings-file.md`) so Obi can resume across sessions. See `logs/changelog.md`.
+
+Launch-scope feature set unchanged from v0.1.1.
+
+## v0.1.1 — Launch
 
 > Launch-scope feature set is identical to v0.1.0. v0.1.1 hardens the Windows preflight gate (non-skippable wording, shorter recovery command) and bumps the version so the marketplace cache can deliver updates to existing installs. See `logs/changelog.md`.
 
