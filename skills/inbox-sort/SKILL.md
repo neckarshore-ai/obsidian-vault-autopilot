@@ -20,6 +20,8 @@ Move notes from inbox root into four buckets: `_Work`, `_Personal`, `_Edge Cases
 |-----------|---------|-------------|
 | `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. **Date source:** YAML `created` field in frontmatter. If missing, the skill auto-enriches `created` from the Source Hierarchy (filename date > Git first-commit > filesystem birthtime) before evaluating cooldown — see Nahbereich. Never use modification date. |
 
+> **Scope is intentionally not parameterized.** inbox-sort operates on the inbox folder root only — that is the skill's purpose, not a configurable surface. Running it on `vault` or `inbox-tree` would mean moving arbitrary files into `_Work` / `_Personal` / `_Edge Cases` / `WebCaptures & Social` buckets, which is destructive and outside the contract. If you want to triage a folder that is not the inbox, point `${OBSIDIAN_VAULT_PATH}` at a vault whose top-level "inbox-like" folder is the one you mean — Step 2 (Find inbox) does case-insensitive matching. This is a deliberate deviation from the v0.1.3 § 8.5 spec patch (which proposed unifying `scope` across all 4 launch-scope skills); the other 3 skills (`property-enrich`, `property-describe`, `note-rename`) carry the unified `scope` parameter.
+
 ## Five Buckets
 
 Every note goes into exactly one bucket inside the inbox folder. Non-markdown files go to `_Attachments/`.
