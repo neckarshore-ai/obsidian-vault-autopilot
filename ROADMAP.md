@@ -1,6 +1,12 @@
 # Roadmap
 
-## v0.1.2 — YAML-edit hardening (current)
+## v0.1.3 — Quoted-key cluster repair + pre-write YAML sanity (current)
+
+> v0.1.3 closes the F25 / F26 / F19-LIVE cluster surfaced during GR-2 Cell 1 + Cell 4 (2026-04-28). Apple-Notes-vintage imports left YAML frontmatter with two distinct quoted-key shapes — shape α `"description":` (standard, valid YAML) and shape β `"description:":` (inside-colon, invalid-as-author-intended). Both bit launch-scope skills, but the fixes differ. v0.1.3 introduces a pre-write sanity-check (`references/yaml-sanity.md`) that classifies frontmatter and returns a verdict the skill uses to decide proceed / repair / skip. Recipe (f) in `references/yaml-edits.md` performs the shape-β normalize. All 4 launch-scope skills now call sanity-check at step zero (defense-in-depth, idempotent). German DACH date format (`DD.MM.YYYY[, HH:mm:ss]`) is recognized in property-enrich Source Hierarchy Prio 1. See `logs/changelog.md`.
+
+Launch-scope feature set unchanged from v0.1.2.
+
+## v0.1.2 — YAML-edit hardening (previous)
 
 > v0.1.2 closes two mid-run regex bugs surfaced during the 2026-04-27 launch shake-out: F8 (inbox-sort callout-append regex did not handle `> ` blockquote prefix on the table separator line) and F15 (property-enrich `tags:` regex was greedy across newlines under `(?s)`). Root cause was identical: each LLM run wrote its own ad-hoc multi-line regex. v0.1.2 codifies line-by-line YAML/Markdown editing as the only allowed approach (`references/yaml-edits.md`) and introduces a vault-side findings ledger (`references/findings-file.md`) so Obi can resume across sessions. See `logs/changelog.md`.
 
