@@ -23,7 +23,7 @@ Fill missing structural metadata: `title`, `created`, `modified`. Additive only 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `cooldown_days` | 3 | Skip notes created within the last N days. Use file creation date (birthtime). |
-| `scope` | inbox | Which folder to scan. User confirms before execution. |
+| `scope` | inbox | Which folder to scan. `inbox` = inbox root only (default). `inbox-tree` = inbox folder including all subfolders (opt-in for bulk-mode, e.g. initial vault setup). `vault` = entire vault excluding root. `folder:<path>` = specific subfolder. User confirms before execution. |
 
 ## Protected Files
 
@@ -41,11 +41,11 @@ Never process or modify these files (see `references/vault-autopilot-note.md`):
 
 ### `created` Source Hierarchy
 
-When `created` is missing from YAML, derive it from the highest-priority available source:
+When `created` is missing from YAML, derive it from the highest-priority available source. Prio 1 includes a normalization preprocessing step for non-ISO formats (v0.1.3+):
 
 | Prio | Source | How | When reliable |
 |------|--------|-----|---------------|
-| 1 | YAML `created` exists | Skip (additive-only, unchanged) | Always |
+| 1 | YAML `created` exists | If value parses as ISO 8601 → use directly. Else try German `DD.MM.YYYY[, HH:mm:ss]` normalization (per `references/german-date-normalization.md`). If normalized, use the ISO result. If unparseable, flag as Class-C "unparseable date format" finding and fall through to Prio 2. **Never overwrite the YAML value** — additive-only contract preserved (the normalized form is used internally for downstream skills like cooldown evaluation; the YAML field stays as-authored). | Always |
 | 2 | Filename date pattern | Parse `YYYY-MM-DD` from filename, e.g. `2024-03-14 Meeting Notes.md` | When user names files with dates |
 | 3 | Git first-commit timestamp | `git log --follow --diff-filter=A --format=%aI -- <file>` | When vault is under Git |
 | 4 | Filesystem birthtime (last resort) | `stat -f %SB` (macOS) / `stat -c %W` (Linux) | Only on native (non-cloned) vaults |
@@ -75,9 +75,10 @@ Before **every** invocation of this skill — including resumed sessions and re-
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. Ask for scope. Confirm if 50+ notes.
 2. **Scan** — read frontmatter, path, filesystem timestamps per note.
-3. **Compute** — for each note missing `created`: walk the Source Hierarchy (Prio 1 through 4). Compute `title` from H1 or filename. Read `modified` from filesystem.
+   - **2a. Repair corrupted quoted-key variants first (Nahbereich, sanity-check).** Call `references/yaml-sanity.md` for each scanned note. If verdict is `BROKEN_KEYS_INSIDE_COLON` (shape β — F26 inside-colon), normalize via `references/yaml-edits.md` recipe (f) — handles ALL quoted-key patterns (broadened from v0.1.0/v0.1.2 hardcoded list of `"created:"`/`"modified:"`). After normalization, resolve duplicate-key collisions per recipe (f) policy. Re-call sanity-check (idempotent fixpoint) — verdict must now be `OK`, `OK_QUOTED`, or `OK_NO_FRONTMATTER`. If verdict is `MULTIPLE_FRONTMATTER_BLOCKS` or `UNCLOSED_FRONTMATTER`, skip the file and log Class-A finding (route to user / note-rename). This step is mandatory BEFORE Step 3 (Compute / Source Hierarchy walk) — without it, the Hierarchy falls through to filesystem birthtime on files where YAML had a valid (but broken-keyed) date. Verdict `OK_QUOTED` (shape α — standard quoted-key, valid YAML) proceeds normally; skill regexes accept both plain and standard-quoted forms. Historical bug: F19 LIVE-CONFIRMED in GR-2 Cell 1 (2026-04-28) — 60 of 1016 inbox-tree files affected (5.9% blast-radius). F26 cluster generalizes the pattern across all quoted-keys.
+3. **Compute** — for each note missing `created`: walk the Source Hierarchy (Prio 1 through 4, with German-date normalization in Prio 1 per `references/german-date-normalization.md`). Compute `title` from H1 or filename. Read `modified` from filesystem.
 4. **Preview** — summary table with sample changes including Source column. Wait for confirmation.
-5. **Write** — add fields using line-by-line YAML edits per `references/yaml-edits.md`. Never use `str.replace`. Never use multi-line regex with `(?s)` or `.+`/`.*` against newline-spanning input. New fields are inserted as new lines immediately before the closing `---` (recipe c). List-field appends (e.g. `tags:`) follow recipe d in `references/yaml-edits.md` § "Append to a list field". Preserve all existing field values.
+5. **Write** — pre-write, call `references/yaml-sanity.md` again as defense-in-depth (sanity-check is idempotent — repeated calls are no-ops if Step 2a already normalized). Add fields using line-by-line YAML edits per `references/yaml-edits.md`. Never use `str.replace`. Never use multi-line regex with `(?s)` or `.+`/`.*` against newline-spanning input. New fields are inserted as new lines immediately before the closing `---` (recipe c). List-field appends (e.g. `tags:`) follow recipe d in `references/yaml-edits.md` § "Append to a list field". Preserve all existing field values.
 6. **Skill Log** — for each enriched file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`). Action format: `Added [field list] (created source: [source])`. YAML tag-list edits and skill-log callout edits MUST follow `references/yaml-edits.md` (recipes d + e).
 7. **Write findings file** — for any non-trivial Findings (Class A/B/C/D as defined in `references/findings-file.md`), append a section to `<VAULT>/_vault-autopilot/findings/<YYYY-MM-DD>-property-enrich.md`. Create the folder chain if missing. Never edit prior findings — append-only ledger.
 8. **Report and log** — append to `logs/run-history.md`.
@@ -121,4 +122,8 @@ Before **every** invocation of this skill — including resumed sessions and re-
 - [ ] Preview shown and confirmed before writing
 - [ ] No `aliases`, `parent`, `source`, or `priority` fields were written
 - [ ] Tag-list edits used line-by-line procedure per `references/yaml-edits.md` (no multi-line regex, no `str.replace`)
+- [ ] Sanity-check called pre-Compute (Step 2a) and pre-Write (Step 5) per `references/yaml-sanity.md`
+- [ ] Quoted-key broken-key variants (shape β — inside-colon) normalized via recipe (f), not appended-below
+- [ ] Duplicate-key collisions resolved (first-occurrence-wins, subsequent removed and logged as Class-D)
+- [ ] German date format (`DD.MM.YYYY[, HH:mm:ss]`) recognized in Prio 1 per `references/german-date-normalization.md` — not silently dropped to Prio 2-4
 - [ ] Findings file written per `references/findings-file.md` for any non-trivial findings
