@@ -230,3 +230,82 @@ Use recipe (d) instead. Walk lines. Find `tags:`. Walk forward to the first non-
 ## Why per-line regex is fine
 
 A per-line regex like `^\s*-\s+\S` against a single-line input is safe — there is no multi-line ambiguity, no greedy newline match. Use per-line regex freely for classification ("is this line a list item?", "is this line `tags:`?"). Just never join lines and regex the joined string.
+
+## Recipe (f) — Normalize inside-colon quoted-keys (F26 repair)
+
+This is the F26 cluster surface (shape β — inside-colon). Read it twice.
+
+> **Scope:** Recipe (f) targets ONLY shape β (`"<key>:":` with inside-colon AND outside-colon). It does NOT touch shape α standard quoted-keys (`"<key>":` with no inside-colon — valid YAML). See `references/yaml-sanity.md` § "Detection patterns" for the distinction.
+
+```text
+1. Read frontmatter lines (recipe a). If no frontmatter, no-op.
+2. Walk frontmatter lines with index. For each line where the per-line regex
+   F26_INSIDE_COLON_PATTERN = re.compile(r'^(\s*)"([^"]+):"\s*:(.*)$') matches:
+   a. Extract groups: indent, key_name, value_with_colon_separator.
+   b. Replace line with: f"{indent}{key_name}:{value_with_colon_separator}".
+3. After all replacements, walk frontmatter lines again. If any key-name now
+   appears on two or more lines (post-normalization collision):
+   a. Keep the FIRST occurrence (= the line that was originally inside-colon-
+      quoted, now normalized — assume original/correct value).
+   b. Remove subsequent occurrences.
+   c. Log each removed line as Class-D finding (file_ref + key_name + value).
+4. Idempotency: if no lines matched in step 2, the function is a no-op.
+   Re-running on already-normalized frontmatter returns unchanged.
+5. Standard quoted-keys (shape α — `"description":` with no inside-colon) are
+   untouched by this recipe. They are valid YAML and pass through.
+6. Write frontmatter + body back per recipe (a) write-back semantics.
+```
+
+### Worked example — recipe (f)
+
+**Input (broken):**
+
+```yaml
+---
+"created:": 2024-03-14
+created: 2025-01-01
+"modified:": 2024-06-15
+"description:": Apple Notes export
+tags: [AppleNoteImport]
+---
+```
+
+**Procedure:**
+
+1. Walk frontmatter lines 1..5.
+2. Line 1 matches `F26_INSIDE_COLON_PATTERN`: groups `("", "created", " 2024-03-14")` → replace with `created: 2024-03-14`.
+3. Line 2: no match (already plain).
+4. Line 3 matches: groups `("", "modified", " 2024-06-15")` → replace with `modified: 2024-06-15`.
+5. Line 4 matches: groups `("", "description", " Apple Notes export")` → replace with `description: Apple Notes export`.
+6. Line 5: no match.
+7. Post-replacement: walk again. Two `created:` lines exist now (line 1 = `2024-03-14`, line 2 = `2025-01-01`). Keep first, remove second. Log Class-D finding "duplicate-key removed: created (kept original quoted-form value 2024-03-14, removed plain-form value 2025-01-01)".
+
+**Output:**
+
+```yaml
+---
+created: 2024-03-14
+modified: 2024-06-15
+description: Apple Notes export
+tags: [AppleNoteImport]
+---
+```
+
+Re-running recipe (f) on the output: step 2 matches no lines, function is a no-op. Idempotent.
+
+### DO NOT — broken normalize patterns
+
+```python
+# DO NOT WRITE THIS — multi-line regex over joined frontmatter
+content = re.sub(
+    r'(?ms)"([^"]+):"\s*:\s*(.+?)\n',
+    lambda m: f'{m.group(1)}: {m.group(2)}\n',
+    content,
+)
+# Why it fails: under (?s), `.+?` matches across newlines (non-greedy still
+# matches newlines). The lazy quantifier saves you from greedy-eat-everything
+# but YAML quoted-string values can themselves span newlines — corrupting
+# multi-line values. Per-line regex is fine. Multi-line regex is not.
+```
+
+Use recipe (f) as defined. Walk lines. Per-line regex match. Replace per line.

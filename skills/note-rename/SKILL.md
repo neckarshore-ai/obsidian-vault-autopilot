@@ -25,7 +25,7 @@ Give poorly named vault notes clear, descriptive filenames. Rename and fix backl
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `cooldown_days` | 3 | Skip notes created within the last N days. Grace period so the user can review recent captures before automation touches them. **Date source:** YAML `created` field in frontmatter. If missing, the skill auto-enriches `created` from the Source Hierarchy (filename date > Git first-commit > filesystem birthtime) before evaluating cooldown — see Nahbereich. Never use modification date. |
-| `scope` | inbox | Which folder to scan. `inbox` = inbox root only. `vault` = entire vault (excluding vault root). `folder:path` = specific subfolder. User confirms before execution. |
+| `scope` | inbox | Which folder to scan. `inbox` = inbox root only (default). `inbox-tree` = inbox folder including all subfolders (opt-in for bulk-mode, e.g. initial vault setup). `vault` = entire vault excluding root. `folder:<path>` = specific subfolder. User confirms before execution. |
 
 ## Scope Rules
 
@@ -151,7 +151,7 @@ Before **every** invocation of this skill — including resumed sessions and re-
 2. **Scan** — list `.md` files.
 3. **Nahbereich** — detect and trash accidental notes (soft-delete to `_trash/`). Move misplaced Daily Notes to the Daily Notes folder. Log each.
 4. **Classify** — read title, tags, first ~30 lines (skip template boilerplate). For each note:
-   - **4a. Repair corrupted date-key variants first.** If the YAML contains `"created:"` or `"modified:"` (quoted with embedded colon — see Nahbereich rule for the broader pattern), normalize to `created` / `modified` and persist immediately (Nahbereich). YAML edits MUST follow `references/yaml-edits.md` (recipe b — line-by-line replace). Without this normalization a strict YAML parser cannot read the author-intended date, falls back to the Source Hierarchy → filesystem birthtime (often fresh on cloned vaults), and the cooldown evaluation in 4c silently skips legitimate candidates. Historical bug: repo issue #4 (2026-04-27).
+   - **4a. Repair corrupted quoted-key variants first (Nahbereich, sanity-check).** Call `references/yaml-sanity.md`. If verdict is `BROKEN_KEYS_INSIDE_COLON` (shape β — F26 inside-colon), normalize via `references/yaml-edits.md` recipe (f) — handles ALL quoted-key patterns, not just `"created:"`/`"modified:"` (broadened from v0.1.0/v0.1.2 hardcoded list). After normalization, resolve duplicate-key collisions per recipe (f) policy. Re-call sanity-check (idempotent fixpoint) — verdict must now be `OK`, `OK_QUOTED`, or `OK_NO_FRONTMATTER`. If verdict is `MULTIPLE_FRONTMATTER_BLOCKS`, use existing Corrupted File Detection (rename file with corruption-label). YAML edits MUST follow `references/yaml-edits.md` (recipes b + f). Without this normalization a strict YAML parser cannot read the author-intended date, falls back to the Source Hierarchy → filesystem birthtime (often fresh on cloned vaults), and the cooldown evaluation in 4c silently skips legitimate candidates. Verdict `OK_QUOTED` (shape α — standard quoted-key, valid YAML) proceeds normally; classification regex accepts both plain and standard-quoted forms. Historical bug: repo issue #4 (2026-04-27) for `created`/`modified`; F26 cross-skill cluster (2026-04-28) generalized the pattern.
    - **4b. After 4a, if YAML `created` is still missing:** derive the value using the Source Hierarchy (see `docs/metadata-requirements.md`). Write `created` to frontmatter immediately (Nahbereich). Record the source for the report. If no source yields a valid date, read and store the current filesystem birthtime for later restoration.
    - **4c. Apply cooldown** (per `cooldown_days` parameter) using the now-trustworthy `created` value. Cooldown-skipped notes are reported in the Skipped section of the report (not silently dropped) — see `references/report-format-note-rename.md`.
    - **4d. Mark** as: rename, keep, or TBD.
@@ -203,3 +203,5 @@ See `references/report-format-note-rename.md` for the full preview table format 
 - [ ] Every processed file has skill log callout at the end
 - [ ] Reviewed notes have "Reviewed" action, not "Renamed"
 - [ ] Re-renamed notes have multiple callout rows, not multiple callouts
+- [ ] Sanity-check called Step 4a per `references/yaml-sanity.md` (broadened from hardcoded `"created:"`/`"modified:"` to all quoted-keys)
+- [ ] Quoted-key broken-key variants (shape β — inside-colon) normalized via recipe (f); standard quoted-keys (shape α) pass through as `OK_QUOTED`

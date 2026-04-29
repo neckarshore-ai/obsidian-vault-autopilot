@@ -19,7 +19,7 @@ Generate a concise `description` property for vault notes by reading their conte
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `cooldown_days` | 3 | Skip notes created within the last N days. Use file creation date (birthtime). |
-| `scope` | inbox | Which folder to scan. User confirms before execution. |
+| `scope` | inbox | Which folder to scan. `inbox` = inbox root only (default). `inbox-tree` = inbox folder including all subfolders (opt-in for bulk-mode, e.g. initial vault setup). `vault` = entire vault excluding root. `folder:<path>` = specific subfolder. User confirms before execution. |
 
 ## Protected Files
 
@@ -47,6 +47,7 @@ Process only if ALL true:
 - No fluff ("This note contains...", "Summary of...")
 - Include specifics: names, dates, tools, numbers when they fit
 - Proper nouns stay in original language ("Steuerbelege 2025")
+- **Source-of-content policy:** Every claim in the description MUST be traceable to (a) note body text, (b) URL-encoded text in body links, OR (c) note title. NEVER fabricate or infer beyond these sources. Halluzinations-Audit-Pattern: every claim points at a source token in the note. URL-slugs that read as natural language (e.g. `linkedin.com/posts/charly-wargnier_n8n-automation`) count as URL-encoded text — but only the literal tokens visible in the slug, not inferred relationships.
 
 ## Pre-flight
 
@@ -55,10 +56,26 @@ Before **every** invocation of this skill — including resumed sessions and re-
 ## Workflow
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. Ask for target scope.
-2. **Filter** — identify notes needing descriptions (missing/placeholder/too-thin).
+2. **Filter** — for each note in scope:
+   - **2a. Pre-flight sanity-check.** Call `references/yaml-sanity.md`. Verdict `OK`, `OK_QUOTED`, or `OK_NO_FRONTMATTER` → proceed to 2b. Verdict `BROKEN_KEYS_INSIDE_COLON` (shape β — F26 inside-colon) → SKIP with Class-C finding "broken-yaml: inside-colon shape detected — run property-enrich first" (additive-only boundary; describe does NOT repair). Verdict `MULTIPLE_FRONTMATTER_BLOCKS` or `UNCLOSED_FRONTMATTER` → SKIP with Class-A finding (route to note-rename for handling).
+   - **2b. Eligibility check.** Identify notes needing descriptions using the **broadened DESC_KEY_PATTERN regex** — accepts plain identifier (`description:`) AND standard quoted-key (`"description":`, shape α). Per-line regex pattern:
+
+     ```python
+     DESC_KEY_PATTERN = re.compile(r'''
+         ^
+         (?:
+             ([A-Za-z_][A-Za-z0-9_-]*)        # plain identifier
+             |
+             "([^":]+)"                        # standard quoted-key (no inside-colon!)
+         )
+         \s*:
+     ''', re.VERBOSE)
+     ```
+
+     The inner `[^":]+` (NO inside-colon allowed) is what distinguishes shape α (matched here) from shape β (handled in 2a — SKIP). Apply "Which Notes Get a Description" rules (missing/placeholder/too-thin).
 3. **Generate** — read content, produce 250-char summary per note. For long notes (5000+ words): read title, first 50 lines, headings, last 10 lines.
 4. **Preview** — show table (filename, generated description, char count). Wait for confirmation. User can approve all, review individually, or reject specific entries.
-5. **Write** — set `description` in YAML frontmatter. Line-by-line replacement only (never `str.replace`, never multi-line regex). See `references/yaml-edits.md` for the canonical recipes (recipe b — replace single field value). Preserve all other fields. Single-quote the value, escape apostrophes by doubling (`'`→`''`).
+5. **Write** — pre-write, call `references/yaml-sanity.md` again as defense-in-depth (sanity-check is idempotent). Set `description` in YAML frontmatter. Line-by-line replacement only (never `str.replace`, never multi-line regex). See `references/yaml-edits.md` for the canonical recipes (recipe b — replace single field value). Preserve all other fields. Single-quote the value, escape apostrophes by doubling (`'`→`''`).
 6. **Skill Log** — for each described file: add `VaultAutopilot` tag and append skill log callout row (see `references/skill-log.md`). YAML tag-list edits and skill-log callout edits MUST follow `references/yaml-edits.md` (recipes d + e).
 7. **Write findings file** — for any non-trivial Findings (Class A/B/C/D as defined in `references/findings-file.md`), append a section to `<VAULT>/_vault-autopilot/findings/<YYYY-MM-DD>-property-describe.md`. Create the folder chain if missing. Never edit prior findings — append-only ledger.
 8. **Report and log** — append to `logs/run-history.md`.
@@ -90,3 +107,7 @@ Before **every** invocation of this skill — including resumed sessions and re-
 - [ ] All descriptions are in English
 - [ ] Preview was shown and confirmed before writing
 - [ ] No properties other than `description` were modified
+- [ ] Sanity-check called pre-Filter (Step 2a) and pre-Write (Step 5) per `references/yaml-sanity.md`
+- [ ] Quoted-key broken-key files (shape β — F26 inside-colon) SKIPPED with Class-C finding (NOT repaired, NOT written — additive-only boundary)
+- [ ] Filter regex accepted both plain (`description:`) and standard quoted-key (`"description":`, shape α) forms
+- [ ] Every description claim is traceable to body, URL-text, or title (no fabrication)
