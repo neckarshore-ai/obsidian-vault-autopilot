@@ -102,9 +102,13 @@ A line like `"description:":` matches inside-colon (verdict β), NOT standard (b
 
 Walk the entire file (not just frontmatter). Count occurrences of lines where `.rstrip() == '---'`. Treat first occurrence at line 0 as frontmatter open. Treat next occurrence as frontmatter close.
 
-After the close, if a subsequent line is also `.rstrip() == '---'` AND is NOT inside a code-fence (no triple-backtick opening before it), AND a subsequent matching `---` exists: this is a SECOND frontmatter block.
+After the close, if a subsequent line is also `.rstrip() == '---'` AND is NOT inside a code-fence (no triple-backtick opening before it), AND a subsequent matching `---` exists, AND at least one line between the two `---` markers matches a YAML-key-like pattern (`^\s*[A-Za-z_][A-Za-z0-9_-]*\s*:` OR `^\s*"[^"]+"\s*:`): this is a SECOND frontmatter block.
 
-**Verdict contribution:** if two or more frontmatter blocks → `MULTIPLE_FRONTMATTER_BLOCKS`.
+Otherwise (no YAML-key-like lines between the pair): body-level horizontal-rule separator — not a frontmatter block, no verdict contribution.
+
+> **Why this matters:** Body-level `---` horizontal-rule pairs are common in longer notes. Without the YAML-content check, any note with two `---` separators in the body produces a false-positive `MULTIPLE_FRONTMATTER_BLOCKS` verdict. Empirically confirmed: 72 false positives in GR-2 Cell 4 re-run (2026-04-30) on nexus-clone-powershell (1016 files); all were body horizontal-rule pairs, zero genuine second frontmatter blocks.
+
+**Verdict contribution:** if two or more genuine frontmatter blocks → `MULTIPLE_FRONTMATTER_BLOCKS`.
 
 This pattern is canonically defined in `note-rename`'s Corrupted File Detection (SKILL.md § "Corrupted File Detection"). The sanity-check uses the same detection logic, exposed as a callable.
 

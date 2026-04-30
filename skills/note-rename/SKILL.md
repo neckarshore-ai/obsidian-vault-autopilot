@@ -76,7 +76,7 @@ Detect files with multiple YAML frontmatter blocks (two or more `---`/`---` pair
 
 **Action:** Rename with a descriptive corruption label (e.g. `YYYY-MM-DD - Korrupte Datei - Zwei Notizen verschmolzen`). Write skill-log. Do not attempt to split the file — that requires manual review by the user.
 
-**Detection:** Count `---` lines at positions that look like frontmatter boundaries (start of file, after content blocks). Two complete frontmatter blocks = corrupted.
+**Detection:** Count `---` pairs that enclose YAML-key-like content (at least one `key: value` line between the pair). Body-level `---` horizontal-rule separators without YAML content do NOT count. Precise heuristic: see `references/yaml-sanity.md` Pattern 2. Two genuine frontmatter blocks = corrupted.
 
 ## Sensitive Content Detection (Nahbereich)
 
