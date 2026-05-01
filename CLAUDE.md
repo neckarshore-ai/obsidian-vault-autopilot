@@ -6,7 +6,7 @@
 
 **Organization:** Neckarshore AI
 **License:** MIT
-**Status:** Pre-launch (v0.1.1)
+**Status:** Pre-launch (v0.1.3)
 
 ## Plugin Structure
 
@@ -92,6 +92,7 @@ Read `docs/philosophy.md` for the full product philosophy. Key principles:
 3. **Read-only is not harmless.** Production vault access requires explicit user approval even for read-only operations (scans, counts, audits). Reading production data without permission is a trust violation, not a technical issue.
 4. **Confirm before bulk operations.** Before touching more than 10 files in any vault (test or production), state: "I will [action] [N] files in [vault-name]. Confirm?" Wait for approval.
 5. **Scope of approval.** A user saying "yes" to a plan approves that plan's scope. It does not approve switching environments, accessing new vaults, or expanding the file set beyond what was described.
+6. **Pre-flight plugin state check.** Before any production vault run, verify plugin state with a single deterministic check: `grep -c obsidian-vault ~/.claude/plugins/installed_plugins.json`. Result = 0 means plugin is uninstalled (correct for direct-symlink mode). Result > 0 means an old plugin version is active — STOP and uninstall first. Never assert plugin state from partial file reads (`head`, `tail`). This rule exists because a `head -20` read missed an installed plugin entry on 2026-05-01, causing an incorrect "PLUGIN GONE" claim. Reports drift; greps don't.
 
 ## What NOT to Do
 
