@@ -36,3 +36,6 @@ coverage/
 
 # Logs
 *.log
+
+# Session-report skill output (generated artifacts, not source)
+session-report-*.html
