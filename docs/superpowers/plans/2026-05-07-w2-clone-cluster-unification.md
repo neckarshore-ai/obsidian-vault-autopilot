@@ -567,7 +567,8 @@ recipe_a() {
       BTIME=$(date -u -d "@$BT_EPOCH" '+%Y-%m-%dT%H:%M:%SZ')
       ;;
   esac
-  if [ "$BTIME" '>=' "$CLONE_CLUSTER_WINDOW_START" ] && [ "$BTIME" '<=' "$CLONE_CLUSTER_WINDOW_END" ]; then
+  if { [ "$BTIME" '>' "$CLONE_CLUSTER_WINDOW_START" ] || [ "$BTIME" = "$CLONE_CLUSTER_WINDOW_START" ]; } && \
+     { [ "$BTIME" '<' "$CLONE_CLUSTER_WINDOW_END" ]   || [ "$BTIME" = "$CLONE_CLUSTER_WINDOW_END" ]; }; then
     return 0
   else
     return 1

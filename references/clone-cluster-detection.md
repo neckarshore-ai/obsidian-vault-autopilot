@@ -38,6 +38,11 @@ Returns `0` (in cluster) or `1` (not in cluster). Reads filesystem birthtime, co
 # Output: exit 0 if birthtime ∈ [start, end], else exit 1
 # No output to stdout. Quiet on success.
 
+# Guard: if no cluster was detected this skill invocation, all files PROCESS
+if [ -z "${CLONE_CLUSTER_WINDOW_START:-}" ] || [ -z "${CLONE_CLUSTER_WINDOW_END:-}" ]; then
+  exit 1
+fi
+
 # Read birthtime cross-platform
 case "$(uname)" in
   Darwin)
@@ -60,15 +65,18 @@ case "$(uname)" in
     ;;
 esac
 
-# Compare via lexicographic ordering (ISO 8601 UTC is sortable)
-if [ "$BTIME" '>=' "$CLONE_CLUSTER_WINDOW_START" ] && [ "$BTIME" '<=' "$CLONE_CLUSTER_WINDOW_END" ]; then
+# Compare via lexicographic ordering (ISO 8601 UTC is sortable). POSIX `[ ]`
+# supports `>` / `<` / `=` for string compare but NOT `>=` / `<=` — emulate
+# the inclusive bounds via `>` || `=` and `<` || `=` compound checks.
+if { [ "$BTIME" '>' "$CLONE_CLUSTER_WINDOW_START" ] || [ "$BTIME" = "$CLONE_CLUSTER_WINDOW_START" ]; } && \
+   { [ "$BTIME" '<' "$CLONE_CLUSTER_WINDOW_END" ]   || [ "$BTIME" = "$CLONE_CLUSTER_WINDOW_END" ]; }; then
   exit 0
 else
   exit 1
 fi
 ```
 
-If `$CLONE_CLUSTER_WINDOW_START` is unset (no cluster detected), all files exit 1 (PROCESS). Skill agents must check `[ -n "${CLONE_CLUSTER_WINDOW_START:-}" ]` and short-circuit to PROCESS when no cluster exists.
+The recipe self-guards: when neither `$CLONE_CLUSTER_WINDOW_START` nor `$CLONE_CLUSTER_WINDOW_END` is set (no cluster declared this invocation), recipe (a) returns 1 (PROCESS) for every file. Callers do not need to pre-check.
 
 ### Recipe (b) — `has_alternate_date_source`
 
