@@ -1,0 +1,62 @@
+{
+  "$schema": "v0.1.4-w4-recipe-f-duplicate-keys-fixture-truth-v1",
+  "fixture_purpose": "5-cell decision matrix for recipe-(f) duplicate-key resolution policy. Maps each fixture file to its expected sanity-check verdict, recipe-f action, finding class, and post-condition.",
+  "policy_anchor": "v0.1.4 W4 — Option (c) per omnopsis-planning ship-plan §3 W4: always log + ask user when values differ.",
+  "cells": [
+    {
+      "file": "cell-A-divergent-inside-colon.md",
+      "scenario": "Inside-colon shape β with divergent value vs pre-existing plain key (F7 empirical case)",
+      "sanity_verdict_pre": "DUPLICATE_KEYS_DIVERGENT_VALUES",
+      "recipe_f_action": "ABORT_NO_WRITE",
+      "finding_class": "A",
+      "finding_category": "duplicate-key-divergent-values",
+      "post_file_state": "unchanged",
+      "sanity_verdict_post": "DUPLICATE_KEYS_DIVERGENT_VALUES",
+      "skill_action": "skip + route to user / note-rename"
+    },
+    {
+      "file": "cell-B-identical-inside-colon.md",
+      "scenario": "Inside-colon shape β with identical value vs pre-existing plain key",
+      "sanity_verdict_pre": "BROKEN_KEYS_INSIDE_COLON",
+      "recipe_f_action": "NORMALIZE_AND_DEDUP_SILENT",
+      "finding_class": "D",
+      "finding_category": "duplicate-key-removed-identical",
+      "post_file_state": "modified — shape-β normalized + duplicate removed",
+      "sanity_verdict_post": "OK",
+      "skill_action": "proceed"
+    },
+    {
+      "file": "cell-C-divergent-plain.md",
+      "scenario": "Two pre-existing plain duplicates with divergent values, no inside-colon",
+      "sanity_verdict_pre": "DUPLICATE_KEYS_DIVERGENT_VALUES",
+      "recipe_f_action": "ABORT_NO_WRITE",
+      "finding_class": "A",
+      "finding_category": "duplicate-key-divergent-values",
+      "post_file_state": "unchanged",
+      "sanity_verdict_post": "DUPLICATE_KEYS_DIVERGENT_VALUES",
+      "skill_action": "skip + route to user / note-rename"
+    },
+    {
+      "file": "cell-D-identical-plain.md",
+      "scenario": "Two pre-existing plain duplicates with identical values, no inside-colon",
+      "sanity_verdict_pre": "DUPLICATE_KEYS_IDENTICAL_VALUES",
+      "recipe_f_action": "DEDUP_SILENT",
+      "finding_class": "D",
+      "finding_category": "duplicate-key-removed-identical",
+      "post_file_state": "modified — duplicate removed",
+      "sanity_verdict_post": "OK",
+      "skill_action": "proceed"
+    },
+    {
+      "file": "cell-E-control-no-duplicates.md",
+      "scenario": "Well-formed frontmatter, no duplicates, no inside-colon (control)",
+      "sanity_verdict_pre": "OK",
+      "recipe_f_action": "NOT_INVOKED",
+      "finding_class": null,
+      "finding_category": null,
+      "post_file_state": "unchanged",
+      "sanity_verdict_post": "OK",
+      "skill_action": "proceed"
+    }
+  ]
+}

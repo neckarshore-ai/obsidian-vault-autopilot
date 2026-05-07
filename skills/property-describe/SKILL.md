@@ -58,7 +58,13 @@ Before **every** invocation of this skill — including resumed sessions and re-
 
 1. **Discover vault** — resolve `${OBSIDIAN_VAULT_PATH}`. Ask for target scope.
 2. **Filter** — for each note in scope:
-   - **2a. Pre-flight sanity-check.** Call `references/yaml-sanity.md`. Verdict `OK`, `OK_QUOTED`, or `OK_NO_FRONTMATTER` → proceed to 2b. Verdict `BROKEN_KEYS_INSIDE_COLON` (shape β — F26 inside-colon) → SKIP with Class-C finding "broken-yaml: inside-colon shape detected — run property-enrich first" (additive-only boundary; describe does NOT repair). Verdict `MULTIPLE_FRONTMATTER_BLOCKS` or `UNCLOSED_FRONTMATTER` → SKIP with Class-A finding (route to note-rename for handling).
+   - **2a. Pre-flight sanity-check.** Call `references/yaml-sanity.md`. Verdict-routing per `references/yaml-sanity.md` § "Per-skill policy":
+     - `BROKEN_KEYS_INSIDE_COLON` (shape β — F26 inside-colon): SKIP + Class-C finding "broken-yaml: inside-colon shape detected — run property-enrich first" (NOT repair — boundaries: describe is additive-only).
+     - `DUPLICATE_KEYS_DIVERGENT_VALUES` (v0.1.4 W4 — F7 family): skip + Class-A finding "duplicate-key-divergent-values" (route to user / property-enrich for resolution).
+     - `DUPLICATE_KEYS_IDENTICAL_VALUES` (v0.1.4 W4): SKIP + Class-C finding "duplicate-keys-identical: run property-enrich first to dedup" (additive-only — defer to repair-capable skill).
+     - `MULTIPLE_FRONTMATTER_BLOCKS` or `UNCLOSED_FRONTMATTER`: skip + Class-A finding (route to note-rename for handling).
+     - `OK_QUOTED` (shape α): proceed normally; broadened filter regex catches both plain and standard-quoted forms.
+     - `OK` / `OK_NO_FRONTMATTER`: proceed normally.
    - **2b. Eligibility check.** Identify notes needing descriptions using the **broadened DESC_KEY_PATTERN regex** — accepts plain identifier (`description:`) AND standard quoted-key (`"description":`, shape α). Per-line regex pattern:
 
      ```python
@@ -111,6 +117,7 @@ Before **every** invocation of this skill — including resumed sessions and re-
 - [ ] No properties other than `description` were modified
 - [ ] Sanity-check called pre-Filter (Step 2a) and pre-Write (Step 5) per `references/yaml-sanity.md`
 - [ ] Quoted-key broken-key files (shape β — F26 inside-colon) SKIPPED with Class-C finding (NOT repaired, NOT written — additive-only boundary)
+- [ ] Duplicate-key divergent-value collisions (F7 family) skip + Class-A finding; describe is additive-only and never auto-resolves (v0.1.4 W4)
 - [ ] Filter regex accepted both plain (`description:`) and standard quoted-key (`"description":`, shape α) forms
 - [ ] Every description claim is traceable to body, URL-text, or title (no fabrication)
 - [ ] Step 2c clone-cluster gate followed per `references/clone-cluster-detection.md` — files in cluster window with no alt source were SKIPPED (cooldown undecidable, Class-C finding logged), not silently described from clone-time birthtime
