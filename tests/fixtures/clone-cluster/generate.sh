@@ -70,9 +70,9 @@ for i in $(seq -f "%02g" 1 20); do
   write_note "$f" "" "Cell A note ${i} — body without YAML, no date in name."
   # Stagger within the 1h window: 20 files × 3 minute steps = 60 min span
   # Center: 2026-04-16 20:33:23. Start offset: -30 min. Step: 3 min.
-  minutes=$(( (10#$i - 1) * 3 ))
-  hh=$(( 20 + minutes / 60 ))
-  mm=$(( 3 + minutes % 60 ))
+  abs_min=$(( 20 * 60 + 3 + (10#$i - 1) * 3 ))
+  hh=$(( abs_min / 60 ))
+  mm=$(( abs_min % 60 ))
   printf -v stamp "2026-04-16T%02d:%02d:23" "$hh" "$mm"
   set_btime "$f" "$stamp"
 done
@@ -81,9 +81,9 @@ done
 for i in $(seq -f "%02g" 1 5); do
   f="$NOTES_DIR/cell-b-${i}.md"
   write_note "$f" "created: 2024-06-15" "Cell B note ${i} — has YAML created."
-  minutes=$(( (10#$i - 1) * 3 + 5 ))  # offset to avoid exact overlap with cell-a
-  hh=$(( 20 + minutes / 60 ))
-  mm=$(( 3 + minutes % 60 ))
+  abs_min=$(( 20 * 60 + 3 + (10#$i - 1) * 3 + 5 ))  # +5 to avoid exact overlap with cell-a
+  hh=$(( abs_min / 60 ))
+  mm=$(( abs_min % 60 ))
   printf -v stamp "2026-04-16T%02d:%02d:23" "$hh" "$mm"
   set_btime "$f" "$stamp"
 done
