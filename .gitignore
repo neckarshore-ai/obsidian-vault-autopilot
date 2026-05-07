@@ -39,3 +39,6 @@ coverage/
 
 # Session-report skill output (generated artifacts, not source)
 session-report-*.html
+
+# Clone-cluster fixture generated notes (regenerate via tests/fixtures/clone-cluster/generate.sh)
+tests/fixtures/clone-cluster/notes/
