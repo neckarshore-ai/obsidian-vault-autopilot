@@ -20,6 +20,7 @@ Generate a concise `description` property for vault notes by reading their conte
 |-----------|---------|-------------|
 | `cooldown_days` | 3 | Skip notes created within the last N days. Use file creation date (birthtime). |
 | `scope` | inbox | Which folder to scan. `inbox` = inbox root only (default). `inbox-tree` = inbox folder including all subfolders (opt-in for bulk-mode, e.g. initial vault setup). `vault` = entire vault excluding root. `folder:<path>` = specific subfolder. User confirms before execution. |
+| `clone_cluster_skip` | true | When `true` (default), Step 2c DEFERs description generation for files whose only available date source is filesystem birthtime AND whose birthtime falls in a detected clone-cluster window (cooldown undecidable). See `references/clone-cluster-detection.md`. Set to `false` to fall through to filesystem birthtime for cooldown evaluation. |
 
 ## Protected Files
 
@@ -73,6 +74,7 @@ Before **every** invocation of this skill — including resumed sessions and re-
      ```
 
      The inner `[^":]+` (NO inside-colon allowed) is what distinguishes shape α (matched here) from shape β (handled in 2a — SKIP). Apply "Which Notes Get a Description" rules (missing/placeholder/too-thin).
+   - **2c. Clone-cluster gate for cooldown evaluation.** Before applying cooldown_days, for each candidate note where YAML `created` is absent: detect the vault-scope clone-cluster window per `references/clone-cluster-detection.md` § "Cluster Window Detection" once per invocation, then invoke recipe (a) `is_birthtime_in_clone_cluster_window`. If recipe (a) returns 0 (in cluster) AND recipe (b) `has_alternate_date_source` returns 1 (no alt source), DEFER cooldown evaluation: treat the file as `cooldown unknown`, SKIP description generation, and log Class-C "clone-cluster birthtime, no alt source — cooldown undecidable" in the findings file. The note is reported in the Skipped section (not silently dropped). Otherwise, evaluate cooldown_days against the available date source (YAML `created`, filename, git, or filesystem birthtime if not in cluster). Behavior gated by config `clone_cluster_skip` (default `true`); when `false`, cooldown falls through to filesystem birthtime as before.
 3. **Generate** — read content, produce 250-char summary per note. For long notes (5000+ words): read title, first 50 lines, headings, last 10 lines.
 4. **Preview** — show table (filename, generated description, char count). Wait for confirmation. User can approve all, review individually, or reject specific entries.
 5. **Write** — pre-write, call `references/yaml-sanity.md` again as defense-in-depth (sanity-check is idempotent). Set `description` in YAML frontmatter. Line-by-line replacement only (never `str.replace`, never multi-line regex). See `references/yaml-edits.md` for the canonical recipes (recipe b — replace single field value). Preserve all other fields. Single-quote the value, escape apostrophes by doubling (`'`→`''`).
@@ -111,3 +113,4 @@ Before **every** invocation of this skill — including resumed sessions and re-
 - [ ] Quoted-key broken-key files (shape β — F26 inside-colon) SKIPPED with Class-C finding (NOT repaired, NOT written — additive-only boundary)
 - [ ] Filter regex accepted both plain (`description:`) and standard quoted-key (`"description":`, shape α) forms
 - [ ] Every description claim is traceable to body, URL-text, or title (no fabrication)
+- [ ] Step 2c clone-cluster gate followed per `references/clone-cluster-detection.md` — files in cluster window with no alt source were SKIPPED (cooldown undecidable, Class-C finding logged), not silently described from clone-time birthtime
