@@ -201,4 +201,32 @@ for skill in property-enrich note-rename inbox-sort property-describe; do
   fi
 done
 
-echo "PASS: clone-cluster fixture + decision matrix + recipe doc + 4 SKILL.md cross-refs"
+# ---------------------------------------------------------------------------
+# 6. Grep-uniqueness: only ONE recipe definition exists, in the doc
+# ---------------------------------------------------------------------------
+echo "[6/6] Grep-uniqueness — recipes defined exactly once..."
+
+# Recipe (a) function definition: appears in the recipe doc, NOT redefined in any skill
+A_DOC_HITS=$(grep -c '^### Recipe (a)' "$RECIPE_DOC" || true)
+if [ "$A_DOC_HITS" != "1" ]; then
+  echo "FAIL: Recipe (a) heading not found exactly once in $RECIPE_DOC (found $A_DOC_HITS)" >&2
+  exit 1
+fi
+B_DOC_HITS=$(grep -c '^### Recipe (b)' "$RECIPE_DOC" || true)
+if [ "$B_DOC_HITS" != "1" ]; then
+  echo "FAIL: Recipe (b) heading not found exactly once in $RECIPE_DOC (found $B_DOC_HITS)" >&2
+  exit 1
+fi
+
+# No SKILL.md should reimplement the recipe — they reference by path only.
+# Allow the strings `is_birthtime_in_clone_cluster_window` and `has_alternate_date_source`
+# (they MAY appear as recipe-name mentions) but disallow the `stat -f '%SB'` /
+# `stat -c '%W'` implementation pattern outside the recipe doc.
+SKILL_REIMPL=$(grep -lE "stat -[fc] '%(SB|W)'" skills/*/SKILL.md || true)
+if [ -n "$SKILL_REIMPL" ]; then
+  echo "FAIL: SKILL.md files reimplement birthtime stat — should reference recipe instead:" >&2
+  echo "$SKILL_REIMPL" >&2
+  exit 1
+fi
+
+echo "PASS: clone-cluster fixture + decision matrix + recipe doc + 4 SKILL.md cross-refs + grep-uniqueness"
