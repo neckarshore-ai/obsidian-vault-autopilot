@@ -52,7 +52,7 @@ Process only if ALL true:
 
 ## Pre-flight
 
-Before **every** invocation of this skill — including resumed sessions and re-triggers within the same conversation: if running on Windows, follow [`references/windows-preflight.md`](../../references/windows-preflight.md) end-to-end (registry check, trailing-dot folder detection, and the Windows-aware file-enumeration pattern). The enumeration pattern in Step 6 of the preflight applies to every subsequent file-listing call this skill makes — the per-note iteration in `Filter` (step 2 below) and any vault-scope walks included. Run the checks freshly each time. Do not assume a previous turn's pass result still holds — registry state and folder topology can change between invocations and previous results are not authoritative. On macOS or Linux, skip — the preflight is a no-op there.
+Before **every** invocation of this skill — including resumed sessions and re-triggers within the same conversation: if running on Windows, follow [`references/windows-preflight.md`](../../references/windows-preflight.md) end-to-end (registry check, trailing-dot folder detection, the Windows-aware file-enumeration pattern, and the clone-cluster preflight WARN at Step 7). The enumeration pattern in Step 6 of the preflight applies to every subsequent file-listing call this skill makes — the per-note iteration in `Filter` (step 2 below) and any vault-scope walks included. Run the checks freshly each time. Do not assume a previous turn's pass result still holds — registry state and folder topology can change between invocations and previous results are not authoritative. On macOS or Linux, skip — the preflight is a no-op there.
 
 ## Workflow
 

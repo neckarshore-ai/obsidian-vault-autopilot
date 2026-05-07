@@ -47,15 +47,15 @@ Not all copy methods are equal. The critical difference is **filesystem birthtim
 
 ### Windows
 
-> **Read [Windows Considerations](windows-considerations.md) before cloning on Windows.** Empirical testing (2026-04-26) found that File Explorer / PowerShell `Copy-Item` silently drops files at long paths and resets creation dates. `robocopy` preserves both. Long paths (>260 characters) require an administrator one-time registry setting to be visible to skills at all.
+> **Read [Windows Considerations](windows-considerations.md) before cloning on Windows.** Empirical testing (2026-04-26) found that File Explorer / PowerShell `Copy-Item` silently drops files at long paths. `robocopy` reliably preserves all files. Long paths (>260 characters) require an administrator one-time registry setting to be visible to skills at all. **CreationTime preservation is NOT reliable on Windows clones**, even with `robocopy /COPY:DAT` — the GR-3 strict-path validation on 2026-05-01 found 36.8 % of robocopy-cloned files with CreationTime reset to the clone moment, most likely by post-clone Defender / Indexer / Obsidian-cache writes. The launch-scope skills mitigate this automatically via [`../references/clone-cluster-detection.md`](../references/clone-cluster-detection.md).
 
 | # | Method | Files preserved | CreationTime preserved | Recommended? |
 |---|--------|----------------|------------------------|--------------|
 | 1 | **File Explorer / PowerShell `Copy-Item`** | **No** — silently drops files at MAX_PATH | **No** — set to copy time | **Avoid** for vaults with deep folder structures |
-| 2 | **`robocopy /E /COPY:DAT`** | **Yes** | **Yes — preserved from source** | **Yes — best option on Windows** |
+| 2 | **`robocopy /E /COPY:DAT`** | **Yes** | At clone-time yes; post-clone unreliable in practice (see note above) | **Yes — best for file completeness**; combine with `property-enrich` first to fill `created` from filename / git, then accept clone-cluster SKIPs as informational |
 | 3 | **`xcopy /K`** | Partial — same MAX_PATH limitation | **No** | Avoid for the same reason as #1 |
 
-**Always run `property-enrich` as your first skill** on a Windows clone, regardless of method. CreationTime is unreliable on Windows after any copy operation; YAML `created` is the source of truth.
+**Always run `property-enrich` as your first skill** on a Windows clone, regardless of method. CreationTime is unreliable on Windows after any copy operation, AND post-copy Windows background services may reset it further; YAML `created` is the source of truth. The clone-cluster gate (skills automatically detect and SKIP files in the cluster) is described in [`../references/clone-cluster-detection.md`](../references/clone-cluster-detection.md).
 
 For the registry setting that enables long path support and the full Windows setup procedure, see [Windows Considerations](windows-considerations.md).
 
