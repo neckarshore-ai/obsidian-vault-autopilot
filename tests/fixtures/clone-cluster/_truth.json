@@ -1,0 +1,39 @@
+{
+  "fixture_version": "1.0",
+  "cluster_window": {
+    "center_utc": "2026-04-16T20:33:23Z",
+    "tolerance_seconds": 1800
+  },
+  "files": {
+    "cell-a-01.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-02.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-03.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-04.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-05.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-06.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-07.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-08.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-09.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-10.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-11.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-12.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-13.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-14.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-15.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-16.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-17.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-18.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-19.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-a-20.md": {"verdict": "SKIP", "reason": "clustered_no_alt"},
+    "cell-b-01.md": {"verdict": "PROCESS", "reason": "clustered_alt"},
+    "cell-b-02.md": {"verdict": "PROCESS", "reason": "clustered_alt"},
+    "cell-b-03.md": {"verdict": "PROCESS", "reason": "clustered_alt"},
+    "cell-b-04.md": {"verdict": "PROCESS", "reason": "clustered_alt"},
+    "cell-b-05.md": {"verdict": "PROCESS", "reason": "clustered_alt"},
+    "cell-c-01.md": {"verdict": "PROCESS", "reason": "not_clustered_no_alt"},
+    "cell-c-02.md": {"verdict": "PROCESS", "reason": "not_clustered_no_alt"},
+    "cell-c-03.md": {"verdict": "PROCESS", "reason": "not_clustered_no_alt"},
+    "cell-d-01.md": {"verdict": "PROCESS", "reason": "not_clustered_alt"},
+    "cell-d-02.md": {"verdict": "PROCESS", "reason": "not_clustered_alt"}
+  }
+}
