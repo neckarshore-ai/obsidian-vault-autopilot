@@ -243,12 +243,29 @@ This is the F26 cluster surface (shape β — inside-colon). Read it twice.
    F26_INSIDE_COLON_PATTERN = re.compile(r'^(\s*)"([^"]+):"\s*:(.*)$') matches:
    a. Extract groups: indent, key_name, value_with_colon_separator.
    b. Replace line with: f"{indent}{key_name}:{value_with_colon_separator}".
-3. After all replacements, walk frontmatter lines again. If any key-name now
-   appears on two or more lines (post-normalization collision):
-   a. Keep the FIRST occurrence (= the line that was originally inside-colon-
-      quoted, now normalized — assume original/correct value).
-   b. Remove subsequent occurrences.
-   c. Log each removed line as Class-D finding (file_ref + key_name + value).
+3. After all replacements (in-memory; do NOT write yet), walk the computed line
+   list. Build a key-name → list-of-values index. For each key-name appearing
+   on ≥ 2 lines:
+   a. Extract per-line normalized value: strip leading whitespace, strip the
+      `<key>:` prefix, strip leading/trailing whitespace from the remainder,
+      strip a trailing comment (`# ...`).
+   b. Compare values byte-wise across the lines for this key-name.
+   c. **All values byte-identical** (the safe-collision sub-case):
+      - Keep the FIRST occurrence, remove subsequent occurrences from the
+        in-memory list.
+      - Log each removed line as Class-D finding "duplicate-key-removed-identical"
+        (file_ref + key_name + value).
+   d. **Any value differs from another** (the divergent sub-case — F7 family):
+      - **ABORT recipe (f) for this file.** Do NOT write the in-memory list
+        back to disk. The on-disk file is left exactly as it was when recipe
+        (f) was invoked.
+      - Log a Class-A finding "duplicate-key-divergent-values" (file_ref +
+        key_name + list of all observed values) per affected key-name.
+      - Return signal `DIVERGENT` to caller. Caller skips the file per per-skill
+        policy in `references/yaml-sanity.md` § "Per-skill policy".
+   e. If no divergent collisions are present (all collisions were identical-value
+      OR no collisions at all), proceed to step 6 with the deduplicated in-memory
+      line list.
 4. Idempotency: if no lines matched in step 2, the function is a no-op.
    Re-running on already-normalized frontmatter returns unchanged.
 5. Standard quoted-keys (shape α — `"description":` with no inside-colon) are
@@ -256,14 +273,14 @@ This is the F26 cluster surface (shape β — inside-colon). Read it twice.
 6. Write frontmatter + body back per recipe (a) write-back semantics.
 ```
 
-### Worked example — recipe (f)
+### Worked example A — recipe (f) identical-value collision (silent dedup, Class-D)
 
-**Input (broken):**
+**Input (broken — shape β + identical-value collision):**
 
 ```yaml
 ---
 "created:": 2024-03-14
-created: 2025-01-01
+created: 2024-03-14
 "modified:": 2024-06-15
 "description:": Apple Notes export
 tags: [AppleNoteImport]
@@ -273,12 +290,13 @@ tags: [AppleNoteImport]
 **Procedure:**
 
 1. Walk frontmatter lines 1..5.
-2. Line 1 matches `F26_INSIDE_COLON_PATTERN`: groups `("", "created", " 2024-03-14")` → replace with `created: 2024-03-14`.
-3. Line 2: no match (already plain).
-4. Line 3 matches: groups `("", "modified", " 2024-06-15")` → replace with `modified: 2024-06-15`.
-5. Line 4 matches: groups `("", "description", " Apple Notes export")` → replace with `description: Apple Notes export`.
+2. Line 1 matches `F26_INSIDE_COLON_PATTERN`: groups `("", "created", " 2024-03-14")` → would replace with `created: 2024-03-14` (in-memory).
+3. Line 2: no match (already plain). Value `2024-03-14`.
+4. Line 3 matches: groups `("", "modified", " 2024-06-15")` → would replace with `modified: 2024-06-15`.
+5. Line 4 matches: groups `("", "description", " Apple Notes export")` → would replace with `description: Apple Notes export`.
 6. Line 5: no match.
-7. Post-replacement: walk again. Two `created:` lines exist now (line 1 = `2024-03-14`, line 2 = `2025-01-01`). Keep first, remove second. Log Class-D finding "duplicate-key removed: created (kept original quoted-form value 2024-03-14, removed plain-form value 2025-01-01)".
+7. Post-replacement walk (in-memory): two `created:` lines (line 1 = `2024-03-14`, line 2 = `2024-03-14`). Compare normalized values: byte-identical. Sub-case (c): keep first, remove second. Log Class-D finding "duplicate-key-removed-identical: created (kept value `2024-03-14`)".
+8. No divergent collisions. Proceed to write back the deduplicated normalized line list.
 
 **Output:**
 
@@ -291,7 +309,40 @@ tags: [AppleNoteImport]
 ---
 ```
 
-Re-running recipe (f) on the output: step 2 matches no lines, function is a no-op. Idempotent.
+Re-running recipe (f) on the output: step 2 matches no lines, step 3 finds no duplicates, function is a no-op. Idempotent.
+
+### Worked example B — recipe (f) divergent-value collision (ABORT, Class-A, F7 case)
+
+**Input (broken — shape β + divergent-value collision; mirrors the empirical F7 finding from GR-3 Cell 1, 2026-05-01, on `neckarshore.ai brand style guide brief.md`):**
+
+```yaml
+---
+"status:": draft
+status: ready-for-designer
+title: F7 case
+---
+```
+
+**Procedure:**
+
+1. Walk frontmatter lines 1..3.
+2. Line 1 matches `F26_INSIDE_COLON_PATTERN`: groups `("", "status", " draft")` → would replace with `status: draft` (in-memory).
+3. Line 2: no match (already plain). Value `ready-for-designer`.
+4. Line 3: no match.
+5. Post-replacement walk (in-memory): two `status:` lines (line 1 = `draft`, line 2 = `ready-for-designer`). Compare normalized values: byte-different. Sub-case (d): **ABORT recipe (f) for this file.** Do NOT write the in-memory list back. Log Class-A finding "duplicate-key-divergent-values: status (observed values: `draft`, `ready-for-designer`)".
+6. Return signal `DIVERGENT` to caller.
+
+**Output:** file on disk is unchanged (still has shape β `"status:"` line + plain `status:` line). The in-memory normalized list is discarded.
+
+**Caller behavior** (per `references/yaml-sanity.md` per-skill policy):
+- `property-enrich`: skip file, route to user / note-rename.
+- `note-rename`: skip file, route to user (do NOT rename — user may legitimately need to merge values first).
+- `inbox-sort`: skip file, route to user / note-rename.
+- `property-describe`: skip file, route to user / property-enrich.
+
+**Why ABORT vs auto-pick:** Either pick (first/last/heuristic) commits a silent semantic-shift on a field the user explicitly disagreed with (two values exist precisely because the user wrote them — even if one was an old import-residue and one was a manual edit). Recipe (f)'s job is structural normalization, not authorship-arbitration. The user must merge the values manually; the skill must NOT pretend it knows.
+
+Re-running recipe (f) on the unchanged file: same outcome — sub-case (d), ABORT, log, return DIVERGENT. Idempotent in the abort sense (same input → same outcome → same verdict).
 
 ### DO NOT — broken normalize patterns
 
