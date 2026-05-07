@@ -15,9 +15,19 @@
 #   CLUSTER_FOUND=yes|no
 #
 # When CLUSTER_FOUND=yes, additionally:
-#   CLONE_CLUSTER_WINDOW_START=<ISO 8601 UTC, Z-suffixed>
-#   CLONE_CLUSTER_WINDOW_END=<ISO 8601 UTC, Z-suffixed>
+#   CLONE_CLUSTER_WINDOW_START=<ISO 8601 UTC, Z-suffixed>       # for WARN message display
+#   CLONE_CLUSTER_WINDOW_END=<ISO 8601 UTC, Z-suffixed>         # for WARN message display
+#   CLONE_CLUSTER_WINDOW_START_EPOCH=<int seconds since epoch>  # for recipe (a) numeric compare
+#   CLONE_CLUSTER_WINDOW_END_EPOCH=<int seconds since epoch>    # for recipe (a) numeric compare
 #   CLUSTER_FILE_COUNT=<int — file count in winning bin>
+#
+# The ISO strings are intended for human display (preflight WARN message).
+# The *_EPOCH fields are the contract for recipe (a)'s numeric in-window
+# compare. Mixing the two — using `stat -f '%SB' -t '...Z'` to read a file's
+# birthtime and string-comparing it against the ISO window — produces wrong
+# verdicts on non-UTC machines because BSD `%SB` formats local time but
+# slaps a literal Z suffix. Recipe (a) reads raw epoch (`%B` on Darwin,
+# `%W` on Linux) and compares against the *_EPOCH fields here.
 #
 # Heuristic (per references/clone-cluster-detection.md "Cluster Window
 # Detection"):
@@ -150,5 +160,7 @@ cat <<EOF
 CLUSTER_FOUND=yes
 CLONE_CLUSTER_WINDOW_START=$START_ISO
 CLONE_CLUSTER_WINDOW_END=$END_ISO
+CLONE_CLUSTER_WINDOW_START_EPOCH=$START_EPOCH
+CLONE_CLUSTER_WINDOW_END_EPOCH=$END_EPOCH
 CLUSTER_FILE_COUNT=$COUNT
 EOF

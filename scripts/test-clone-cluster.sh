@@ -66,44 +66,76 @@ fi
 # ---------------------------------------------------------------------------
 echo "[3/5] Decision matrix per _truth.json..."
 
-# Extract cluster window from truth file (anchor for recipe (a))
+# v0.1.5 contract: drive recipe (a) from the actual detector output instead
+# of re-deriving the window from _truth.json. Re-derivation hid a runtime
+# bug in v0.1.4 W2: the test computed a UTC-correct window via `date -ju`,
+# while recipe (a)'s `stat -f '%SB' -t '...Z'` formatted local time with a
+# literal Z, and the fixture generator's `touch -t` used local time too —
+# so the test passed by coincidence because both halves were systematically
+# wrong by the same offset. Real macOS users on non-UTC hosts got wrong
+# SKIP verdicts at runtime. Driving the test from the detector closes that
+# gap, and the lock-in assertion below catches any future regression that
+# reintroduces the local-time-with-Z trap.
+DETECTOR_OUT=$("$REPO_ROOT/scripts/detect-clone-cluster.sh" "$NOTES_DIR")
+eval "$DETECTOR_OUT"
+if [ "${CLUSTER_FOUND:-}" != "yes" ]; then
+  echo "FAIL: detector did not declare a cluster on the W2 fixture; output:" >&2
+  printf -- "%s\n" "$DETECTOR_OUT" >&2
+  exit 1
+fi
+if [ -z "${CLONE_CLUSTER_WINDOW_START_EPOCH:-}" ] || [ -z "${CLONE_CLUSTER_WINDOW_END_EPOCH:-}" ]; then
+  echo "FAIL: detector did not emit *_EPOCH window fields (v0.1.5 contract)" >&2
+  printf -- "%s\n" "$DETECTOR_OUT" >&2
+  exit 1
+fi
+export CLONE_CLUSTER_WINDOW_START CLONE_CLUSTER_WINDOW_END
+export CLONE_CLUSTER_WINDOW_START_EPOCH CLONE_CLUSTER_WINDOW_END_EPOCH
+
+# Lock-in assertion: the detector's epoch window must enclose the fixture's
+# documented UTC center. v0.1.4 W2 deliberately omitted this assertion
+# because the broken format-string would have made it fail on non-UTC hosts.
+# v0.1.5 fixes recipe (a) + generator + detector contract, so the assertion
+# now passes cleanly. Future regression to local-time-with-Z handling will
+# trip this check.
 CLUSTER_CENTER=$(awk -F'"' '/center_utc/ { print $4 }' "$FIXTURE_DIR/_truth.json")
-TOLERANCE_SEC=$(awk -F'[ ,]' '/tolerance_seconds/ { print $4 }' "$FIXTURE_DIR/_truth.json")
-# Compute window start/end (ISO 8601). Use date with - and + offsets.
 case "$(uname)" in
   Darwin)
-    CLONE_CLUSTER_WINDOW_START=$(date -ju -v-30M -f '%Y-%m-%dT%H:%M:%SZ' "$CLUSTER_CENTER" '+%Y-%m-%dT%H:%M:%SZ')
-    CLONE_CLUSTER_WINDOW_END=$(date -ju -v+30M -f '%Y-%m-%dT%H:%M:%SZ' "$CLUSTER_CENTER" '+%Y-%m-%dT%H:%M:%SZ')
+    CENTER_EPOCH=$(date -ju -f '%Y-%m-%dT%H:%M:%SZ' "$CLUSTER_CENTER" '+%s')
     ;;
   Linux)
-    CLONE_CLUSTER_WINDOW_START=$(date -u -d "$CLUSTER_CENTER - 30 minutes" '+%Y-%m-%dT%H:%M:%SZ')
-    CLONE_CLUSTER_WINDOW_END=$(date -u -d "$CLUSTER_CENTER + 30 minutes" '+%Y-%m-%dT%H:%M:%SZ')
+    CENTER_EPOCH=$(date -u -d "$CLUSTER_CENTER" '+%s')
     ;;
 esac
-export CLONE_CLUSTER_WINDOW_START CLONE_CLUSTER_WINDOW_END
+if [ "$CENTER_EPOCH" -lt "$CLONE_CLUSTER_WINDOW_START_EPOCH" ] || \
+   [ "$CENTER_EPOCH" -gt "$CLONE_CLUSTER_WINDOW_END_EPOCH" ]; then
+  echo "FAIL: detector window does not enclose fixture center_utc" >&2
+  echo "  center_utc=$CLUSTER_CENTER (epoch $CENTER_EPOCH)" >&2
+  echo "  detector window=[$CLONE_CLUSTER_WINDOW_START..$CLONE_CLUSTER_WINDOW_END]" >&2
+  echo "  detector window epoch=[$CLONE_CLUSTER_WINDOW_START_EPOCH..$CLONE_CLUSTER_WINDOW_END_EPOCH]" >&2
+  exit 1
+fi
 
-# Inline recipe (a) for the test harness — copy of the doc snippet (POSIX-safe).
+# Inline recipe (a) for the test harness — copy of the doc snippet, v0.1.5
+# epoch-based contract (numeric in-window compare, no ISO strings).
 recipe_a() {
   local FILE="$1"
-  local BTIME
-  if [ -z "${CLONE_CLUSTER_WINDOW_START:-}" ] || [ -z "${CLONE_CLUSTER_WINDOW_END:-}" ]; then
+  local BT_EPOCH
+  if [ -z "${CLONE_CLUSTER_WINDOW_START_EPOCH:-}" ] || [ -z "${CLONE_CLUSTER_WINDOW_END_EPOCH:-}" ]; then
     return 1
   fi
   case "$(uname)" in
     Darwin)
-      BTIME=$(stat -f '%SB' -t '%Y-%m-%dT%H:%M:%SZ' "$FILE")
+      BT_EPOCH=$(stat -f '%B' "$FILE")
       ;;
     Linux)
-      local BT_EPOCH
       BT_EPOCH=$(stat -c '%W' "$FILE")
       if [ "$BT_EPOCH" = "0" ]; then
         BT_EPOCH=$(stat -c '%Y' "$FILE")
       fi
-      BTIME=$(date -u -d "@$BT_EPOCH" '+%Y-%m-%dT%H:%M:%SZ')
       ;;
   esac
-  if { [ "$BTIME" '>' "$CLONE_CLUSTER_WINDOW_START" ] || [ "$BTIME" = "$CLONE_CLUSTER_WINDOW_START" ]; } && \
-     { [ "$BTIME" '<' "$CLONE_CLUSTER_WINDOW_END" ]   || [ "$BTIME" = "$CLONE_CLUSTER_WINDOW_END" ]; }; then
+  if [ "$BT_EPOCH" -ge "$CLONE_CLUSTER_WINDOW_START_EPOCH" ] && \
+     [ "$BT_EPOCH" -le "$CLONE_CLUSTER_WINDOW_END_EPOCH" ]; then
     return 0
   else
     return 1

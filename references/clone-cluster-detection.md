@@ -26,29 +26,34 @@ The 10-file / 1 h heuristic is empirically anchored: in `nexus-clone-robocopy`, 
 
 The window is computed once per skill invocation and cached in memory (variable `$CLONE_CLUSTER_WINDOW_START` / `$CLONE_CLUSTER_WINDOW_END`, ISO 8601). Per-file checks reuse this baseline.
 
-**Runnable implementation:** The detection algorithm above (steps 1–5) is implemented in [`scripts/detect-clone-cluster.sh`](../scripts/detect-clone-cluster.sh). Callers run `eval "$(scripts/detect-clone-cluster.sh "$VAULT")"` to populate `$CLUSTER_FOUND`, `$CLONE_CLUSTER_WINDOW_START`, `$CLONE_CLUSTER_WINDOW_END`, and `$CLUSTER_FILE_COUNT`. The script is the single source of truth for the bucketize-and-find-winner step, used by both the runtime SKIP-gate flow described below (recipes a + b) and the user-facing preflight WARN in [`references/windows-preflight.md`](windows-preflight.md) Step 7.
+**Runnable implementation:** The detection algorithm above (steps 1–5) is implemented in [`scripts/detect-clone-cluster.sh`](../scripts/detect-clone-cluster.sh). Callers run `eval "$(scripts/detect-clone-cluster.sh "$VAULT")"` to populate `$CLUSTER_FOUND`, `$CLONE_CLUSTER_WINDOW_START`, `$CLONE_CLUSTER_WINDOW_END`, and `$CLUSTER_FILE_COUNT`. The script is the single source of truth for the bucketize-and-find-winner step, used by both the runtime SKIP-gate flow described below (recipes a + b) and the cross-platform user-facing preflight WARN in [`references/clone-preflight.md`](clone-preflight.md).
 
 ## Recipes
 
 ### Recipe (a) — `is_birthtime_in_clone_cluster_window`
 
-Returns `0` (in cluster) or `1` (not in cluster). Reads filesystem birthtime, compares against pre-computed cluster window.
+Returns `0` (in cluster) or `1` (not in cluster). Reads filesystem birthtime as raw epoch seconds, compares numerically against the pre-computed cluster-window epoch bounds emitted by `scripts/detect-clone-cluster.sh`.
+
+> **Why epoch, not ISO strings.** v0.1.4 W2 first shipped this recipe with an ISO-string compare using `stat -f '%SB' -t '%Y-%m-%dT%H:%M:%SZ'` on Darwin. That format string formats local time and slaps a literal `Z` suffix; on a non-UTC host the resulting "ISO" string was off by the local-UTC offset and disagreed with the genuinely-UTC window emitted by the detector — producing **wrong SKIP verdicts on every macOS user in a non-UTC timezone**. The Linux path was already epoch-based and was therefore correct. v0.1.5 extracts the epoch contract for both platforms and deletes the lying-format-string. Detector now also emits `CLONE_CLUSTER_WINDOW_START_EPOCH` and `CLONE_CLUSTER_WINDOW_END_EPOCH` for this recipe to consume; the ISO strings are retained for the user-facing WARN message in [`clone-preflight.md`](clone-preflight.md) only.
 
 ```bash
 # Inputs: $FILE — absolute path to .md file
-#         $CLONE_CLUSTER_WINDOW_START, $CLONE_CLUSTER_WINDOW_END — ISO 8601 (UTC)
-# Output: exit 0 if birthtime ∈ [start, end], else exit 1
+#         $CLONE_CLUSTER_WINDOW_START_EPOCH, $CLONE_CLUSTER_WINDOW_END_EPOCH
+#                — integer seconds since epoch (UTC), set by
+#                  scripts/detect-clone-cluster.sh
+# Output: exit 0 if birthtime epoch ∈ [start, end], else exit 1
 # No output to stdout. Quiet on success.
 
 # Guard: if no cluster was detected this skill invocation, all files PROCESS
-if [ -z "${CLONE_CLUSTER_WINDOW_START:-}" ] || [ -z "${CLONE_CLUSTER_WINDOW_END:-}" ]; then
+if [ -z "${CLONE_CLUSTER_WINDOW_START_EPOCH:-}" ] || [ -z "${CLONE_CLUSTER_WINDOW_END_EPOCH:-}" ]; then
   exit 1
 fi
 
-# Read birthtime cross-platform
+# Read birthtime as raw epoch seconds (cross-platform).
 case "$(uname)" in
   Darwin)
-    BTIME=$(stat -f '%SB' -t '%Y-%m-%dT%H:%M:%SZ' "$FILE")
+    # BSD stat: %B = birthtime as seconds since epoch (raw integer).
+    BTIME_EPOCH=$(stat -f '%B' "$FILE")
     ;;
   Linux)
     # GNU stat: %W = birthtime as seconds since epoch (0 if unavailable)
@@ -59,7 +64,6 @@ case "$(uname)" in
       # approximation; mtime is the closest available proxy.
       BTIME_EPOCH=$(stat -c '%Y' "$FILE")
     fi
-    BTIME=$(date -u -d "@$BTIME_EPOCH" '+%Y-%m-%dT%H:%M:%SZ')
     ;;
   *)
     echo "ERROR: unsupported OS $(uname)" >&2
@@ -67,18 +71,18 @@ case "$(uname)" in
     ;;
 esac
 
-# Compare via lexicographic ordering (ISO 8601 UTC is sortable). POSIX `[ ]`
-# supports `>` / `<` / `=` for string compare but NOT `>=` / `<=` — emulate
-# the inclusive bounds via `>` || `=` and `<` || `=` compound checks.
-if { [ "$BTIME" '>' "$CLONE_CLUSTER_WINDOW_START" ] || [ "$BTIME" = "$CLONE_CLUSTER_WINDOW_START" ]; } && \
-   { [ "$BTIME" '<' "$CLONE_CLUSTER_WINDOW_END" ]   || [ "$BTIME" = "$CLONE_CLUSTER_WINDOW_END" ]; }; then
+# Numeric in-window compare — POSIX `-ge` / `-le` are unambiguous.
+if [ "$BTIME_EPOCH" -ge "$CLONE_CLUSTER_WINDOW_START_EPOCH" ] && \
+   [ "$BTIME_EPOCH" -le "$CLONE_CLUSTER_WINDOW_END_EPOCH" ]; then
   exit 0
 else
   exit 1
 fi
 ```
 
-The recipe self-guards: when neither `$CLONE_CLUSTER_WINDOW_START` nor `$CLONE_CLUSTER_WINDOW_END` is set (no cluster declared this invocation), recipe (a) returns 1 (PROCESS) for every file. Callers do not need to pre-check.
+The recipe self-guards: when neither `$CLONE_CLUSTER_WINDOW_START_EPOCH` nor `$CLONE_CLUSTER_WINDOW_END_EPOCH` is set (no cluster declared this invocation), recipe (a) returns 1 (PROCESS) for every file. Callers do not need to pre-check.
+
+> **Migrating from v0.1.4.** Prior callers that exported `CLONE_CLUSTER_WINDOW_START` / `_END` (ISO strings) and relied on recipe (a) to read them must update to also export `CLONE_CLUSTER_WINDOW_START_EPOCH` / `_END_EPOCH` (integers). The detector script now emits both. The simplest update is to switch from a custom window computation to `eval "$(scripts/detect-clone-cluster.sh "$VAULT")"` which sets all four variables in one call. The ISO strings remain useful for the user-facing WARN message; the epoch values are the recipe contract.
 
 ### Recipe (b) — `has_alternate_date_source`
 
