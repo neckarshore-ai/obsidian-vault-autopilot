@@ -26,6 +26,8 @@ The 10-file / 1 h heuristic is empirically anchored: in `nexus-clone-robocopy`, 
 
 The window is computed once per skill invocation and cached in memory (variable `$CLONE_CLUSTER_WINDOW_START` / `$CLONE_CLUSTER_WINDOW_END`, ISO 8601). Per-file checks reuse this baseline.
 
+**Runnable implementation:** The detection algorithm above (steps 1–5) is implemented in [`scripts/detect-clone-cluster.sh`](../scripts/detect-clone-cluster.sh). Callers run `eval "$(scripts/detect-clone-cluster.sh "$VAULT")"` to populate `$CLUSTER_FOUND`, `$CLONE_CLUSTER_WINDOW_START`, `$CLONE_CLUSTER_WINDOW_END`, and `$CLUSTER_FILE_COUNT`. The script is the single source of truth for the bucketize-and-find-winner step, used by both the runtime SKIP-gate flow described below (recipes a + b) and the user-facing preflight WARN in [`references/windows-preflight.md`](windows-preflight.md) Step 7.
+
 ## Recipes
 
 ### Recipe (a) — `is_birthtime_in_clone_cluster_window`

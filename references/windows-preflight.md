@@ -162,18 +162,51 @@ Inside any skill that does enumeration, branch on `IS_WINDOWS` (set by Step 1):
 | `0` (macOS / Linux) | `find` or any standard enumerator. No prefix needed. |
 | `1` (Windows) | `[System.IO.Directory]::EnumerateFiles("\\?\$path", '*', 'AllDirectories')` or equivalent extended-path-prefixed call. |
 
+## Step 7 — Clone-Cluster Birthtime Detection
+
+> **WARN-flow, not STOP-flow.** This step emits a non-blocking warning when a clone-induced birthtime cluster is detected, so the user understands why date-derivation skills will SKIP affected files at runtime. Skill execution **continues**. The runtime SKIP-gate documented in [`clone-cluster-detection.md`](clone-cluster-detection.md) is the data-safety mechanism; this preflight is transparency, not enforcement.
+
+Run the detector against the configured vault root (cross-platform — works on macOS, Linux, and Windows under MSYS / Git Bash):
+
+```bash
+eval "$(scripts/detect-clone-cluster.sh "$OBSIDIAN_VAULT_PATH")"
+```
+
+This sets `CLUSTER_FOUND` and, when the value is `yes`, additionally sets `CLONE_CLUSTER_WINDOW_START`, `CLONE_CLUSTER_WINDOW_END`, and `CLUSTER_FILE_COUNT`.
+
+| `CLUSTER_FOUND` | Action |
+|---|---|
+| `no` | Silent. Continue to the skill's normal workflow. |
+| `yes` | Emit the WARN message below, then **continue** with the skill's normal workflow. The runtime SKIP-gate handles correctness. |
+
+WARN message text (display verbatim, substituting the captured values, then proceed):
+
+> **Clone-cluster birthtime detected (informational, not blocking).**
+>
+> [`$CLUSTER_FILE_COUNT`] files share filesystem birthtimes inside `[$CLONE_CLUSTER_WINDOW_START]..[$CLONE_CLUSTER_WINDOW_END]`. This pattern indicates the vault was recently cloned or restored — birthtimes reflect clone-time, not the original note-creation time.
+>
+> Date-derivation skills (`property-enrich`, `note-rename`, `inbox-sort`, `property-describe`) will automatically SKIP files in this window when no alternate date source (YAML `created`, `YYYY-MM-DD` filename, git first-commit) is available. Affected files will appear in each skill's findings file as **Class C — clone-cluster birthtime, no alt source**.
+>
+> Full mitigation behavior: [`references/clone-cluster-detection.md`](clone-cluster-detection.md).
+
+After emitting the WARN, proceed with the skill's core workflow.
+
+### Why this preflight is empirical, not theoretical
+
+The GR-3 strict-path validation on `nexus-clone-robocopy` (2026-05-01) found 36.8 % (189 / 514) of inbox-tree files clustered at `2026-04-16T20:33:23Z` — the vault's clone time. `robocopy /E /COPY:DAT` was supposed to preserve `CreationTime` from the source; empirically it did not (post-clone Defender / Indexer / Obsidian-cache resets, or robocopy's Windows CreationTime semantics being unreliable in practice). This preflight surfaces the same reality to the user before any date-derivation runs, so the runtime SKIPs (which appear as Class-C findings) are not a surprise.
+
 ## Test fixture for this preflight
 
-The regression-lock for trailing-dot detection lives at `tests/fixtures/windows-trailing-dot/`. It contains a folder named `030_Systems - reference material.` with two notes inside, plus two notes outside — one of each pair holds an incoming wikilink to a file inside the trailing-dot folder, the other holds an outgoing wikilink from inside to outside. This shape exercises both directions of the backlink-update path.
+Two regression-locks cover this preflight:
 
-Run `scripts/test-windows-trailing-dot.sh` from the repo root to verify the fixture and this document remain in sync. The Windows-side empirical verification (broken pattern fails, fixed pattern succeeds) is documented in the fixture's `README.md` — run on a Windows host before merging any change to this preflight or to enumeration in the four launch-scope skills.
+- **Trailing-dot enumeration (Step 5):** `tests/fixtures/windows-trailing-dot/` — folder named `030_Systems - reference material.` with two notes inside plus two notes outside, exercising both directions of the backlink-update path. Run `scripts/test-windows-trailing-dot.sh`. The Windows-side empirical verification (broken pattern fails, fixed pattern succeeds) is documented in the fixture's `README.md` — run on a Windows host before merging any change to enumeration in the four launch-scope skills.
+- **Clone-cluster detection (Step 7):** `tests/fixtures/clone-cluster/` — 30-file synthetic vault (W2 fixture, reused). Run `scripts/test-clone-preflight.sh` to assert that `scripts/detect-clone-cluster.sh` emits `CLUSTER_FOUND=yes` against the cluster fixture, `CLUSTER_FOUND=no` against a sub-floor (5-file) directory and against an empty directory, and that the cross-doc claims in `windows-considerations.md` and `cloning-guide.md` reflect empirical reality (no `robocopy /COPY:DAT preserves CreationTime` claim).
 
 ## What this preflight does NOT check
 
-- **Clone method (Copy-Item vs robocopy).** `CreationTime` reset is a separate concern, handled by `property-enrich`'s Source Hierarchy (filename > git > birthtime). The preflight's job is enumeration safety only.
 - **Path lengths in the actual vault.** If LongPathsEnabled is `1`, all paths are accessible regardless of length. No per-path scan is needed.
-- **Whether the vault was cloned at all.** That is a different concern documented in `docs/cloning-guide.md`.
+- **Whether the vault was cloned at all in the absence of a birthtime cluster.** A small clone (< 10 files) or a clone that occurred far enough in the past that other write activity has spread birthtimes across multiple bins will not trigger Step 7. The runtime SKIP-gate in `clone-cluster-detection.md` is the same threshold; both are intentionally biased toward false-negatives over false-positives. See [`docs/cloning-guide.md`](../docs/cloning-guide.md) for clone-method recommendations.
 
 ## Cost
 
-On Windows: one `powershell.exe` invocation per skill run for Steps 2 + 5 (~100-300ms combined). On macOS/Linux: one `uname -s` call (~1ms). The check is cheap enough to run every invocation.
+On Windows: one `powershell.exe` invocation per skill run for Steps 2 + 5 (~100-300 ms combined) plus one Step 7 detector pass (one `find` + one `awk` + per-file `stat`, ~50-150 ms on a 1 000-file vault). On macOS / Linux: one `uname -s` call (~1 ms) plus the Step 7 detector pass. The check is cheap enough to run every invocation.

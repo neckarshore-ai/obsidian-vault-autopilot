@@ -4,7 +4,7 @@
 
 ## TL;DR for Windows Users
 
-1. **Use `robocopy` to clone your vault, not File Explorer.** File Explorer (PowerShell `Copy-Item` underneath) silently drops files at long paths and resets file creation dates. `robocopy` preserves both.
+1. **Use `robocopy` to clone your vault, not File Explorer.** File Explorer (PowerShell `Copy-Item` underneath) silently drops files at long paths. `robocopy /E /COPY:DAT` reliably preserves all files. **However, CreationTime preservation is NOT reliable on Windows clones** — even with `robocopy /COPY:DAT`. The GR-3 strict-path validation on 2026-05-01 found 36.8 % (189 / 514) of files clustering at clone-time, regardless of source CreationTime values (likely post-clone Defender / Indexer / Obsidian-cache resets). The launch-scope skills detect this pattern at preflight time (WARN) and SKIP date-derivation for affected files at runtime — see [`references/clone-cluster-detection.md`](../references/clone-cluster-detection.md).
 2. **Enable Long Path support before running any skill.** Windows defaults to a 260-character path limit. Vaults with deep folder hierarchies and long descriptive folder names exceed this routinely. Without long path support enabled, Vault Autopilot skills cannot see those files and will silently skip them.
 3. **Always run `property-enrich` first on a Windows clone.** Filesystem creation date is unreliable on Windows after copying. YAML `created` is the source of truth.
 4. **Start a fresh Claude Code session before invoking a skill.** "Resume Session" can short-circuit the Windows preflight gate using a cached pass-state from earlier in the conversation, even if the registry value has changed since. Fresh session = fresh gate.
@@ -132,7 +132,9 @@ We cloned the same 1856-note source vault three times using three methods, then 
 |---|--------|--------------|------------------------|-------------------------|
 | 1 | **`scp` from macOS** (reference) | 1856 / 1856 | No — set to transfer time | Yes |
 | 2 | **PowerShell `Copy-Item`** (= File Explorer copy-paste) | 1716 / 1856 — **140 files dropped** | No — set to copy time | Yes |
-| 3 | **`robocopy /E`** | 1856 / 1856 | **Yes — preserved from source** | Yes |
+| 3 | **`robocopy /E`** | 1856 / 1856 | Preserved at clone-time, but unreliable in practice (see below) | Yes |
+
+> **2026-05-01 update — empirical CreationTime cluster on robocopy clone.** A second strict-path validation (GR-3) on a fresh `robocopy /E /COPY:DAT` clone found 36.8 % (189 / 514) of inbox-tree files with `CreationTime = 2026-04-16T20:33:23Z` (the clone moment), clustered within ±30 s. The 2026-04-26 measurement above (taken immediately after the copy) showed CreationTime preserved; by 2026-05-01 a large subset had been reset, most likely by post-clone Defender / Indexer / Obsidian-cache writes. The launch-scope skills mitigate this at runtime via [`references/clone-cluster-detection.md`](../references/clone-cluster-detection.md) — files in the cluster window with no alternate date source are SKIPPED rather than enriched with the clone-time value. The Windows preflight ([`references/windows-preflight.md`](../references/windows-preflight.md) Step 7) surfaces the cluster as a WARN at the start of every skill run so the user has visibility before SKIPs accumulate as Class-C findings.
 
 ### What this means for Vault Autopilot's `created` field
 
@@ -141,7 +143,7 @@ The plugin's auto-enrich logic uses a fallback chain to determine the `created` 
 On Windows, filesystem CreationTime is the **least reliable** source because it depends on how the file got there:
 
 - If you cloned with **File Explorer** or **PowerShell Copy-Item**: CreationTime reflects when you copied the vault, not when the note was actually written. Auto-enrich will write that wrong date into your YAML.
-- If you cloned with **`robocopy`**: CreationTime is preserved from the source, but the source itself may also have been a copy (chained copies all preserve the original).
+- If you cloned with **`robocopy`**: CreationTime is preserved at clone-time, but is empirically unreliable thereafter on Windows — post-clone background services (Defender, Search Indexer, Obsidian's startup cache) can reset it to the clone moment, producing a birthtime cluster. The skills' clone-cluster gate handles this automatically; see [`references/clone-cluster-detection.md`](../references/clone-cluster-detection.md).
 - If your vault came from **macOS via SCP/AirDrop**: CreationTime is the transfer time, not the original write time.
 
 ### Recommendation
