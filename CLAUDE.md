@@ -28,7 +28,7 @@ logs/
 
 | # | Skill | Core Task | Status |
 |---|-------|-----------|--------|
-| 1 | inbox-sort | Move files from inbox to correct folders | beta |
+| 1 | inbox-sort | Move files from inbox to correct folders | stable |
 | 2 | note-rename | Rename poorly named files | stable |
 | 3 | note-quality-check | Score notes, suggest deletions | beta |
 | 4 | property-classify | Classify note status and type | beta |
