@@ -52,7 +52,7 @@ Three repos, three different jobs. They teach and visualize. We automate.
 | **Acts on your vault** | ✅ Yes | ❌ No | ❌ No |
 | **AI-powered metadata** | ✅ Yes | ❌ No | ❌ No |
 | **Quality gates** | ✅ Yes | ❌ No | ❌ No |
-| **Skills count** | 7 (3 stable, 4 in dev) | ~20 | ~10 |
+| **Skills count** | 7 (3 stable, 3 beta, 1 deferred) | ~20 | ~10 |
 
 ## Safety
 
