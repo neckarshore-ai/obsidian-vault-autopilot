@@ -45,7 +45,7 @@ Before committing any skill, verify:
 3. No hardcoded paths (use `${OBSIDIAN_VAULT_PATH}`)
 4. Output format is specified (Core + Nahbereich + Report)
 5. Quality checks are included in the skill
-6. Skill is concise and focused (under 500 words for most skills)
+6. Skill is concise and focused — under 500 words for narrow-scope skills; launch-scope skills (inbox-sort, note-rename, property-enrich, property-describe) typically run 1300–3000 words to cover preflight + Source Hierarchy + Nahbereich + Report inline
 7. All content is in English
 8. No emoji in skill files
 

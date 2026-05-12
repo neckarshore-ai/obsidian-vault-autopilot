@@ -17,12 +17,12 @@ Seven skills that manage your vault automatically:
 | 1 | **inbox-sort** | Moves notes from inbox root into existing subfolders based on content | ✅ stable |
 | 2 | **note-rename** | Renames poorly named files and updates all backlinks | ✅ stable |
 | 3 | **property-enrich** | Fills missing metadata: title, dates, aliases, source, priority | ✅ stable |
-| 4 | **note-quality-check** | Scores notes by quality, recommends what to keep or delete | 🚧 in development |
-| 5 | **property-describe** | Generates concise `description` frontmatter from note content | 🚧 in development |
-| 6 | **property-classify** | Sets lifecycle `status` and `type` properties automatically | 🚧 in development |
+| 4 | **note-quality-check** | Scores notes by quality, recommends what to keep or delete | 🧪 beta |
+| 5 | **property-describe** | Generates concise `description` frontmatter from note content | 🧪 beta |
+| 6 | **property-classify** | Sets lifecycle `status` and `type` properties automatically | 🧪 beta |
 | 7 | **tag-manage** | Audits tag quality, suggests tags from content, cleans duplicates | 📅 v0.2.0 |
 
-Skills marked **🚧 in development** are not ready for use — behavior will change.
+Skills marked **🧪 beta** are usable with caveats — behavior may still change before v1.0.
 
 Each skill follows the **Core + Nahbereich + Report** principle: do the job,
 fix adjacent issues, and report everything else.
