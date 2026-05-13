@@ -24,16 +24,18 @@ logs/
   run-history.md           <- Skill execution log
 ```
 
-## Skills (6 stable/beta + 1 deferred)
+## Skills (4 launch-scope + 2 in-development + 1 deferred)
+
+Launch-scope = Cycle-4 Gold-Run validated (see [D19](https://github.com/omnopsis-ai/omnopsis-planning/blob/main/docs/reference/decisions-strategy.md#d19--ova-cycle-4-pass-criterion-reformulation-0-new-class-a-skill-regressions)). In-development beta skills live in the codebase but were not part of the launch-scope test matrix.
 
 | # | Skill | Core Task | Status |
 |---|-------|-----------|--------|
-| 1 | inbox-sort | Move files from inbox to correct folders | stable |
-| 2 | note-rename | Rename poorly named files | stable |
-| 3 | note-quality-check | Score notes, suggest deletions | beta |
-| 4 | property-classify | Classify note status and type | beta |
-| 5 | property-describe | Generate note descriptions | beta |
-| 6 | property-enrich | Fill missing metadata fields | stable |
+| 1 | inbox-sort | Move files from inbox to correct folders | stable (launch-scope) |
+| 2 | note-rename | Rename poorly named files | stable (launch-scope) |
+| 3 | property-enrich | Fill missing metadata fields | stable (launch-scope) |
+| 4 | property-describe | Generate note descriptions | beta (launch-scope) |
+| 5 | note-quality-check | Score notes, suggest deletions | beta (in development) |
+| 6 | property-classify | Classify note status and type | beta (in development) |
 | 7 | tag-manage | Assign, clean up, and standardize tags | deferred (v0.2.0) |
 
 ## Quality Checklist per Skill
