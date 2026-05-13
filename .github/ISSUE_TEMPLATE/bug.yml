@@ -5,13 +5,11 @@ body:
   - type: markdown
     attributes:
       value: |
-        **Modern way:** Paste your bug description as a prompt. Use your favorite AI weapon of choice, dictate it with [Wispr Flow](https://wisprflow.ai/r?GERMAN46), or just write it down in your own words. A raw half-page dump tells us more than a perfectly structured but half-empty form.
+        **Modern way:** Paste your bug description as a prompt. Use your favorite AI tool of choice or just write it down in your own words. A raw half-page dump tells us more than a perfectly structured but half-empty form.
 
         **Classic way:** If you prefer structure, use the fields below.
 
         Either way works. We'll ask if we need more details.
-
-        **Reward:** Quality bug reports earn a free month of [Wispr Flow Pro](https://wisprflow.ai/r?GERMAN46) (unlimited dictation). We'll send you the invite after review.
   - type: textarea
     id: description
     attributes:

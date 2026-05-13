@@ -5,9 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Rough is fine. Dictate it with [Wispr Flow](https://wisprflow.ai/r?GERMAN46), paste it from your AI chat, or just type it out.
-
-        **Reward:** Quality feature requests earn a free month of [Wispr Flow Pro](https://wisprflow.ai/r?GERMAN46) (unlimited dictation).
+        Rough is fine. Dictate it with your favorite speech-to-text tool, paste it from your AI chat, or just type it out.
   - type: textarea
     id: description
     attributes:

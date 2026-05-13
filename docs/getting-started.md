@@ -41,10 +41,14 @@ For details on why the clone method matters, see [Cloning Guide](cloning-guide.m
 
 ## Step 3 — Install the Plugin
 
+In Claude Code, add the marketplace and install the plugin:
+
 ```bash
-git clone https://github.com/neckarshore-ai/obsidian-vault-autopilot.git \
-  ~/.claude/plugins/obsidian-vault-autopilot
+/plugin marketplace add neckarshore-ai/obsidian-vault-autopilot
+/plugin install obsidian-vault-autopilot@neckarshore-ai
 ```
+
+(For the manual / local-clone install path, see the README's "Installation" section.)
 
 Set your vault path to point at the **clone** (not your production vault):
 
