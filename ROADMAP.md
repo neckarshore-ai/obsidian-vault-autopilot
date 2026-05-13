@@ -168,23 +168,6 @@ inbox-sort → note-rename → property-enrich → property-describe
 
 The orchestrator handles ordering, passes findings between skills, and produces a combined report.
 
-## Future Ideas
-
-These are not committed — they depend on community interest and feedback.
-
-| # | Idea | Description |
-|---|------|-------------|
-| 1 | Attachment detect | Scan folders for non-Markdown files (images, PDFs, media, scripts), classify as companion/orphan/sensitive, report inventory. [Plan](docs/plans/non-markdown-detection-skill.md) |
-| 2 | Social scraper | Import content from external platforms into vault notes |
-| 3 | Research report | Generate research summaries from a list of URLs |
-| 4 | Social post | Draft social media posts from vault notes |
-| 5 | Bring Your Own Context | Let skills reference external knowledge bases or project-specific conventions |
-| 6 | Scheduled runs | Automated skill execution on a schedule (daily inbox sort, weekly quality check) |
-| 7 | Test data generator | Generate test fixtures for any skill to validate before running on your real vault |
-| 8 | Confidence tags in reports | Tag every AI recommendation as `high` / `medium` / `low` confidence so users know what was found vs guessed. Aligns with the "AI recommends, human decides" principle. Inspired by EXTRACTED/INFERRED/AMBIGUOUS classification patterns. |
-| 9 | `.vaultautopilotignore` file | Gitignore-syntax exclude file at vault root. Skills skip listed paths (templates, archive, generated folders) during scans. Inspired by gitignore-style exclude files. |
-| 10 | Incremental run cache | SHA256 content cache so re-runs only process changed notes. Critical for vaults > 1k notes where full scans become slow. Inspired by per-file content cache patterns. |
-
 ---
 
 Have an idea? [Open an issue](https://github.com/neckarshore-ai/obsidian-vault-autopilot/issues) or check [CONTRIBUTING.md](CONTRIBUTING.md).
