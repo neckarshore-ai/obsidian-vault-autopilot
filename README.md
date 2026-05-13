@@ -10,21 +10,18 @@ Build your Second Brain rapidly. Let the Autopilot handle the tedious stuff.
 
 ## What This Does
 
-Seven skills that manage your vault automatically:
+Four skills that manage your vault automatically:
 
 | # | Skill | What it does | Status |
 |---|-------|-------------|--------|
 | 1 | **inbox-sort** | Moves notes from inbox root into existing subfolders based on content | ✅ stable |
 | 2 | **note-rename** | Renames poorly named files and updates all backlinks | ✅ stable |
 | 3 | **property-enrich** | Fills missing metadata: title, dates, aliases, source, priority | ✅ stable |
-| 4 | **note-quality-check** | Scores notes by quality, recommends what to keep or delete | 🧪 beta |
-| 5 | **property-describe** | Generates concise `description` frontmatter from note content | 🧪 beta |
-| 6 | **property-classify** | Sets lifecycle `status` and `type` properties automatically | 🧪 beta |
-| 7 | **tag-manage** | Audits tag quality, suggests tags from content, cleans duplicates | 📅 v0.2.0 |
+| 4 | **property-describe** | Generates concise `description` frontmatter from note content | 🧪 beta |
 
-Skills marked **🧪 beta** are usable with caveats — behavior may still change before v1.0.
+The **🧪 beta** skill is usable today with caveats — behavior may still change before v1.0. All four skills have been validated across multiple vault topologies (macOS native, Windows clone, PowerShell clone, robocopy clone).
 
-Each skill follows the **Core + Nahbereich + Report** principle: do the job,
+Each skill follows the **Core + Nahbereich (adjacent fixes) + Report** principle: do the job,
 fix adjacent issues, and report everything else.
 
 ## What This Does NOT Do
@@ -34,25 +31,26 @@ This is not a diagram generator. It does not create Excalidraw or Mermaid visual
 
 It automates your vault. Nobody else does that.
 
-## Works Great With
+## On the Roadmap
 
-| # | Repo | What it adds |
-|---|------|-------------|
-| 1 | [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills) | Teaches agents Obsidian syntax — the knowledge layer our skills build on |
-| 2 | [axtonliu/axton-obsidian-visual-skills](https://github.com/axtonliu/axton-obsidian-visual-skills) | Generates diagrams and visualizations from your notes |
+Three additional skills are on the roadmap. They live in the codebase but
+have not been validated at the same coverage as the four launch-scope
+skills above.
 
-Three repos, three different jobs. They teach and visualize. We automate.
+**In preview** (usable today with caveats, not yet Gold-Run validated):
 
-## How We Compare
+| # | Skill | What it does | Target |
+|---|-------|-------------|--------|
+| 1 | note-quality-check | Scores notes by quality, recommends what to keep or delete | v0.2.x |
+| 2 | property-classify | Sets lifecycle `status` and `type` properties automatically | v0.2.x |
 
-| | **Vault Autopilot** | [kepano-obsidian](https://github.com/kepano/kepano-obsidian) | [axton-obsidian-visual-skills](https://github.com/axtonliu/axton-obsidian-visual-skills) |
-|---|---|---|---|
-| **Focus** | 🤖 Vault automation | 📖 Format reference | 🎨 Visualization |
-| **Skills type** | Active (manages files) | Passive (documentation) | Generative (creates visuals) |
-| **Acts on your vault** | ✅ Yes | ❌ No | ❌ No |
-| **AI-powered metadata** | ✅ Yes | ❌ No | ❌ No |
-| **Quality gates** | ✅ Yes | ❌ No | ❌ No |
-| **Skills count** | 7 (3 stable, 3 beta, 1 deferred) | ~20 | ~10 |
+**Planned** (designed but not yet active):
+
+| # | Skill | What it will do | Target |
+|---|-------|----------------|--------|
+| 3 | tag-manage | Audits tag quality, suggests tags from content, cleans duplicates | v0.2.0 |
+
+Want to help shape any of these? **[Open an issue](https://github.com/neckarshore-ai/obsidian-vault-autopilot/issues)** with your use case.
 
 ## Safety
 
