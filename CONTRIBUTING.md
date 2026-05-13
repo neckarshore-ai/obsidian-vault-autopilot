@@ -4,7 +4,7 @@ Thanks for your interest in Obsidian Vault Autopilot.
 
 ## Reporting Issues
 
-> **Security vulnerabilities:** Do not open a public issue. Follow the [Security Policy](SECURITY.md) instead.
+> **Security vulnerabilities:** see the [Security Policy](SECURITY.md) for the reporting channel. This is a local-only plugin with no network component, so security reports are handled via GitHub Issues like other reports — the Security Policy documents what information to include.
 
 Open a [GitHub issue](https://github.com/neckarshore-ai/obsidian-vault-autopilot/issues) with:
 

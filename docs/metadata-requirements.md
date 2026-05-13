@@ -13,7 +13,7 @@ The most important field is `created:` in YAML frontmatter. Skills use it for **
 created: 2024-03-14
 modified: 2026-04-10
 tags:
-  - project/omnixis
+  - Project/MyProject
 ---
 ```
 

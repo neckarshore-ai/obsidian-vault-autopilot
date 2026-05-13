@@ -66,7 +66,7 @@ The warning does NOT block execution — it informs only.
 
 ### Relational Properties (v0.2.0)
 
-> **Deferred to v0.2.0.** Properties like `aliases`, `parent`, `source`, and `priority` are not filled in the current release. The full design is preserved in `SKILL.v0.2.0-draft.md` in this directory.
+> **Deferred to v0.2.0.** Properties like `aliases`, `parent`, `source`, and `priority` are not filled in the current release.
 
 ## Pre-flight
 

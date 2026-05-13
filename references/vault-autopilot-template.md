@@ -8,11 +8,10 @@ This vault is managed by [Obsidian Vault Autopilot](https://github.com/neckarsho
 |---|-------|-------------|----------|
 | 1 | inbox-sort | Moves notes from inbox root into subfolders | — |
 | 2 | note-rename | Renames poorly named files with clear, descriptive names | — |
-| 3 | note-quality-check | Scores notes, flags stale content, suggests deletions | — |
-| 4 | property-classify | Classifies note status and type via YAML frontmatter | — |
-| 5 | property-describe | Generates missing note descriptions | — |
-| 6 | property-enrich | Fills missing metadata fields (dates, tags, status) | — |
-| 7 | tag-manage | Assigns, cleans up, and standardizes tags | — |
+| 3 | property-enrich | Fills missing metadata fields (dates, tags, status) | — |
+| 4 | property-describe | Generates missing note descriptions | — |
+
+Three more skills (`note-quality-check`, `property-classify`, `tag-manage`) are on the roadmap — see the project README's "On the Roadmap" section for status.
 
 ## How It Works
 
