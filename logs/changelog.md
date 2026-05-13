@@ -1,6 +1,8 @@
-# Changelog
+# Internal Changelog
 
-Shared changelog for the obsidian-vault plugin. All skills and references log their changes here.
+Per-component implementation log for the obsidian-vault plugin. All skills and references log their changes here in chronological order, with full technical detail.
+
+> **For user-facing release notes**, see the top-level [`CHANGELOG.md`](../CHANGELOG.md). This file is the internal companion — it documents what was changed at the file / function level, including findings codes and Gold-Run cell references that are not user-visible.
 
 | Date | Component | Change |
 |------|-----------|--------|

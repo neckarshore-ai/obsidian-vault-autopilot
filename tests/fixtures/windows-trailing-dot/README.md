@@ -59,6 +59,4 @@ The bug is empirically reproducible. Manual procedure for v0.1.4 W1 PR review un
 ## Cross-References
 
 - [`references/windows-preflight.md`](../../../references/windows-preflight.md) — runtime guidance the skills consume; documents the enumeration pattern and trailing-dot detection.
-- [`docs/windows-considerations.md`](../../../docs/windows-considerations.md) — the user-facing Windows handbook; W3 will retract the robocopy-as-baseline claim, but the trailing-dot guidance is W1's territory.
-- [`docs/plans/vault-autopilot-v0.1.4-ship.md`](https://github.com/neckarshore-ai/omnopsis-planning/blob/main/docs/plans/vault-autopilot-v0.1.4-ship.md) — the v0.1.4 ship plan (in `omnopsis-planning`); §3 W1 is this fixture's authoritative spec.
-- 2026-05-04 GR-3 closure report (in `omnopsis-planning/docs/reports/2026-05-04-obi-skills.md`) — the empirical discovery context.
+- [`docs/windows-considerations.md`](../../../docs/windows-considerations.md) — the user-facing Windows handbook; the trailing-dot guidance lives in the "Windows Considerations" section.

@@ -82,7 +82,7 @@ Windows traditionally limited file paths to 260 characters total (drive + folder
 
 ### Why it matters for Obsidian vaults
 
-A typical OMNIXIS-style PARA vault routinely produces paths like:
+A typical descriptive PARA-style vault routinely produces paths like:
 
 ```
 C:\Users\<username>\Documents\Vaults\<vault-name>\010_Outcomes - WHAT I WANT - Everything with a concrete goal, decision, or expected result\10_Projects\10 - <Project Name> - <Description>\Components\<Component Name>\<Note Title>.md
@@ -180,7 +180,7 @@ $env:OBSIDIAN_VAULT_PATH = "C:\Users\<you>\Documents\Vaults\MyVault-Clone"
 
 ## Test Methodology
 
-Source vault: 1856 Markdown files, mixed depth, OMNIXIS-style PARA structure with descriptive folder names. Original on macOS APFS. Transferred to Windows 11 NTFS via three methods on 2026-04-16, measured 2026-04-26.
+Source vault: 1856 Markdown files, mixed depth, descriptive PARA-style structure with long folder names. Original on macOS APFS. Transferred to Windows 11 NTFS via three methods on 2026-04-16, measured 2026-04-26.
 
 Hardware: ThinkCentre M-class, Windows 11 22H2, German locale, NTFS. Path: `C:\Users\<user>\Documents\Vaults\`. SSH access via OpenSSH server.
 

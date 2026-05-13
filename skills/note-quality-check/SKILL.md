@@ -102,22 +102,22 @@ Evaluate each note against all five. These inform the suggested action (Keep vs.
 
 ```
 **Cluster X: "[Name]" (N Notes)**
-Kontext: [1-line description of what connects these notes]
+Context: [1-line description of what connects these notes]
 
-| # | Note | Typ | Zeilen | Suggested Action |
-|---|------|-----|-------:|-----------------|
-| 1 | Example Note.md | Brief-Entwurf | 68 | Archive (A) |
-| 2 | Another Note.md | Projekt-Doku | 115 | Keep (K) |
+| # | Note | Type | Lines | Suggested Action |
+|---|------|------|------:|-----------------|
+| 1 | Example Note.md | Brief Draft | 68 | Archive (A) |
+| 2 | Another Note.md | Project Doc | 115 | Keep (K) |
 
-**Aktionen:**
-- **Keep (K)** — bleibt wo sie ist, optional Ordner-Vorschlag
-- **Archive (A)** — verschiebt nach `099_Archive/[Cluster]/`
-- **Park (P)** — keine Aktion jetzt, kommt in den Report für später
-- **Trash (T)** — Soft-Delete nach `_trash/` (wiederherstellbar)
+**Actions:**
+- **Keep (K)** — stays where it is, optional folder suggestion
+- **Archive (A)** — moves to `099_Archive/[Cluster]/`
+- **Park (P)** — no action now, recorded in the report for later
+- **Trash (T)** — soft-delete to `_trash/` (recoverable)
 
-Beispiel: `1A 2K` oder `alle A` oder `1-5 A, 6T`
+Examples: `1A 2K` or `all A` or `1-5 A, 6T`
 
-→ Deine Entscheidung?
+→ Your decision?
 ```
 
 9. Show max `batch_size` notes per table (default 5). If a cluster has more, continue with a second table after the user decides.

@@ -144,4 +144,4 @@ How many of the 40 attributes affect each skill:
 | **property-enrich** | 7 | 3 | 5 | **15** |
 | **tag-manage** | 7 | 2 | 5 | **14** |
 
-7 of 11 Tier 1 attributes and 5 Tier 2/3 attributes are **global** — they affect all 7 skills. The configuration infrastructure is a plugin-level feature, not a single-skill feature.
+7 of 11 Tier 1 attributes and 5 Tier 2/3 attributes are **global** — they affect all 7 skills (4 launch-scope + 3 roadmap). The configuration infrastructure is a plugin-level feature, not a single-skill feature.
