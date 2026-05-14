@@ -27,7 +27,14 @@ ditto -V "$HOME/Vaults/MyVault" "$HOME/Vaults/MyVault-Clone"
 
 **macOS (Finder):** Right-click your vault folder → Duplicate. Birthtimes are preserved on macOS (tested with both `ditto` and Finder). Works without extra steps.
 
-**Windows:** Copy your vault folder in File Explorer (Ctrl+C → Ctrl+V in a new location). Birthtimes reset on Windows. Running `property-enrich` first is recommended for bulk coverage, but other skills auto-enrich `created` per-note during their runs.
+**Windows:** Clone your vault with `robocopy`, NOT File Explorer. File Explorer silently drops files at paths exceeding MAX_PATH (260 chars), which is common in deep PARA structures. Use:
+
+```powershell
+robocopy "C:\Users\<you>\Documents\Vaults\MyVault" `
+         "C:\Users\<you>\Documents\Vaults\MyVault-Clone" /E /COPY:DAT
+```
+
+Birthtimes are not reliably preserved on Windows clones even with `/COPY:DAT` (GR-3 empirical finding 2026-05-01: 36.8% of files reset to clone-time). The launch-scope skills detect this at preflight and SKIP date-derivation for affected files — `property-enrich` is recommended first for bulk coverage, other skills auto-enrich `created` per-note during runs. See [Windows Considerations](windows-considerations.md) and [Cloning Guide](cloning-guide.md) for full procedure.
 
 **Linux:**
 
