@@ -8,11 +8,47 @@
 
 Only the current release receives security updates.
 
-## Scope
+## Data Handling
 
-Obsidian Vault Autopilot is a **local-only** plugin. It runs entirely on your machine
-inside Claude Code. No data is transmitted to external servers. No cloud services are
-involved.
+Obsidian Vault Autopilot is structured to keep your vault content as
+close to your machine as possible, but the full picture has two parts
+worth distinguishing:
+
+**The plugin code itself makes no network calls.** The skills are pure
+Markdown and Bash; no HTTP libraries are imported; no telemetry, no
+analytics, no auto-updates, no error reporting are sent anywhere by the
+plugin's own code. You can verify this with `grep -rn 'http\|fetch\|curl'`
+across the repo.
+
+**Skill execution happens inside Claude Code, which uses Anthropic's API.**
+When you invoke a skill — `inbox-sort`, `note-rename`, `property-enrich`,
+`property-describe`, or any of the in-development skills — Claude Code
+reads the relevant note content and sends it to Anthropic's API to
+generate the skill's output (rename suggestions, sort decisions, property
+text). The note content processed by each skill is transmitted to
+Anthropic during that invocation.
+
+This means:
+
+- For a vault you'd be comfortable processing through any cloud-based
+  AI assistant (general notes, project files, public-domain content),
+  the data-flow is unchanged from your normal Claude Code usage.
+- For privacy-sensitive vaults (medical, legal, financial, family
+  records), this is a real consideration. The plugin does not change
+  Claude Code's data handling — but it does invoke Claude Code, and
+  the note content reaches Anthropic during invocation.
+
+Anthropic's privacy policy and data handling commitments apply to the
+API calls Claude Code makes:
+**https://www.anthropic.com/privacy**
+
+If you need stricter data confinement than Anthropic's API offers
+(self-hosted models, no third-party data processors), this plugin is
+not the right tool for your use case today. If your threat model fits
+within Anthropic's data handling commitments, the plugin code adds no
+additional data-flow beyond what Claude Code itself does.
+
+## Scope
 
 The plugin reads and writes files within your configured `OBSIDIAN_VAULT_PATH`. It does
 not access files outside that path.

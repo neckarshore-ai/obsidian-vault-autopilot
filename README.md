@@ -8,6 +8,15 @@ Build your Second Brain rapidly. Let the Autopilot handle the tedious stuff.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+## Data Handling
+
+**At a glance:** the plugin code itself makes no network calls
+(verifiable with `grep`). Skill execution happens inside Claude
+Code, which sends note content to Anthropic's API to generate skill
+output — subject to [Anthropic's Privacy Policy](https://www.anthropic.com/privacy).
+For privacy-sensitive vaults, read [SECURITY.md § Data Handling](SECURITY.md#data-handling)
+in full before processing sensitive content.
+
 ## What This Does
 
 Four skills that manage your vault automatically:
