@@ -87,7 +87,7 @@ New to this plugin? Follow the **[Getting Started](docs/getting-started.md)** gu
 | 2 | **Preview + Confirm** | Every destructive action shows what will change and waits for your approval. `--preview` is also available as a standalone mode. |
 | 3 | **Cooldown** | Files newer than 3 days (configurable) are protected from automation. Gives you time to notice new notes before automation touches them. |
 | 4 | **Skill Log** | Every action is logged with timestamp, skill name, and what changed — in the note frontmatter and in `logs/run-history.md`. |
-| 5 | **Secret Detection** | Files containing API keys, recovery phrases, or financial data are flagged and moved to `_secret/`, never touched by sorting logic. |
+| 5 | **Secret Detection** | Files containing API keys, recovery phrases, or financial data are detected. `inbox-sort` flags them in the report for your review; `note-rename` moves them to `_secret/` automatically. In either case, they are never silently sorted into normal categories. |
 
 ### Known Limitations
 
