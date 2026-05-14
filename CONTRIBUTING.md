@@ -4,7 +4,7 @@ Thanks for your interest in Obsidian Vault Autopilot.
 
 ## Reporting Issues
 
-> **Security vulnerabilities:** see the [Security Policy](SECURITY.md) for the reporting channel. This is a local-only plugin with no network component, so security reports are handled via GitHub Issues like other reports — the Security Policy documents what information to include.
+> **Security vulnerabilities:** see the [Security Policy](SECURITY.md) for the reporting channel. Security reports are handled via GitHub Issues like other reports — the Security Policy documents what information to include, and [SECURITY.md § Data Handling](SECURITY.md#data-handling) explains how vault content flows through skill execution.
 
 Open a [GitHub issue](https://github.com/neckarshore-ai/obsidian-vault-autopilot/issues) with:
 
