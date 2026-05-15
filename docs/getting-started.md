@@ -48,12 +48,19 @@ For details on why the clone method matters, see [Cloning Guide](cloning-guide.m
 
 ## Step 3 — Install the Plugin
 
-In Claude Code, add the marketplace and install the plugin:
+In Claude Code, add the marketplace:
 
 ```bash
 /plugin marketplace add neckarshore-ai/obsidian-vault-autopilot
+```
+
+Then install the plugin:
+
+```bash
 /plugin install obsidian-vault-autopilot@neckarshore-ai
 ```
+
+Run each command as a separate Claude Code input — pasting both lines together causes Claude Code to treat the whole string as the marketplace source and fall back to a failing SSH clone.
 
 (For the manual / local-clone install path, see the README's "Installation" section.)
 
