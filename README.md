@@ -115,12 +115,19 @@ see [CONTRIBUTING.md](CONTRIBUTING.md). For community guidelines, see
 
 ### Claude Code (recommended)
 
-Add the marketplace and install the plugin:
+Add the marketplace:
 
 ```bash
 /plugin marketplace add neckarshore-ai/obsidian-vault-autopilot
+```
+
+Then install the plugin:
+
+```bash
 /plugin install obsidian-vault-autopilot@neckarshore-ai
 ```
+
+> **Note:** Run each command as a separate Claude Code input. Pasting both lines as one input causes Claude Code to treat the entire string as the marketplace source and the clone falls back to SSH.
 
 ### Manual
 
@@ -131,10 +138,15 @@ git clone https://github.com/neckarshore-ai/obsidian-vault-autopilot.git \
   ~/.claude/plugins/obsidian-vault-autopilot
 ```
 
-Then in Claude Code:
+Then in Claude Code, add the marketplace:
 
 ```bash
 /plugin marketplace add ~/.claude/plugins/obsidian-vault-autopilot
+```
+
+And install the plugin:
+
+```bash
 /plugin install obsidian-vault-autopilot@neckarshore-ai
 ```
 
